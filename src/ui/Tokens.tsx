@@ -1,111 +1,49 @@
 import { createSignal, For } from "solid-js";
-import { Tabs } from "./common/Tabs";
 import { Token, TokenSet } from "../types";
+import { TokensEditor } from "./TokensEditor";
 
 interface TokensProps {
   sets: TokenSet[];
   onTokenClick?: (args: [string, Token]) => void;
 }
 
-export function Tokens({ sets, onTokenClick }: TokensProps) {
-  const mappedSets = sets.map((set) => ({
-    name: set.name,
-    content: (
-      <div class="flex flex-col">
-        <h1>Colors</h1>
-        <For each={Object.entries(set.tokens.color ?? {})}>
-          {([key, value]) => (
-            <button
-              style={{ "background-color": value.value }}
-              onClick={() => {
-                onTokenClick?.([`color.${key}`, value]);
-              }}
-            >
-              {value.name}
-            </button>
-          )}
-        </For>
+export function Tokens(props: TokensProps) {
+  console.log("Tokens", props.sets);
+  const [selected, setSelectedSets] = createSignal<string[]>([]);
+  const [activeSet, setActiveSet] = createSignal(0);
+  const handleSetSelect = (e) => {
+    setSelectedSets((prev) => {
+      if (prev.includes(e.target.value)) {
+        return prev.filter((set) => set !== e.target.value);
+      }
+      return [...prev, e.target.value];
+    });
+  };
 
-        <h1>Borders</h1>
-        <For each={Object.entries(set.tokens.border ?? {})}>
-          {([key, value]) => (
-            <button
-              onClick={() => {
-                onTokenClick?.([`border.${key}`, value]);
-              }}
-            >
-              {value.name}
-            </button>
-          )}
-        </For>
-
-        <h1>Border Radius</h1>
-        <For each={Object.entries(set.tokens.borderRadius ?? {})}>
-          {([key, value]) => (
-            <button
-              onClick={() => {
-                onTokenClick?.([`borderRadius.${key}`, value]);
-              }}
-            >
-              {value.name}
-            </button>
-          )}
-        </For>
-
-        <h1>Shadows</h1>
-        <For each={Object.entries(set.tokens.boxShadow ?? {})}>
-          {([key, value]) => (
-            <button
-              onClick={() => {
-                onTokenClick?.([`shadow.${key}`, value]);
-              }}
-            >
-              {value.name}
-            </button>
-          )}
-        </For>
-
-        <h1>Typography</h1>
-        <For each={Object.entries(set.tokens.typography ?? {})}>
-          {([key, value]) => (
-            <button
-              onClick={() => {
-                onTokenClick?.([`typography.${key}`, value]);
-              }}
-            >
-              {value.name}
-            </button>
-          )}
-        </For>
-
-        <h1>Spacing</h1>
-        <For each={Object.entries(set.tokens.spacing ?? {})}>
-          {([key, value]) => (
-            <button
-              onClick={() => {
-                onTokenClick?.([`spacing.${key}`, value]);
-              }}
-            >
-              {value.name}
-            </button>
-          )}
-        </For>
-
-        <h1>Sizing</h1>
-        <For each={Object.entries(set.tokens.sizing ?? {})}>
-          {([key, value]) => (
-            <button
-              onClick={() => {
-                onTokenClick?.([`sizing.${key}`, value]);
-              }}
-            >
-              {value.name}
-            </button>
-          )}
-        </For>
-      </div>
-    ),
-  }));
-
-  return <Tabs tabs={mappedSets} mode="vertical" />;
+  return (
+    <div>
+      <For each={props.sets}>
+        {(set, index) => (
+          <div
+            onClick={() => {
+              setActiveSet(index());
+            }}
+          >
+            <input
+              type="checkbox"
+              id={set.id}
+              value={set.id}
+              onInput={handleSetSelect}
+              checked={selected().includes(set.id)}
+            />
+            <label for={set.id}>{set.name}</label>
+          </div>
+        )}
+      </For>
+      <TokensEditor
+        set={props.sets[activeSet()]}
+        onTokenClick={props.onTokenClick}
+      />
+    </div>
+  );
 }

@@ -2,7 +2,7 @@
   "name": "tokens",
   "id": "1206013659177640379",
   "api": "1.0.0",
-  "main": "plugin.js",
+  "main": "main.js",
   "editorType": ["figma"],
   "ui": "ui.html"
 }

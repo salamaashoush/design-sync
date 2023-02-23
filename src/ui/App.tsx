@@ -1,17 +1,23 @@
-import { Component, createEffect, createSignal } from "solid-js";
-import { Tabs } from "./common/Tabs";
-import { TEST_TOKEN_SET_1 } from "./data";
-import { Tokens } from "./Tokens";
+import { Component, createResource, Show } from "solid-js";
+import { UIMessageType } from "../messages";
+import { rpcClient } from "../rpc/client";
 import { Token, TokenSet } from "../types";
-import { MessageType } from "../messages";
 import { Resizable, ResizableEvent } from "./common/Resizable";
+import { Tokens } from "./Tokens";
+
+interface Store {
+  selectedSets: string[];
+  sets: TokenSet[];
+}
 
 const App: Component = () => {
+  const [setsRes] = createResource(() => rpcClient.call("token-sets/get"));
   const handleTokenClick = (args: [string, Token]) => {
+    console.log("token click", args);
     parent.postMessage(
       {
         pluginMessage: {
-          type: MessageType.ApplyToken,
+          type: UIMessageType.ApplyToken,
           payload: {
             token: args[1],
             path: args[0],
@@ -22,13 +28,11 @@ const App: Component = () => {
       "*"
     );
   };
-  const [sets, setSets] = createSignal<TokenSet[]>([TEST_TOKEN_SET_1]);
   const handleResize = ({ width, height }: ResizableEvent) => {
-    console.log("resize", width, height);
     parent.postMessage(
       {
         pluginMessage: {
-          type: MessageType.Resize,
+          type: UIMessageType.Resize,
           payload: {
             width,
             height,
@@ -39,20 +43,15 @@ const App: Component = () => {
       "*"
     );
   };
+
   return (
     <Resizable onResize={handleResize}>
-      <Tabs
-        tabs={[
-          {
-            name: "Tokens",
-            content: <Tokens sets={sets()} onTokenClick={handleTokenClick} />,
-          },
-          {
-            name: "Tab 2",
-            content: <div>Tab 2 content</div>,
-          },
-        ]}
-      />
+      <Show when={setsRes()?.sets} fallback={<div>Loading...</div>}>
+        <Tokens
+          sets={setsRes()?.sets as TokenSet[]}
+          onTokenClick={handleTokenClick}
+        />
+      </Show>
     </Resizable>
   );
 };

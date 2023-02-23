@@ -1,6 +1,9 @@
 import tiny from "tinycolor2";
 
-export function getFigmaRGBColor(color: string, alpha: boolean = false) {
+export function convertColor(
+  color: string,
+  alpha: boolean = false
+): RGBA | RGB {
   const rgb = tiny(color).toRgb();
   if (alpha) {
     return {
@@ -9,16 +12,16 @@ export function getFigmaRGBColor(color: string, alpha: boolean = false) {
       b: rgb.b / 255,
       a: rgb.a,
     };
-  } else {
-    return {
-      r: rgb.r / 255,
-      g: rgb.g / 255,
-      b: rgb.b / 255,
-    };
   }
+
+  return {
+    r: rgb.r / 255,
+    g: rgb.g / 255,
+    b: rgb.b / 255,
+  };
 }
 
-export function getFigmaFontStyleFromWeight(fontWeight: string) {
+export function convertFontWeight(fontWeight: string) {
   // check if the font weight is a number
   if (parseInt(fontWeight)) {
     const weight = parseInt(fontWeight);
@@ -50,12 +53,12 @@ export function getFigmaFontStyleFromWeight(fontWeight: string) {
   }
 }
 
-export function getFigmaFontSize(fontSize: string) {
+export function convertFontSize(fontSize: string) {
   const parsedFontSize = parseInt(fontSize);
   return parsedFontSize;
 }
 
-export function getFigmaValueWithUnit(value: string, relativeValue: number) {
+export function convertValue(value: string, relativeValue: number) {
   // check if the line height is a number with a unit
   const parsedValue = parseInt(value);
   if (value.includes("px")) {
@@ -72,9 +75,14 @@ export function getFigmaValueWithUnit(value: string, relativeValue: number) {
       value: (parsedValue / relativeValue) * 100,
     };
   }
+
+  return {
+    unit: "PIXELS",
+    value: parsedValue,
+  };
 }
 
-export function getFigmaTextDecoration(textDecoration: string) {
+export function convertTextDecoration(textDecoration: string) {
   // convert css text decoration to figma text decoration
   switch (textDecoration) {
     case "underline":
@@ -86,7 +94,7 @@ export function getFigmaTextDecoration(textDecoration: string) {
   }
 }
 
-export function getFigmaTextCase(textCase: string) {
+export function convertTextCase(textCase: string) {
   // convert css text transform to figma text case
   switch (textCase) {
     case "uppercase":

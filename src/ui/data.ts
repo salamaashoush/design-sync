@@ -1,6 +1,4 @@
-import { TokenSet } from "../types";
-
-export const TEST_TOKEN_SET_1: TokenSet = {
+export const TEST_TOKEN_SET_1 = {
   name: "Default",
   tokens: {
     border: {
@@ -42,6 +40,20 @@ export const TEST_TOKEN_SET_1: TokenSet = {
       },
     },
     typography: {
+      label: {
+        name: "Label",
+        value: {
+          fontFamily: "Inter",
+          fontWeight: "500",
+          fontSize: "14px",
+          lineHeight: "20px",
+          letterSpacing: "0px",
+          textDecoration: "none",
+          textCase: "none",
+        },
+        type: "typography",
+      },
+
       heading1: {
         name: "Heading 1",
         value: {
@@ -52,7 +64,6 @@ export const TEST_TOKEN_SET_1: TokenSet = {
           letterSpacing: "0px",
           textDecoration: "none",
           textCase: "none",
-          color: "#000000",
         },
         type: "typography",
       },
@@ -66,7 +77,6 @@ export const TEST_TOKEN_SET_1: TokenSet = {
           letterSpacing: "0px",
           textDecoration: "none",
           textCase: "none",
-          color: "#000000",
         },
         type: "typography",
       },
@@ -80,7 +90,6 @@ export const TEST_TOKEN_SET_1: TokenSet = {
           letterSpacing: "0px",
           textDecoration: "none",
           textCase: "none",
-          color: "#000000",
         },
         type: "typography",
       },
@@ -156,17 +165,17 @@ export const TEST_TOKEN_SET_1: TokenSet = {
     fontSize: {
       small: {
         name: "Small",
-        value: 12,
+        value: "12",
         type: "fontSize",
       },
       medium: {
         name: "Medium",
-        value: 16,
+        value: "16",
         type: "fontSize",
       },
       large: {
         name: "Large",
-        value: 24,
+        value: "24",
         type: "fontSize",
       },
     },
@@ -257,53 +266,104 @@ export const TEST_TOKEN_SET_1: TokenSet = {
       },
     },
     opacity: {
-      0: {
+      "0": {
         name: "0",
-        value: "0",
+        value: 0,
         type: "opacity",
       },
-      25: {
+      "25": {
         name: "25",
-        value: "0.25",
+        value: 0.25,
         type: "opacity",
       },
-      50: {
+      "50": {
         name: "50",
 
-        value: "0.5",
+        value: 0.5,
         type: "opacity",
       },
-      75: {
+      "75": {
         name: "75",
-        value: "0.75",
+        value: 0.75,
         type: "opacity",
       },
-      100: {
+      "100": {
         name: "100",
-        value: "1",
+        value: 1,
         type: "opacity",
       },
     },
-    zIndex: {
-      0: {
-        name: "0",
-        value: "0",
-        type: "zIndex",
+    layer: {
+      base: {
+        name: "Base",
+        value: 0,
+        type: "layer",
       },
-      10: {
-        name: "10",
-        value: "10",
-        type: "zIndex",
+      overlay: {
+        name: "Overlay",
+        value: 1,
+        type: "layer",
       },
-      20: {
-        name: "20",
-        value: "20",
-        type: "zIndex",
+      modal: {
+        name: "Modal",
+        value: 2,
+        type: "layer",
       },
-      30: {
-        name: "30",
-        value: "30",
-        type: "zIndex",
+      popover: {
+        name: "Popover",
+        value: 3,
+        type: "layer",
+      },
+    },
+    composition: {
+      header: {
+        name: "Header",
+        value: {
+          border: "{border.small}",
+          borderRadius: "{borderRadius.small}",
+          boxShadow: "{boxShadow.small}",
+          fill: "{color.primary}",
+          spacing: "{spacing.medium}",
+          typography: "{typography.heading1}",
+        },
+        type: "composition",
+      },
+    },
+    component: {
+      button: {
+        name: "Button",
+        value: {
+          base: "{composition.header}",
+          variants: {
+            variant: {
+              primary: {
+                fill: "{color.primary}",
+              },
+              secondary: {
+                fill: "{color.secondary}",
+              },
+              tertiary: {
+                fill: "{color.tertiary}",
+              },
+            },
+            size: {
+              small: {
+                spacing: "{spacing.small}",
+              },
+              medium: {
+                spacing: "{spacing.medium}",
+              },
+              large: {
+                spacing: "{spacing.large}",
+              },
+            },
+          },
+          defaultVariants: {
+            variant: "primary",
+            size: "medium",
+          },
+        },
+        type: "component",
       },
     },
   },

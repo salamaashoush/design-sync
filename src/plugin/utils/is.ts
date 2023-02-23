@@ -1,4 +1,4 @@
-import { Token, TokenTypes } from "../types";
+import { Ref, RefOrValue, Token, TokenTypes } from "../../types";
 
 export function isColorToken(token: Token): token is TokenTypes["color"] {
   return token.type === "color";
@@ -50,8 +50,8 @@ export function isBoxShadowToken(
   return token.type === "boxShadow";
 }
 
-export function isZIndexToken(token: Token): token is TokenTypes["zIndex"] {
-  return token.type === "zIndex";
+export function isLayerToken(token: Token): token is TokenTypes["layer"] {
+  return token.type === "layer";
 }
 
 export function isOpacityToken(token: Token): token is TokenTypes["opacity"] {
@@ -88,4 +88,27 @@ export function isLetterSpacingToken(
   token: Token
 ): token is TokenTypes["letterSpacing"] {
   return token.type === "letterSpacing";
+}
+
+export function isCompositionToken(
+  token: Token
+): token is TokenTypes["composition"] {
+  return token.type === "composition";
+}
+
+export function isComponentToken(
+  token: Token
+): token is TokenTypes["component"] {
+  return token.type === "component";
+}
+
+export function isTextNode(node: SceneNode): node is TextNode {
+  return node.type === "TEXT";
+}
+
+export function isTokenReference(value: RefOrValue<any>): value is Ref<string> {
+  return (
+    typeof value === "string" &&
+    value.match(/(\$[^\s,]+\w)|({([^}]*)})/g) !== null
+  );
 }
