@@ -1,27 +1,44 @@
 import mitt from "mitt";
 import { getErrorMessage } from "../utils";
 import type { RpcCalls, RpcChannelData } from "./calls";
-import type { JsonRpcRequest, JsonRpcResponse } from "./types";
+import type { JsonRpcResponse } from "./types";
+import {
+  isJsonRpcRequest,
+  isJsonRpcSubscribeRequest,
+  isJsonRpcUnsubscribeRequest,
+} from "./utils";
 
 // jsonrpc 2 server for figma plugin
 
-interface RpcServerEvents extends RpcChannelData {
-  request: JsonRpcRequest<keyof RpcCalls, any>;
-}
+type RpcServerRequests = {
+  [Method in keyof RpcCalls]: RpcCalls[Method]["req"];
+};
+interface RpcServerEvents extends RpcChannelData, RpcServerRequests {}
 
 export class RpcServer {
   private emitter = mitt<RpcServerEvents>();
-
+  private channels = new Set<keyof RpcChannelData>();
   constructor() {
     figma.ui.on("message", this.onMessage);
   }
 
-  private onMessage = (event: JsonRpcRequest<keyof RpcCalls, any>) => {
-    const req = event;
-    if (req.method === "subscribe") {
-      // this.emitter.emit(req.params.channel, req.params.data);
-    } else {
-      this.emitter.emit("request", req);
+  private onMessage = (req: unknown) => {
+    if (isJsonRpcSubscribeRequest(req)) {
+      for (const ch of req.params.channels) {
+        this.channels.add(ch);
+      }
+      return;
+    }
+
+    if (isJsonRpcUnsubscribeRequest(req)) {
+      for (const ch of req.params.channels) {
+        this.channels.delete(ch);
+      }
+      return;
+    }
+
+    if (isJsonRpcRequest(req)) {
+      this.emitter.emit(req.method, req);
     }
   };
 
@@ -31,7 +48,7 @@ export class RpcServer {
       params: RpcCalls[Method]["req"]["params"]
     ) => Promise<RpcCalls[Method]["res"]["result"]>
   ) {
-    this.emitter.on("request", async (req) => {
+    this.emitter.on(method, async (req) => {
       if (req.method !== method) return;
       try {
         const res = await handler(req.params);
@@ -62,6 +79,26 @@ export class RpcServer {
         });
       }
     });
+  }
+
+  emit<Channel extends keyof RpcChannelData>(
+    channel: Channel,
+    data: RpcChannelData[Channel]
+  ) {
+    if (!this.channels.has(channel)) return;
+    figma.ui.postMessage(
+      {
+        jsonrpc: "2.0",
+        method: "subscribe",
+        params: {
+          channel,
+          data,
+        },
+      },
+      {
+        origin: "*",
+      }
+    );
   }
 
   on<Channel extends keyof RpcChannelData>(

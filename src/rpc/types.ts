@@ -1,6 +1,5 @@
-import { RpcCalls } from "./calls";
-
 export type JsonRpcData = unknown;
+
 export interface JsonRpcRequest<
   Method extends string,
   Params extends JsonRpcData = JsonRpcData
@@ -50,7 +49,7 @@ export interface JsonRpcSubscription<
   params: JsonRpcSubscriptionData<Channel, Data>;
 }
 
-export type RpcCallParams<Method extends keyof RpcCalls> =
-  RpcCalls[Method]["req"]["params"] extends void | undefined
-    ? []
-    : [RpcCalls[Method]["req"]["params"]];
+export type JsonRpcObject =
+  | JsonRpcRequest<any, any>
+  | JsonRpcResponse
+  | JsonRpcSubscription<any, any>;

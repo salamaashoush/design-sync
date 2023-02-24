@@ -1,7 +1,8 @@
 import mitt from "mitt";
 import { createIdGenerator } from "../utils";
-import type { RpcCalls, RpcChannelData } from "./calls";
-import type { JsonRpcResponse, RpcCallParams } from "./types";
+import type { RpcCallParams, RpcCalls, RpcChannelData } from "./calls";
+import type { JsonRpcResponse } from "./types";
+import { isJsonRpcResponse, isJsonRpcSubscription } from "./utils";
 
 interface RpcClientEvents extends RpcChannelData {
   response: JsonRpcResponse;
@@ -18,10 +19,15 @@ export class RpcClient {
   private onMessage = (event: MessageEvent) => {
     console.log("onMessage client", event);
     const res = event.data.pluginMessage;
-    if (res.method === "subscription") {
+
+    if (isJsonRpcSubscription(res)) {
       this.emitter.emit(res.params.channel, res.params.data);
-    } else {
+      return;
+    }
+
+    if (isJsonRpcResponse(res)) {
       this.emitter.emit("response", res);
+      return;
     }
   };
 

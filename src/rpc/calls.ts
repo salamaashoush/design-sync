@@ -1,24 +1,48 @@
-import type { TokenSet } from "../types";
+import type { Token, TokenSet } from "../types";
 import type { JsonRpcCall } from "./types";
 
 export interface RpcChannelData {
-  "selection-changed": {
+  selectionchange: {
     selection: string[];
   };
 }
 
 export interface RpcCalls {
   subscribe: JsonRpcCall<"subscribe", { channels: (keyof RpcChannelData)[] }>;
-
   unsubscribe: JsonRpcCall<
     "unsubscribe",
     { channels: (keyof RpcChannelData)[] }
   >;
-  "token-sets/get": JsonRpcCall<
-    "token-sets/get",
+  "tokens/get": JsonRpcCall<
+    "tokens/get",
     void,
     {
       sets: TokenSet[];
     }
   >;
+  "tokens/apply": JsonRpcCall<
+    "tokens/apply",
+    {
+      target: "selection" | "document" | "page";
+      path: string;
+      token: Token;
+    }
+  >;
+  resize: JsonRpcCall<
+    "resize",
+    {
+      width: number;
+      height: number;
+    }
+  >;
 }
+
+export type JsonRpcSubscribeRequest = RpcCalls["subscribe"]["req"];
+export type JsonRpcUnsubscribeRequest = RpcCalls["unsubscribe"]["req"];
+export type RpcCallParam<Method extends keyof RpcCalls> =
+  RpcCalls[Method]["req"]["params"];
+
+export type RpcCallParams<Method extends keyof RpcCalls> =
+  RpcCalls[Method]["req"]["params"] extends void | undefined
+    ? []
+    : [RpcCalls[Method]["req"]["params"]];

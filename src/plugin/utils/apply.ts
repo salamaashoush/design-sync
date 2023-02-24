@@ -349,3 +349,78 @@ export function applyComponentTokenToNode(
   //   }
   // }
 }
+
+export function applyTokenToNodes(
+  { token }: RpcCallParam<"tokens/apply">,
+  nodes: SceneNode[]
+) {
+  for (const node of nodes) {
+    // apply token to selected node
+    if (isColorToken(token)) {
+      applyColorTokenToNode(token.value, node);
+    }
+    if (isBorderToken(token)) {
+      applyBorderTokenToNode(token.value, node);
+    }
+
+    if (isSpacingToken(token)) {
+      applySpacingTokenToNode(token.value, node);
+    }
+
+    if (isSizingToken(token)) {
+      applySizingTokenToNode(token.value, node);
+    }
+
+    if (isFontWeightToken(token)) {
+      applyFontTokensToNode({ fontWeight: token.value }, node);
+    }
+
+    if (isFontSizeToken(token)) {
+      applyFontSizeTokenToNode(token.value, node);
+    }
+
+    if (isLineHeightToken(token)) {
+      applyLineHeightTokenToNode(token.value, node);
+    }
+
+    if (isBorderWidthToken(token)) {
+      applyBorderWidthTokenToNode(token.value, node);
+    }
+
+    if (isBorderRadiusToken(token)) {
+      applyBorderRadiusTokenToNode(token.value, node);
+    }
+
+    if (isTextCaseToken(token)) {
+      applyTextCaseTokenToNode(token.value, node);
+    }
+
+    if (isLetterSpacingToken(token)) {
+      applyLetterSpacingTokenToNode(token.value, node);
+    }
+
+    if (isTextDecorationToken(token)) {
+      applyTextDecorationTokenToNode(token.value, node);
+    }
+
+    if (isTypographyToken(token)) {
+      applyTypographyTokenToNode(token.value, node);
+    }
+
+    if (isBoxShadowToken(token)) {
+      nodes.forEach((node) => {
+        console.log(node);
+      });
+      appBoxShadowTokenToNode(token.value, node);
+    }
+
+    if (isComponentToken(token) && node.type === "COMPONENT") {
+      applyComponentTokenToNode(token.value, node);
+    }
+
+    if (isCompositionToken(token)) {
+      const resolvedValue = backend.resolveTokenValue(token.value);
+      applyCompositionTokenToNode(resolvedValue, node);
+    }
+  }
+}
