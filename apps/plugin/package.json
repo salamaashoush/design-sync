@@ -1,0 +1,44 @@
+{
+  "name": "@tokenize/figma-plugin",
+  "version": "0.0.0",
+  "description": "Tokenize Figma Plugin",
+  "scripts": {
+    "dev": "pnpm run build && concurrently --kill-others \"pnpm dev:ui\" \"pnpm dev:main\"",
+    "dev:ui": "vite",
+    "dev:main": "pnpm build:main --watch",
+    "build": "pnpm run clean && pnpm run \"/^build:.*/\"",
+    "build:ui": "vite build",
+    "serve:ui": "vite preview",
+    "build:main": "esbuild src/plugin/main.ts --outfile=dist/main.js --bundle --target=es2019",
+    "clean": "node ./bin/clean.mjs",
+    "lint": "eslint ./src --ext .ts,.tsx,.js,.jsx",
+    "lint:fix": "yarn lint --fix",
+    "verify": "tsc --pretty",
+    "precommit": "lint-staged"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@tokenize/tsconfig": "workspace:*",
+    "@tokenize/eslint-config": "workspace:*",
+    "unocss": "^0.50.3",
+    "@unocss/reset": "^0.50.3",
+    "vite": "^4.1.4",
+    "vite-plugin-solid": "^2.5.0",
+    "@figma/plugin-typings": "^1.58.0",
+    "vite-plugin-static-copy": "^0.13.1",
+    "vite-plugin-mkcert": "1.13.3",
+    "@types/tinycolor2": "^1.4.3",
+    "esbuild": "^0.17.10",
+    "@iconify-json/mdi": "^1.1.48",
+    "concurrently": "^7.6.0",
+    "typescript": "^4.9.5"
+  },
+  "dependencies": {
+    "@tokenize/rpc": "workspace:*",
+    "@tokenize/storage": "workspace:*",
+    "@tokenize/utils": "workspace:*",
+    "solid-js": "^1.6.11",
+    "tinycolor2": "^1.6.0",
+    "mitt": "^3.0.0"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "extends": "@tokenize/tsconfig/base.json",
+  "compilerOptions": {
+    "types": ["vite/client", "@figma/plugin-typings"]
+  },
+  "include": ["src/**/*"]
+}

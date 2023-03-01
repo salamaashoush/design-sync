@@ -1,0 +1,17 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "pipeline": {
+    "build": {
+      "outputs": ["dist/**"]
+    },
+    "lint": {},
+    "lint:fix": {},
+    "test": {
+      "outputs": ["coverage/**"]
+    },
+    "format": {},
+    "verify": {},
+    "dev": {},
+    "precommit": {}
+  }
+}
