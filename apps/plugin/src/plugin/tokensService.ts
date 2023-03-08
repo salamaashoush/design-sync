@@ -8,11 +8,6 @@ import { isTokenReference } from './utils/is';
 export class TokensService {
   private activeTokenSet = TOKEN_SET_1 as unknown as TokenSet;
   private localStorage = new LocalStorage();
-  private remoteStorage = new GitlabStorage({
-    accessToken: 'glpat-PyYSH5nFksXCFkNT3rX1',
-    branch: 'salama',
-    repoPath: 'quomd/development_platform/frontend/design-tokens',
-  });
 
   private tokenSets = [TOKEN_SET_1, TOKEN_SET_2] as TokenSet[];
   async getTokens() {
