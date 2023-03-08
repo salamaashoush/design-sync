@@ -1,4 +1,4 @@
-import { server } from '../rpc';
+import { server } from '../rpc/server';
 import './rpcHandlers';
 
 figma.on('selectionchange', () => {
@@ -16,5 +16,4 @@ figma.on('selectionchange', () => {
   });
 });
 
-figma.ui.resize(500, 700);
-figma.showUI(__html__);
+figma.showUI(__html__, { themeColors: true, width: 500, height: 700, title: 'Tokenize' });

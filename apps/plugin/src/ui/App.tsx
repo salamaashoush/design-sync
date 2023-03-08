@@ -1,8 +1,7 @@
+import { ModalsProvider, Resizable, ResizableEvent } from '@tokenize/uikit';
 import { Component, createResource, onCleanup, onMount, Show } from 'solid-js';
-import { client } from '../rpc';
+import { client } from '../rpc/client';
 import { Token, TokenSet } from '../types';
-import { ModalsProvider } from './common/Modal';
-import { Resizable, ResizableEvent } from './common/Resizable';
 import { Tokens } from './Tokens';
 
 const App: Component = () => {
@@ -22,8 +21,7 @@ const App: Component = () => {
   };
 
   onMount(() => {
-    client.on('selectionchange', ({ selection }) => {
-      console.log('selectionchange', selection);
+    client.on('selectionchange', ({}) => {
       // setSelectedSets(selection);
     });
 

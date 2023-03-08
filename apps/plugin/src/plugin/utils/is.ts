@@ -20,6 +20,10 @@ export function isFontWeightToken(token: Token): token is TokenTypes['fontWeight
   return token.type === 'fontWeight';
 }
 
+export function isFontFamilyToken(token: Token): token is TokenTypes['fontFamily'] {
+  return token.type === 'fontFamily';
+}
+
 export function isFontSizeToken(token: Token): token is TokenTypes['fontSize'] {
   return token.type === 'fontSize';
 }
@@ -86,4 +90,16 @@ export function isTextNode(node: SceneNode): node is TextNode {
 
 export function isTokenReference(value: RefOrValue<unknown>): value is Ref<string> {
   return typeof value === 'string' && value.match(/(\$[^\s,]+\w)|({([^}]*)})/g) !== null;
+}
+
+export function isFontNeeded(token: Token): boolean {
+  return (
+    isFontWeightToken(token) ||
+    isFontSizeToken(token) ||
+    isLineHeightToken(token) ||
+    isLetterSpacingToken(token) ||
+    isTextCaseToken(token) ||
+    isTextDecorationToken(token) ||
+    isTypographyToken(token)
+  );
 }

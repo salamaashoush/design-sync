@@ -1,4 +1,4 @@
 {
   "extends": "@tokenize/tsconfig/base.json",
-  "include": ["src/**/*"]
+  "include": ["src/**/*", "theme-config.ts"]
 }

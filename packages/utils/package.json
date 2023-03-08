@@ -9,6 +9,10 @@
     "verify": "tsc --pretty",
     "precommit": "lint-staged"
   },
+  "dependencies": {
+    "fast-memoize": "^2.5.2",
+    "just-clone": "6.2.0"
+  },
   "devDependencies": {
     "@tokenize/tsconfig": "workspace:*",
     "@tokenize/eslint-config": "workspace:*",

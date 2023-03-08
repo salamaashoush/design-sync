@@ -8,6 +8,7 @@ import {
   convertTextDecoration,
   convertValue,
 } from './convert';
+import { loadFontFromTokenOrNode } from './helper';
 import {
   isBorderRadiusToken,
   isBorderToken,
@@ -15,6 +16,7 @@ import {
   isBoxShadowToken,
   isColorToken,
   isCompositionToken,
+  isFontNeeded,
   isFontSizeToken,
   isFontWeightToken,
   isLetterSpacingToken,
@@ -30,41 +32,26 @@ import {
 export function applyColorTokenToNode(value: TokenValue<'color'>, node: SceneNode, target: 'fill' | 'stroke' = 'fill') {
   const color = convertColor(value);
   if (target === 'fill' && 'fills' in node) {
-    if (Array.isArray(node.fills) && node.fills.length > 0) {
-      node.fills = node.fills.map((fill) => ({
-        ...fill,
-        color,
-      }));
-    } else {
-      node.fills = [
-        {
-          type: 'SOLID',
-          color: color,
-        },
-      ];
-    }
+    node.fills = [
+      {
+        type: 'SOLID',
+        color: color,
+      },
+    ];
   }
 
   if (target === 'stroke' && 'strokes' in node) {
-    if (Array.isArray(node.strokes) && node.strokes.length > 0) {
-      node.strokes = node.strokes.map((stroke) => ({
-        ...stroke,
+    node.strokes = [
+      {
+        type: 'SOLID',
         color,
-      }));
-    } else {
-      node.strokes = [
-        {
-          type: 'SOLID',
-          color,
-        },
-      ];
-    }
+      },
+    ];
   }
 }
 
 export function applyBorderTokenToNode(value: TokenValue<'border'>, node: SceneNode) {
   const { width, color, style } = value;
-  console.log('applyBorderTokenToNode', value);
   if ('strokes' in node) {
     node.strokes = [
       {
@@ -116,26 +103,12 @@ export function applySizingTokenToNode(
   }
 }
 
-const loadedFonts = new Set<string>();
-
-async function loadFont(family: string, style = 'Regular') {
-  if (!loadedFonts.has(family)) {
-    await figma.loadFontAsync({ family, style });
-    loadedFonts.add(`${family}-${style}`);
-  }
-}
-
-async function loadFontsForNode(node: TextNode) {
-  const { family, style } = node.fontName as FontName;
-  await loadFont(family, style);
-}
-
 interface FontToken {
   fontFamily?: TokenValue<'fontFamily'>;
   fontWeight?: TokenValue<'fontWeight'>;
 }
 
-export async function applyFontTokensToNode({ fontWeight, fontFamily }: FontToken, node: SceneNode) {
+export function applyFontTokensToNode({ fontWeight, fontFamily }: FontToken, node: SceneNode) {
   if (isTextNode(node)) {
     const fontName = node.fontName as FontName;
     const style = fontWeight ? convertFontWeight(fontWeight) : fontName.style;
@@ -145,7 +118,6 @@ export async function applyFontTokensToNode({ fontWeight, fontFamily }: FontToke
       return;
     }
 
-    await loadFont(family, style);
     node.fontName = {
       family,
       style,
@@ -153,61 +125,56 @@ export async function applyFontTokensToNode({ fontWeight, fontFamily }: FontToke
   }
 }
 
-export async function applyFontSizeTokenToNode(value: TokenValue<'fontSize'>, node: SceneNode) {
+export function applyFontSizeTokenToNode(value: TokenValue<'fontSize'>, node: SceneNode) {
   if (isTextNode(node)) {
     const newValue = convertFontSize(value);
     if (newValue === node.fontSize) {
       return;
     }
-    await loadFontsForNode(node);
     node.fontSize = newValue;
   }
 }
 
-export async function applyLineHeightTokenToNode(value: TokenTypes['lineHeight']['value'], node: SceneNode) {
+export function applyLineHeightTokenToNode(value: TokenTypes['lineHeight']['value'], node: SceneNode) {
   if (isTextNode(node)) {
     const newValue = convertValue(value, node.fontSize as number) as LineHeight;
 
     if (newValue === node.lineHeight) {
       return;
     }
-    await loadFontsForNode(node);
     node.lineHeight = newValue;
   }
 }
 
-export async function applyTextCaseTokenToNode(value: TokenTypes['textCase']['value'], node: SceneNode) {
+export function applyTextCaseTokenToNode(value: TokenTypes['textCase']['value'], node: SceneNode) {
   if (isTextNode(node)) {
     const newValue = convertTextCase(value);
 
     if (newValue === node.textCase) {
       return;
     }
-    await loadFontsForNode(node);
     node.textCase = newValue;
   }
 }
 
-export async function applyLetterSpacingTokenToNode(value: TokenValue<'letterSpacing'>, node: SceneNode) {
+export function applyLetterSpacingTokenToNode(value: TokenValue<'letterSpacing'>, node: SceneNode) {
   if (isTextNode(node)) {
     const newValue = convertValue(value, node.fontSize as number) as LetterSpacing;
 
     if (newValue === node.letterSpacing) {
       return;
     }
-    await loadFontsForNode(node);
     node.letterSpacing = newValue;
   }
 }
 
-export async function applyTextDecorationTokenToNode(value: TokenValue<'textDecoration'>, node: SceneNode) {
+export function applyTextDecorationTokenToNode(value: TokenValue<'textDecoration'>, node: SceneNode) {
   if (isTextNode(node)) {
     const newValue = convertTextDecoration(value);
 
     if (newValue === node.textDecoration) {
       return;
     }
-    await loadFontsForNode(node);
     node.textDecoration = newValue;
   }
 }
@@ -232,31 +199,31 @@ export function applyBorderRadiusTokenToNode(value: TokenValue<'borderRadius'>, 
   }
 }
 
-export async function applyTypographyTokenToNode(value: TokenValue<'typography'>, node: SceneNode) {
+export function applyTypographyTokenToNode(value: TokenValue<'typography'>, node: SceneNode) {
   const { fontSize, fontWeight, lineHeight, fontFamily, letterSpacing, textDecoration, textCase } = value;
 
   if (fontSize) {
-    await applyFontSizeTokenToNode(fontSize, node);
+    applyFontSizeTokenToNode(fontSize, node);
   }
 
   if (fontWeight || fontFamily) {
-    await applyFontTokensToNode({ fontWeight, fontFamily }, node);
+    applyFontTokensToNode({ fontWeight, fontFamily }, node);
   }
 
   if (lineHeight) {
-    await applyLineHeightTokenToNode(lineHeight, node);
+    applyLineHeightTokenToNode(lineHeight, node);
   }
 
   if (letterSpacing) {
-    await applyLetterSpacingTokenToNode(letterSpacing, node);
+    applyLetterSpacingTokenToNode(letterSpacing, node);
   }
 
   if (textDecoration) {
-    await applyTextDecorationTokenToNode(textDecoration, node);
+    applyTextDecorationTokenToNode(textDecoration, node);
   }
 
   if (textCase) {
-    await applyTextCaseTokenToNode(textCase, node);
+    applyTextCaseTokenToNode(textCase, node);
   }
 }
 
@@ -351,9 +318,16 @@ export function applyCompositionTokenToNode(value: TokenValue<'composition'>, no
 // }
 
 export async function applyTokenToNodes(token: Token, path: string, nodes: readonly SceneNode[]) {
+  console.log(nodes.length);
+  const start = Date.now();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const resolvedValue: any = tokensService.resolveTokenValue<Token>(token.value);
+  // check if we need to load fonts
+  if (isFontNeeded(token)) {
+    token.value = resolvedValue;
+    await loadFontFromTokenOrNode(token, nodes[0]);
+  }
   for (const node of nodes) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const resolvedValue: any = tokensService.resolveTokenValue<Token>(token.value);
     if (isColorToken(token)) {
       applyColorTokenToNode(resolvedValue, node);
     }
@@ -370,15 +344,15 @@ export async function applyTokenToNodes(token: Token, path: string, nodes: reado
     }
 
     if (isFontWeightToken(token)) {
-      await applyFontTokensToNode({ fontWeight: resolvedValue }, node);
+      applyFontTokensToNode({ fontWeight: resolvedValue }, node);
     }
 
     if (isFontSizeToken(token)) {
-      await applyFontSizeTokenToNode(resolvedValue, node);
+      applyFontSizeTokenToNode(resolvedValue, node);
     }
 
     if (isLineHeightToken(token)) {
-      await applyLineHeightTokenToNode(resolvedValue, node);
+      applyLineHeightTokenToNode(resolvedValue, node);
     }
 
     if (isBorderWidthToken(token)) {
@@ -390,19 +364,19 @@ export async function applyTokenToNodes(token: Token, path: string, nodes: reado
     }
 
     if (isTextCaseToken(token)) {
-      await applyTextCaseTokenToNode(resolvedValue, node);
+      applyTextCaseTokenToNode(resolvedValue, node);
     }
 
     if (isLetterSpacingToken(token)) {
-      await applyLetterSpacingTokenToNode(resolvedValue, node);
+      applyLetterSpacingTokenToNode(resolvedValue, node);
     }
 
     if (isTextDecorationToken(token)) {
-      await applyTextDecorationTokenToNode(resolvedValue, node);
+      applyTextDecorationTokenToNode(resolvedValue, node);
     }
 
     if (isTypographyToken(token)) {
-      await applyTypographyTokenToNode(resolvedValue, node);
+      applyTypographyTokenToNode(resolvedValue, node);
     }
 
     if (isBoxShadowToken(token)) {
@@ -419,4 +393,5 @@ export async function applyTokenToNodes(token: Token, path: string, nodes: reado
     //store token path in node
     node.setPluginData(token.type, path);
   }
+  console.log('applyTokenToNodes', Date.now() - start);
 }

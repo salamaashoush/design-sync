@@ -7,16 +7,29 @@
     "lint": "eslint ./src --ext .ts,.tsx,.js,.jsx",
     "lint:fix": "yarn lint --fix",
     "verify": "tsc --pretty",
-    "precommit": "lint-staged"
+    "precommit": "lint-staged",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
   },
   "dependencies": {
-    "solid-js": "^1.6.11"
+    "figma-plugin-ds": "1.0.1",
+    "class-variance-authority": "^0.4.0",
+    "tailwind-merge": "^1.10.0",
+    "@kobalte/core": "^0.6.2",
+    "@kobalte/vanilla-extract": "^0.2.1",
+    "@vanilla-extract/css": "^1.9.5",
+    "@vanilla-extract/sprinkles": "^1.5.1",
+    "@vanilla-extract/recipes": "^0.3.0"
+  },
+  "peerDependencies": {
+    "solid-js": "^1.6.12"
   },
   "devDependencies": {
     "@tokenize/tsconfig": "workspace:*",
     "@tokenize/eslint-config": "workspace:*",
     "eslint": "^8.35.0",
     "lint-staged": "^13.1.2",
-    "typescript": "^4.9.5"
+    "typescript": "^4.9.5",
+    "solid-js": "^1.6.12"
   }
 }

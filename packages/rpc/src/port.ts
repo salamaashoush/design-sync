@@ -6,9 +6,3 @@ export interface RpcPort {
   addEventListener(event: 'message', handler: (event: MessageEvent) => void): void;
   removeEventListener(event: 'message', handler: (event: MessageEvent) => void): void;
 }
-
-export const defaultRpcPort: RpcPort = {
-  postMessage: parent.postMessage,
-  addEventListener: window.addEventListener,
-  removeEventListener: window.removeEventListener,
-};

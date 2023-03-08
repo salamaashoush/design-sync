@@ -1,5 +1,5 @@
 import { createSignal, For } from 'solid-js';
-import { client } from '../rpc';
+import { client } from '../rpc/client';
 import { Token, TokenSet } from '../types';
 import { TokensEditor } from './TokensEditor';
 
@@ -12,7 +12,6 @@ export function Tokens(props: TokensProps) {
   const [selected, setSelectedSets] = createSignal<string[]>([]);
   const [activeSet, setActiveSet] = createSignal(0);
   const handleSetSelect = (e: any) => {
-    console.log(e.target.value);
     setSelectedSets((prev) => {
       if (prev.includes(e.target.value)) {
         return prev.filter((set) => set !== e.target.value);

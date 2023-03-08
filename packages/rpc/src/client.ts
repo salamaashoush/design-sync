@@ -1,7 +1,7 @@
 import { createIdGenerator } from '@tokenize/utils';
 import mitt from 'mitt';
 import type { RpcCallParams } from './calls';
-import { defaultRpcPort } from './port';
+import type { RpcPort } from './port';
 import type { JsonRpcResponse } from './types';
 import { isJsonRpcResponse, isJsonRpcSubscription } from './utils';
 
@@ -15,7 +15,7 @@ export class RpcClient {
   private emitter = mitt<RpcClientEvents>();
   private idGenerator = createIdGenerator();
 
-  constructor(private port = defaultRpcPort) {
+  constructor(private port: RpcPort) {
     this.port.addEventListener('message', this.onMessage);
   }
 
@@ -104,8 +104,6 @@ export class RpcClient {
 
   destroy() {
     this.emitter.all.clear();
-    window?.removeEventListener('message', this.onMessage);
+    this.port?.removeEventListener('message', this.onMessage);
   }
 }
-
-export const rpcClient = new RpcClient();

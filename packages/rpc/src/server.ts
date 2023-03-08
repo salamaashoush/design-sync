@@ -1,6 +1,6 @@
 import { getErrorMessage } from '@tokenize/utils';
 import mitt from 'mitt';
-import { defaultRpcPort } from './port';
+import type { RpcPort } from './port';
 import type { JsonRpcResponse } from './types';
 import { isJsonRpcRequest, isJsonRpcSubscribeRequest, isJsonRpcUnsubscribeRequest } from './utils';
 
@@ -17,7 +17,7 @@ export class RpcServer {
   // @ts-ignore-next-line
   private emitter = mitt<RpcServerEvents>();
   private channels = new Set<keyof RpcChannelData>();
-  constructor(private port = defaultRpcPort) {
+  constructor(private port: RpcPort) {
     port.addEventListener('message', this.onMessage);
   }
 
@@ -108,5 +108,3 @@ export class RpcServer {
     this.port.removeEventListener('message', this.onMessage);
   }
 }
-
-export const rpcServer = new RpcServer();

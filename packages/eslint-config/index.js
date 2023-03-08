@@ -11,7 +11,7 @@ module.exports = {
     browser: true,
     es2021: true,
   },
-  plugins: ['solid', 'simple-import-sort'],
+  plugins: ['solid', 'simple-import-sort', 'jsx-a11y'],
   extends: [
     'plugin:@typescript-eslint/recommended',
     'plugin:import/errors',
@@ -19,6 +19,8 @@ module.exports = {
     'plugin:import/typescript',
     'plugin:prettier/recommended',
     'plugin:solid/typescript',
+    // 'plugin:jsx-a11y/recommended',
+    '@unocss',
   ],
   settings: {
     'import/resolver': {

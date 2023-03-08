@@ -1,8 +1,9 @@
-import { defineConfig } from 'vite';
-import solidPlugin from 'vite-plugin-solid';
+import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin';
 import UnoCSS from 'unocss/vite';
-import { viteStaticCopy } from 'vite-plugin-static-copy';
+import { defineConfig } from 'vite';
 import mkcert from 'vite-plugin-mkcert';
+import solidPlugin from 'vite-plugin-solid';
+import { viteStaticCopy } from 'vite-plugin-static-copy';
 
 export default defineConfig({
   plugins: [
@@ -10,6 +11,7 @@ export default defineConfig({
     UnoCSS({
       // your config or in uno.config.ts
     }),
+    vanillaExtractPlugin({}),
     viteStaticCopy({
       targets: [
         {

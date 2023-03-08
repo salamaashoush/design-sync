@@ -1,5 +1,5 @@
-import { JsonRpcCall, RpcClient, RpcServer } from '@tokenize/rpc';
-import type { Token, TokenSet } from './types';
+import { JsonRpcCall } from '@tokenize/rpc';
+import type { Token, TokenSet } from '../types';
 
 interface SelectionData {
   id: string;
@@ -43,13 +43,3 @@ declare global {
     >;
   }
 }
-
-export const client = new RpcClient();
-export const server = new RpcServer({
-  addEventListener: figma.ui.on,
-  removeEventListener: figma.ui.off,
-  postMessage: (message) =>
-    figma.ui.postMessage(message, {
-      origin: '*',
-    }),
-});

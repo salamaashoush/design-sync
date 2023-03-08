@@ -1,4 +1,4 @@
-import { server } from '../rpc';
+import { server } from '../rpc/server';
 import { Token } from '../types';
 import { tokensService } from './tokensService';
 import { applyTokenToNodes } from './utils/apply';

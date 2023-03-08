@@ -1,6 +1,7 @@
+import { memoize } from '@tokenize/utils';
 import tiny from 'tinycolor2';
 
-export function convertColor(color: string, alpha = false): RGBA | RGB {
+export const convertColor = memoize((color: string, alpha = false): RGBA | RGB => {
   const rgb = tiny(color).toRgb();
   if (alpha) {
     return {
@@ -16,9 +17,9 @@ export function convertColor(color: string, alpha = false): RGBA | RGB {
     g: rgb.g / 255,
     b: rgb.b / 255,
   };
-}
+});
 
-export function convertFontWeight(fontWeight: string) {
+export const convertFontWeight = memoize((fontWeight: string) => {
   // check if the font weight is a number
   if (parseInt(fontWeight)) {
     const weight = parseInt(fontWeight);
@@ -48,14 +49,14 @@ export function convertFontWeight(fontWeight: string) {
   } else {
     return fontWeight;
   }
-}
+});
 
-export function convertFontSize(fontSize: string) {
+export const convertFontSize = memoize((fontSize: string) => {
   const parsedFontSize = parseInt(fontSize);
   return parsedFontSize;
-}
+});
 
-export function convertValue(value: string, relativeValue: number) {
+export const convertValue = memoize((value: string, relativeValue: number) => {
   // check if the line height is a number with a unit
   const parsedValue = parseInt(value);
   if (value.includes('px')) {
@@ -77,9 +78,9 @@ export function convertValue(value: string, relativeValue: number) {
     unit: 'PIXELS',
     value: parsedValue,
   };
-}
+});
 
-export function convertTextDecoration(textDecoration: string) {
+export const convertTextDecoration = memoize((textDecoration: string) => {
   // convert css text decoration to figma text decoration
   switch (textDecoration) {
     case 'underline':
@@ -89,9 +90,9 @@ export function convertTextDecoration(textDecoration: string) {
     default:
       return 'NONE';
   }
-}
+});
 
-export function convertTextCase(textCase: string) {
+export const convertTextCase = memoize((textCase: string) => {
   // convert css text transform to figma text case
   switch (textCase) {
     case 'uppercase':
@@ -103,4 +104,4 @@ export function convertTextCase(textCase: string) {
     default:
       return 'ORIGINAL';
   }
-}
+});
