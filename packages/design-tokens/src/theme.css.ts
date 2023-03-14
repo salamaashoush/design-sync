@@ -1,6 +1,6 @@
 import { createGlobalTheme } from '@vanilla-extract/css';
 const fontFamily = {
-  main: 'Inter',
+  main: 'Inter, sans-serif',
 };
 
 const fontSize = {
@@ -32,7 +32,7 @@ const letterSpacing = {
   ui14Neg: '-.001em',
 };
 
-export const vars = createGlobalTheme('body', {
+export const theme = createGlobalTheme('body', {
   color: {
     transparent: 'transparent',
     current: 'currentColor',

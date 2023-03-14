@@ -1,20 +1,8 @@
-import {
-  Button,
-  Checkbox,
-  Dialog,
-  Icon,
-  IconButton,
-  Input,
-  Label,
-  OnboardingTip,
-  Radio,
-  RadioGroup,
-  SectionTitle,
-  Select,
-} from '@tokenize/uikit';
+import { Button, Checkbox, Dialog, Input, Label, Radio, RadioGroup, SectionTitle, Select } from '@tokenize/uikit';
 import { Component, createEffect, createSignal } from 'solid-js';
 import { ButtonExample } from './ButtonExample';
 import { CollapsibleExample } from './CollapsibleExample';
+import { IconsExample } from './IconsExample';
 import { TypographyExample } from './TypographyExample';
 
 const App: Component = () => {
@@ -38,6 +26,8 @@ const App: Component = () => {
       <ButtonExample />
       <CollapsibleExample />
       <TypographyExample />
+      <IconsExample />
+
       <h2>Checkbox</h2>
       <Checkbox label="Checkbox" />
       <Checkbox label="Checkbox" checked />
@@ -50,31 +40,25 @@ const App: Component = () => {
         <Radio label="Female" value="female" />
       </RadioGroup>
 
-      <h2>Icon</h2>
-      <Icon name="adjust" />
-      <Icon name="plus" color="blue" />
-      <Icon name="plus" color="red" spin />
-      <Icon text="SS" />
-
-      <h2>IconButton</h2>
+      {/* <h2>IconButton</h2>
       <IconButton icon={<Icon name="angle" />} />
-      <IconButton icon={<Icon name="angle" />} selected />
+      <IconButton icon={<Icon name="angle" />} selected /> */}
 
       <h2>Input</h2>
       <Input placeholder="Placeholder" />
       <Input placeholder="Placeholder" disabled />
       <Input placeholder="Placeholder" value="Value" />
       <Input placeholder="Placeholder" value="Value" disabled />
-      <Input icon={<Icon name="adjust" />} placeholder="Placeholder" />
+      {/* <Input icon={<Icon name="adjust" />} placeholder="Placeholder" /> */}
 
       <h2>Typography</h2>
       <SectionTitle>Section Title</SectionTitle>
       <Label>Label</Label>
 
-      <h2>OnboardingTip</h2>
+      {/* <h2>OnboardingTip</h2>
       <OnboardingTip icon={<Icon name="adjust" />}>
         <p>Onboarding tip</p>
-      </OnboardingTip>
+      </OnboardingTip> */}
 
       <h2>Select</h2>
       <Select items={[{ label: 'Option 1', value: 'option-1' }]} />

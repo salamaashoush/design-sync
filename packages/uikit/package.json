@@ -7,29 +7,26 @@
     "lint": "eslint ./src --ext .ts,.tsx,.js,.jsx",
     "lint:fix": "yarn lint --fix",
     "verify": "tsc --pretty",
-    "precommit": "lint-staged",
-    "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "precommit": "lint-staged"
   },
   "dependencies": {
-    "figma-plugin-ds": "1.0.1",
-    "class-variance-authority": "^0.4.0",
-    "tailwind-merge": "^1.10.0",
-    "@kobalte/core": "^0.6.2",
-    "@kobalte/vanilla-extract": "^0.2.1",
-    "@vanilla-extract/css": "^1.9.5",
+    "@kobalte/core": "^0.7.2",
+    "@tokenize/design-tokens": "workspace:*",
+    "@tokenize/figma-icons": "workspace:*",
+    "@kobalte/vanilla-extract": "^0.3.0",
+    "@vanilla-extract/css": "^1.10.0",
     "@vanilla-extract/sprinkles": "^1.5.1",
     "@vanilla-extract/recipes": "^0.3.0"
   },
   "peerDependencies": {
-    "solid-js": "^1.6.12"
+    "solid-js": "^1.6.14"
   },
   "devDependencies": {
     "@tokenize/tsconfig": "workspace:*",
     "@tokenize/eslint-config": "workspace:*",
-    "eslint": "^8.35.0",
-    "lint-staged": "^13.1.2",
+    "eslint": "^8.36.0",
+    "lint-staged": "^13.2.0",
     "typescript": "^4.9.5",
-    "solid-js": "^1.6.12"
+    "solid-js": "^1.6.14"
   }
 }

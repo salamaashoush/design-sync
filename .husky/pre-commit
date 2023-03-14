@@ -1,4 +1,4 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
-pnpm turbo precommit --concurrency=1 --filter=[HEAD^1]
+pnpm turbo precommit --filter=[HEAD^1]

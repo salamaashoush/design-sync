@@ -2,5 +2,29 @@
   "name": "@tokenize/figma-icons",
   "version": "0.0.0",
   "description": "Tokenize Figma Icons",
-  "license": "MIT"
+  "license": "MIT",
+  "main": "src/components/index.ts",
+  "scripts": {
+    "lint": "eslint ./src --ext .ts,.tsx,.js,.jsx",
+    "lint:fix": "pnpm lint --fix",
+    "verify": "tsc --pretty",
+    "build:icons": "ts-node generate/main.ts"
+  },
+  "devDependencies": {
+    "@tokenize/tsconfig": "workspace:*",
+    "@tokenize/eslint-config": "workspace:*",
+    "eslint": "^8.36.0",
+    "lint-staged": "^13.2.0",
+    "typescript": "^4.9.5",
+    "solid-js": "^1.6.14",
+    "svgo": "^3.0.2",
+    "ts-node": "^10.9.1",
+    "@types/node": "^18.15.3",
+    "cheerio": "1.0.0-rc.12",
+    "prettier": "^2.8.4",
+    "@types/prettier": "^2.7.2"
+  },
+  "peerDependencies": {
+    "solid-js": "^1.6.14"
+  }
 }

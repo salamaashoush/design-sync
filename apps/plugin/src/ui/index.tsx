@@ -1,7 +1,4 @@
-// eslint-disable-next-line import/no-unresolved
-import 'uno.css';
-
-import '@tokenize/uikit/src/figma-themes.css';
+import '@tokenize/design-tokens/src/figma-themes.css';
 import '@unocss/reset/tailwind.css';
 
 import { render } from 'solid-js/web';

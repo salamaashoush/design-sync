@@ -1,4 +1,5 @@
-import { Collapsible, Icon, IconButton } from '@tokenize/uikit';
+import { PlusIcon } from '@tokenize/figma-icons';
+import { Collapsible, IconButton } from '@tokenize/uikit';
 
 export function CollapsibleExample() {
   return (
@@ -12,11 +13,11 @@ export function CollapsibleExample() {
         <p>Content</p>
       </Collapsible>
 
-      <Collapsible title="Control" control={<IconButton icon={<Icon name="plus" />} />}>
+      <Collapsible title="Control" control={<IconButton icon={<PlusIcon color="red" />} />}>
         <p>Content</p>
       </Collapsible>
 
-      <Collapsible title="Section with control" section control={<IconButton icon={<Icon name="plus" />} />}>
+      <Collapsible title="Section with control" section control={<IconButton icon={<PlusIcon />} />}>
         <p>Content</p>
       </Collapsible>
 

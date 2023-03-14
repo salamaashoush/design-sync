@@ -1,9 +1,9 @@
 import { Collapsible as KCollapsible } from '@kobalte/core';
+import { CaretRightIcon } from '@tokenize/figma-icons';
 import { JSX, ParentProps } from 'solid-js';
 import {
   collapsible,
   collapsibleCaret,
-  collapsibleCaretIcon,
   collapsibleContent,
   collapsibleHeader,
   collapsibleLabel,
@@ -26,19 +26,7 @@ export function Collapsible(props: ParentProps<CollapsibleProps>) {
     >
       <div class={collapsibleHeader}>
         <KCollapsible.Trigger data-section={props.section} class={collapsibleLabel}>
-          <span class={collapsibleCaret}>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="4"
-              height="6"
-              viewBox="0 0 4 6"
-              fill="none"
-              class={collapsibleCaretIcon}
-            >
-              <path d="M4 3L0 0V6L4 3Z" fill="currentColor" />
-            </svg>
-          </span>
-
+          <CaretRightIcon class={collapsibleCaret} />
           {props.title}
         </KCollapsible.Trigger>
         {props.control}

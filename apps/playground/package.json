@@ -11,25 +11,25 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "@iconify-json/mdi": "^1.1.49",
-    "@iconify/utils": "^2.1.4",
+    "@iconify/utils": "^2.1.5",
     "@tokenize/eslint-config": "workspace:*",
     "@tokenize/tsconfig": "workspace:*",
-    "@tokenize/uikit": "workspace:*",
-    "@unocss/reset": "^0.50.4",
     "typescript": "^4.9.5",
-    "unocss": "^0.50.4",
     "vite": "^4.1.4",
+    "@unocss/reset": "0.50.4",
     "vite-plugin-mkcert": "1.13.3",
     "vite-plugin-solid": "^2.6.1",
     "vite-plugin-static-copy": "^0.13.1",
     "@vanilla-extract/vite-plugin": "^3.8.0",
-    "@vanilla-extract/css": "^1.9.5",
+    "@vanilla-extract/css": "^1.10.0",
     "@vanilla-extract/sprinkles": "^1.5.1",
     "@vanilla-extract/recipes": "^0.3.0",
     "solid-devtools": "^0.26.0"
   },
   "dependencies": {
-    "solid-js": "^1.6.12"
+    "@tokenize/figma-icons": "workspace:*",
+    "@tokenize/uikit": "workspace:*",
+    "@tokenize/design-tokens": "workspace:*",
+    "solid-js": "^1.6.14"
   }
 }

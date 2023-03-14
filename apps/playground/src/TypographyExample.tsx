@@ -1,4 +1,5 @@
-import { Label, SectionTitle, ui11, ui11Bold, ui11Medium } from '@tokenize/uikit';
+import { ui11, ui11Bold, ui11Medium } from '@tokenize/design-tokens';
+import { Label, SectionTitle } from '@tokenize/uikit';
 
 export function TypographyExample() {
   return (

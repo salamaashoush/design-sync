@@ -17,3 +17,12 @@ export const slideUp = keyframes({
     height: 0,
   },
 });
+
+export const spin = keyframes({
+  from: {
+    transform: 'rotate(0deg)',
+  },
+  to: {
+    transform: 'rotate(360deg)',
+  },
+});

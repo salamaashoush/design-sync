@@ -1,6 +1,6 @@
+import { theme } from '@tokenize/design-tokens';
+import { ui11Medium } from '@tokenize/design-tokens/src/typography.css';
 import { recipe, RecipeVariants } from '@vanilla-extract/recipes';
-import { vars } from '../theme.css';
-import { ui11Medium } from '../Typography/typography.css';
 
 export const button = recipe({
   base: [
@@ -9,10 +9,10 @@ export const button = recipe({
       display: 'flex',
       alignItems: 'center',
       flexShrink: 0,
-      borderRadius: vars.borderRadius.large,
-      color: vars.color.text,
-      height: vars.sizing.md,
-      paddingInline: vars.spacing.xs,
+      borderRadius: theme.borderRadius.large,
+      color: theme.color.text,
+      height: theme.sizing.md,
+      paddingInline: theme.spacing.xs,
       textDecoration: 'none',
       outline: 'none',
       border: '2px solid transparent',
@@ -20,7 +20,7 @@ export const button = recipe({
       selectors: {
         '&:disabled': {
           cursor: 'not-allowed',
-          color: vars.color.textDisabled,
+          color: theme.color.textDisabled,
         },
       },
     },
@@ -28,29 +28,29 @@ export const button = recipe({
   variants: {
     intent: {
       primary: {
-        background: vars.color.bgBrand,
-        color: vars.color.textOnbrand,
+        background: theme.color.bgBrand,
+        color: theme.color.textOnbrand,
         selectors: {
           '&:enabled:active, &:enabled:focus': {
-            border: `2px solid ${vars.color.borderOnbrand}`,
+            border: `2px solid ${theme.color.borderOnbrand}`,
           },
           '&:disabled': {
-            backgroundColor: vars.color.bgDisabled,
+            backgroundColor: theme.color.bgDisabled,
           },
         },
       },
 
       secondary: {
-        background: vars.color.transparent,
-        border: `1px solid ${vars.color.borderStrong}`,
-        paddingInline: `calc(${vars.spacing.xs} + 1px)`,
+        background: theme.color.transparent,
+        border: `1px solid ${theme.color.borderStrong}`,
+        paddingInline: `calc(${theme.spacing.xs} + 1px)`,
         selectors: {
           '&:enabled:active, &:enabled:focus': {
-            border: `2px solid ${vars.color.borderBrandStrong}`,
-            paddingInline: vars.spacing.xs,
+            border: `2px solid ${theme.color.borderBrandStrong}`,
+            paddingInline: theme.spacing.xs,
           },
           '&:disabled': {
-            borderColor: vars.color.borderDisabled,
+            borderColor: theme.color.borderDisabled,
           },
         },
       },
@@ -67,15 +67,15 @@ export const button = recipe({
         destructive: true,
       },
       style: {
-        backgroundColor: vars.color.bgDanger,
+        backgroundColor: theme.color.bgDanger,
         ':disabled': {
-          backgroundColor: vars.color.bgDanger,
-          color: vars.color.textOndanger,
+          backgroundColor: theme.color.bgDanger,
+          color: theme.color.textOndanger,
           opacity: 0.4,
         },
         selectors: {
           '&:enabled:active, &:enabled:focus': {
-            border: `2px solid ${vars.color.borderOndanger}`,
+            border: `2px solid ${theme.color.borderOndanger}`,
           },
         },
       },
@@ -86,15 +86,15 @@ export const button = recipe({
         destructive: true,
       },
       style: {
-        borderColor: vars.color.borderDangerStrong,
-        color: vars.color.textDangerSecondary,
+        borderColor: theme.color.borderDangerStrong,
+        color: theme.color.textDangerSecondary,
         selectors: {
           '&:enabled:active, &:enabled:focus': {
-            border: `2px solid ${vars.color.borderDangerStrong}`,
+            border: `2px solid ${theme.color.borderDangerStrong}`,
           },
           '&:disabled': {
-            borderColor: vars.color.borderDangerStrong,
-            color: vars.color.textDangerSecondary,
+            borderColor: theme.color.borderDangerStrong,
+            color: theme.color.textDangerSecondary,
             opacity: 0.4,
           },
         },

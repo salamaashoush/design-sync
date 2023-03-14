@@ -1,14 +1,13 @@
+import { slideDown, slideUp, theme } from '@tokenize/design-tokens';
+import { ui11 } from '@tokenize/design-tokens/src/typography.css';
 import { style } from '@vanilla-extract/css';
-import { slideDown, slideUp } from '../keyframes.css';
-import { vars } from '../theme.css';
-import { ui11 } from '../Typography/typography.css';
 
 export const collapsible = style({
   display: 'flex',
   flexDirection: 'column',
   position: 'relative',
   width: ' 100%',
-  borderBottom: `1px solid ${vars.color.border}`,
+  borderBottom: `1px solid ${theme.color.border}`,
   selectors: {
     '&:last-child': {
       borderBottom: '1px solid transparent',
@@ -17,8 +16,8 @@ export const collapsible = style({
 });
 
 export const collapsibleContent = style({
-  color: vars.color.text,
-  padding: `${vars.spacing.xxs} ${vars.spacing.xxs} ${vars.spacing.xxs} ${vars.spacing.sm}`,
+  color: theme.color.text,
+  padding: `${theme.spacing.xxs} ${theme.spacing.xxs} ${theme.spacing.xxs} ${theme.spacing.sm}`,
   animation: `${slideUp} 100ms ease-out`,
   overflow: 'hidden',
   selectors: {
@@ -37,7 +36,7 @@ export const collapsibleHeader = style({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-between',
-  height: vars.sizing.md,
+  height: theme.sizing.md,
 });
 
 export const collapsibleLabel = style([
@@ -45,39 +44,31 @@ export const collapsibleLabel = style([
   {
     display: 'flex',
     alignItems: 'center',
-    gap: 8,
+    // gap: 8,
     flex: 1,
-    height: vars.sizing.md,
-    color: vars.color.text,
-    paddingInline: '8px',
+    height: theme.sizing.md,
+    color: theme.color.text,
+    paddingInlineEnd: '8px',
     cursor: 'default',
     ':focus-visible': {
-      outline: `2px solid ${vars.color.bgBrandHover}`,
+      outline: `2px solid ${theme.color.bgBrandHover}`,
       outlineOffset: '2px',
     },
     ':disabled': {
-      color: vars.color.textDisabled,
+      color: theme.color.textDisabled,
       cursor: 'not-allowed',
     },
     selectors: {
       '&[data-section]': {
-        fontWeight: vars.fontWeight.bold,
+        fontWeight: theme.fontWeight.bold,
       },
     },
   },
 ]);
 
 export const collapsibleCaret = style({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  width: 16,
-  height: 16,
-  color: vars.color.text,
-});
-
-export const collapsibleCaretIcon = style({
-  fill: vars.color.text,
+  fill: theme.color.iconTertiary,
+  fontSize: 16,
   fillOpacity: 0.8,
   selectors: {
     [`${collapsibleLabel}[data-expanded] &`]: {

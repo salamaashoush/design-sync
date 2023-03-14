@@ -1,6 +1,6 @@
 import { Dialog as KDialog } from '@kobalte/core';
 import { ComponentProps, createContext, createSignal, For, JSX, ParentProps, useContext } from 'solid-js';
-import { Icon } from './Icon';
+
 interface ModalProps extends ComponentProps<typeof KDialog.Root> {
   title: string;
   trigger?: JSX.Element;
@@ -22,9 +22,7 @@ export function Dialog(props: ParentProps<ModalProps>) {
           <KDialog.Content class="rounded">
             <div class="flex px-6 py-4 justify-between border-b-2 border-brand border-b-solid">
               <KDialog.Title class="dialog__title">{props.title}</KDialog.Title>
-              <KDialog.CloseButton class="dialog__close-button">
-                <Icon name="close" />
-              </KDialog.CloseButton>
+              <KDialog.CloseButton class="dialog__close-button">{/* <Icon name="close" /> */}</KDialog.CloseButton>
             </div>
             <KDialog.Description class="dialog__description">{props.children}</KDialog.Description>
           </KDialog.Content>
