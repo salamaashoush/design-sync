@@ -20,7 +20,6 @@ module.exports = {
     'plugin:prettier/recommended',
     'plugin:solid/typescript',
     // 'plugin:jsx-a11y/recommended',
-    '@unocss',
   ],
   settings: {
     'import/resolver': {
