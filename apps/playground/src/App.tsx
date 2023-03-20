@@ -30,9 +30,9 @@ const App: Component = () => {
 
       <h2>Checkbox</h2>
       <Checkbox label="Checkbox" />
-      <Checkbox label="Checkbox" checked />
-      <Checkbox label="Checkbox" disabled />
-      <Checkbox label="Checkbox" checked disabled />
+      <Checkbox label="Checkbox" isChecked />
+      <Checkbox label="Checkbox" isDisabled />
+      <Checkbox label="Checkbox" isChecked isDisabled />
 
       <h2>Radio</h2>
       <RadioGroup name="gender">

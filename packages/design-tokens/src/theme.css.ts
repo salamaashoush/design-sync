@@ -211,8 +211,8 @@ export const theme = createGlobalTheme('body', {
   },
   borderRadius: {
     sm: '2px',
-    med: '5px',
-    large: '6px',
+    md: '5px',
+    lg: '6px',
   },
   shadows: {
     hud: '0 5px 17px rgba(0, 0, 0, .2), 0 2px 7px rgba(0, 0, 0, .15)',

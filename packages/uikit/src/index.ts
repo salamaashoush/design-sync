@@ -1,5 +1,5 @@
 export * from './Button/Button';
-export * from './Checkbox';
+export * from './Checkbox/Checkbox';
 export * from './Collapsible/Collapsible';
 export * from './Dialog';
 export * from './IconButton';

@@ -9,7 +9,7 @@ export const button = recipe({
       display: 'flex',
       alignItems: 'center',
       flexShrink: 0,
-      borderRadius: theme.borderRadius.large,
+      borderRadius: theme.borderRadius.lg,
       color: theme.color.text,
       height: theme.sizing.md,
       paddingInline: theme.spacing.xs,
