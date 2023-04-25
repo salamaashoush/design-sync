@@ -4,17 +4,17 @@
   "description": "Tokenize ESLint",
   "main": "index.js",
   "dependencies": {
-    "eslint": "^8.36.0",
-    "eslint-config-prettier": "^8.7.0",
-    "eslint-plugin-solid": "^0.11.0",
-    "@typescript-eslint/eslint-plugin": "^5.55.0",
-    "@typescript-eslint/parser": "^5.55.0",
+    "eslint": "^8.39.0",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-solid": "^0.12.1",
+    "@typescript-eslint/eslint-plugin": "^5.59.1",
+    "@typescript-eslint/parser": "^5.59.1",
     "eslint-plugin-jsx-a11y": "^6.7.1",
     "eslint-plugin-prettier": "^4.2.1",
-    "eslint-config-turbo": "^0.0.9",
+    "eslint-config-turbo": "^1.9.3",
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-simple-import-sort": "^10.0.0",
-    "typescript": "^5.0.2",
-    "prettier": "^2.8.4"
+    "typescript": "^5.0.4",
+    "prettier": "^2.8.8"
   }
 }

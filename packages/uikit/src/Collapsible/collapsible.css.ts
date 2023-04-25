@@ -16,17 +16,14 @@ export const collapsible = style({
 });
 
 export const collapsibleContent = style({
+  overflow: 'hidden',
+  width: '100%',
   color: theme.color.text,
   padding: `${theme.spacing.xxs} ${theme.spacing.xxs} ${theme.spacing.xxs} ${theme.spacing.sm}`,
   animation: `${slideUp} 100ms ease-out`,
-  overflow: 'hidden',
   selectors: {
-    '&[hidden]': {
-      display: 'none',
-    },
     '&[data-expanded]': {
       animation: `${slideDown} 100ms ease-out`,
-      display: 'block',
       borderBottom: '1px solid transparent',
     },
   },
@@ -70,6 +67,7 @@ export const collapsibleCaret = style({
   fill: theme.color.iconTertiary,
   fontSize: 16,
   fillOpacity: 0.8,
+  transition: 'transform 250ms',
   selectors: {
     [`${collapsibleLabel}[data-expanded] &`]: {
       transform: 'rotate(90deg)',
