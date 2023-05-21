@@ -1,16 +1,15 @@
 import { ui11, ui11Bold, ui11Medium } from '@tokenize/design-tokens';
-import { Label, SectionTitle } from '@tokenize/uikit';
+import { Collapsible, Label, SectionTitle } from '@tokenize/uikit';
 
 export function TypographyExample() {
   return (
-    <div>
-      <h1>Typography</h1>
+    <Collapsible title="Typography">
       <Label>Label</Label>
       <SectionTitle>Section Title</SectionTitle>
 
       <div class={ui11}>UI11</div>
       <div class={ui11Medium}>UI11 medium</div>
       <div class={ui11Bold}>UI11 bold</div>
-    </div>
+    </Collapsible>
   );
 }

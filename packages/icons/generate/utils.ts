@@ -37,6 +37,7 @@ export async function formatWithPrettier(code: string, parser = 'typescript') {
 export interface SVGAttribs {
   viewBox?: string;
   height?: string;
+  width?: string;
   stroke?: string;
 }
 

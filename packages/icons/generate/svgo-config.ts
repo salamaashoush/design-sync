@@ -18,7 +18,7 @@ export const svgoConfig: Config = {
         currentColor: true,
       },
     },
-    'removeDimensions',
+    // 'removeDimensions',
     {
       name: 'removeAttributesBySelector',
       params: {

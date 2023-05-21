@@ -19,9 +19,7 @@ export function ${icon.fileName}(props: IconProps) {
         overflow: "visible",
         color: props.color || "currentColor",
       }}
-      {...props}
-      height={props.size || "2em"}
-      width={props.size || "2em"}
+      {...props}      
       xmlns="http://www.w3.org/2000/svg"
     >
       ${icon.contents}

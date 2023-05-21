@@ -1,5 +1,5 @@
 import { Collapsible as KCollapsible } from '@kobalte/core';
-import { CaretRightIcon } from '@tokenize/figma-icons';
+import { CaretRight16Icon } from '@tokenize/figma-icons';
 import { JSX, ParentProps } from 'solid-js';
 import {
   collapsible,
@@ -18,15 +18,15 @@ export function Collapsible(props: ParentProps<CollapsibleProps>) {
   return (
     <KCollapsible.Root
       class={collapsible}
-      isDisabled={props.isDisabled}
-      defaultIsOpen={props.defaultIsOpen}
+      disabled={props.disabled}
+      defaultOpen={props.defaultOpen}
       onOpenChange={props.onOpenChange}
-      isOpen={props.isOpen}
+      open={props.open}
       forceMount={props.forceMount}
     >
       <div class={collapsibleHeader}>
         <KCollapsible.Trigger data-section={props.section} class={collapsibleLabel}>
-          <CaretRightIcon class={collapsibleCaret} />
+          <CaretRight16Icon class={collapsibleCaret} />
           {props.title}
         </KCollapsible.Trigger>
         {props.control}

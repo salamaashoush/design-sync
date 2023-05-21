@@ -1,11 +1,11 @@
 import { theme } from '@tokenize/design-tokens';
 import * as Icons from '@tokenize/figma-icons';
+import { Collapsible } from '@tokenize/uikit';
 import { For } from 'solid-js';
 
 export function IconsExample() {
   return (
-    <div>
-      <h1>Icons</h1>
+    <Collapsible title="Icons">
       <div style={{ display: 'flex', color: theme.color.text, width: '100%', 'flex-shrink': 0, 'flex-wrap': 'wrap' }}>
         <For each={Object.keys(Icons)}>
           {(key) => {
@@ -27,6 +27,6 @@ export function IconsExample() {
           }}
         </For>
       </div>
-    </div>
+    </Collapsible>
   );
 }

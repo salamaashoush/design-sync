@@ -10,7 +10,7 @@
     "precommit": "lint-staged"
   },
   "dependencies": {
-    "@kobalte/core": "^0.9.3",
+    "@kobalte/core": "^0.9.6",
     "@tokenize/design-tokens": "workspace:*",
     "@tokenize/figma-icons": "workspace:*",
     "@kobalte/vanilla-extract": "^0.4.0",
@@ -19,14 +19,14 @@
     "@vanilla-extract/recipes": "^0.4.0"
   },
   "peerDependencies": {
-    "solid-js": "^1.7.3"
+    "solid-js": "^1.7.5"
   },
   "devDependencies": {
     "@tokenize/tsconfig": "workspace:*",
     "@tokenize/eslint-config": "workspace:*",
-    "eslint": "^8.39.0",
-    "lint-staged": "^13.2.1",
+    "eslint": "^8.41.0",
+    "lint-staged": "^13.2.2",
     "typescript": "^5.0.4",
-    "solid-js": "^1.7.3"
+    "solid-js": "^1.7.5"
   }
 }

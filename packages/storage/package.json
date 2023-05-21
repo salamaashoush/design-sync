@@ -12,8 +12,8 @@
   "devDependencies": {
     "@tokenize/tsconfig": "workspace:*",
     "@tokenize/eslint-config": "workspace:*",
-    "eslint": "^8.39.0",
-    "lint-staged": "^13.2.1",
+    "eslint": "^8.41.0",
+    "lint-staged": "^13.2.2",
     "typescript": "^5.0.4"
   }
 }

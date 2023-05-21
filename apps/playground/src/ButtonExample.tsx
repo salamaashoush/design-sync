@@ -1,9 +1,8 @@
-import { Button } from '@tokenize/uikit';
+import { Button, Collapsible } from '@tokenize/uikit';
 
 export function ButtonExample() {
   return (
-    <div>
-      <h1>Button</h1>
+    <Collapsible title="Buttons">
       <Button intent="primary">Primary</Button>
       <Button intent="primary" disabled>
         Primary
@@ -24,6 +23,6 @@ export function ButtonExample() {
       <Button intent="secondary" destructive disabled>
         Secondary destructive
       </Button>
-    </div>
+    </Collapsible>
   );
 }
