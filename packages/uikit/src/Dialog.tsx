@@ -8,10 +8,10 @@ interface ModalProps extends ComponentProps<typeof KDialog.Root> {
 export function Dialog(props: ParentProps<ModalProps>) {
   return (
     <KDialog.Root
-      isOpen={props.isOpen}
-      defaultIsOpen={props.defaultIsOpen}
+      open={props.open}
+      defaultOpen={props.defaultOpen}
       id={props.id}
-      isModal={props.isModal}
+      modal={props.modal}
       forceMount={props.forceMount}
       onOpenChange={props.onOpenChange}
     >
@@ -60,7 +60,7 @@ export function ModalsContainer() {
     <For each={modals()}>
       {(modal) => (
         <Dialog
-          defaultIsOpen
+          defaultOpen
           title={modal.title}
           onOpenChange={(isOpen) => {
             if (!isOpen) {

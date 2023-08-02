@@ -1,5 +1,5 @@
 {
-  "extends": "@tokenize/tsconfig/base.json",
+  "extends": "@tokenize/tsconfig/solid.json",
   "compilerOptions": {
     "types": ["vite/client", "@figma/plugin-typings"]
   },

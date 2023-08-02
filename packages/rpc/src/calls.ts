@@ -15,3 +15,5 @@ export type RpcCallParam<Method extends keyof RpcCalls> = RpcCalls[Method]['req'
 export type RpcCallParams<Method extends keyof RpcCalls> = RpcCalls[Method]['req']['params'] extends void | undefined
   ? []
   : [RpcCalls[Method]['req']['params']];
+
+export type RpcCallResult<Method extends keyof RpcCalls> = RpcCalls[Method]['res']['result'];

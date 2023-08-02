@@ -43,7 +43,7 @@ export async function loadFontFromTokenOrNode(token: Token, node: TextNode) {
     }
   }
   // load from the token
-  if (family || style) {
+  if (family) {
     await loadFont(family, style);
   }
   // load from the node

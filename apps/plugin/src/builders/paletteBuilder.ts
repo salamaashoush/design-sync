@@ -18,7 +18,10 @@ export const shadowTarget = { light: 0.35, medium: 0.3, dark: 0.25 };
 export const highlightTarget = { light: 98, medium: 97, dark: 95 };
 
 export class PaletteBuilder {
-  constructor(private paperWhite = highlightTarget.light, private shadeTargetMultiplier = shadowTarget.light) {}
+  constructor(
+    private paperWhite = highlightTarget.light,
+    private shadeTargetMultiplier = shadowTarget.light,
+  ) {}
 
   createSwatchRow(colorStr: string) {
     const color = tinyColor(colorStr);

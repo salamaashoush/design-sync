@@ -1,12 +1,12 @@
 import { SizingTokenOptions, SpacingTokenOptions, Token, TokenTypes, TokenValue } from '../../types';
 import { tokensService } from '../tokensService';
 import {
-  convertColor,
   convertFontSize,
   convertFontWeight,
   convertTextCase,
   convertTextDecoration,
   convertValue,
+  deserialzeColor,
 } from './convert';
 import { loadFontFromTokenOrNode } from './helper';
 import {
@@ -30,7 +30,7 @@ import {
 } from './is';
 
 export function applyColorTokenToNode(value: TokenValue<'color'>, node: SceneNode, target: 'fill' | 'stroke' = 'fill') {
-  const color = convertColor(value);
+  const color = deserialzeColor(value);
   if (target === 'fill' && 'fills' in node) {
     node.fills = [
       {
@@ -56,7 +56,7 @@ export function applyBorderTokenToNode(value: TokenValue<'border'>, node: SceneN
     node.strokes = [
       {
         type: 'SOLID',
-        color: convertColor(color),
+        color: deserialzeColor(color),
       },
     ];
     node.strokeWeight = width as number;
@@ -234,7 +234,7 @@ export function appBoxShadowTokenToNode(value: TokenValue<'boxShadow'>, node: Sc
     node.effects = [
       {
         type: 'DROP_SHADOW',
-        color: convertColor(color, true) as RGBA,
+        color: deserialzeColor(color, true) as RGBA,
         offset: {
           x: offsetX,
           y: offsetY,
@@ -318,14 +318,13 @@ export function applyCompositionTokenToNode(value: TokenValue<'composition'>, no
 // }
 
 export async function applyTokenToNodes(token: Token, path: string, nodes: readonly SceneNode[]) {
-  console.log(nodes.length);
   const start = Date.now();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const resolvedValue: any = tokensService.resolveTokenValue<Token>(token.value);
   // check if we need to load fonts
   if (isFontNeeded(token)) {
     token.value = resolvedValue;
-    await loadFontFromTokenOrNode(token, nodes[0]);
+    await loadFontFromTokenOrNode(token, nodes[0] as TextNode);
   }
   for (const node of nodes) {
     if (isColorToken(token)) {

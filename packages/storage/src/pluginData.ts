@@ -1,4 +1,4 @@
-import type { LocalStorageOptions } from './localStorage';
+import type { LocalStorageOptions } from './local';
 
 export class PluginDataStorage {
   private serialize: <T>(value: T) => string;
@@ -45,5 +45,3 @@ export class PluginDataStorage {
     return this.deserialize(value);
   }
 }
-
-export const pluginDataStorage = new PluginDataStorage();

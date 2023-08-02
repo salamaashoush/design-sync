@@ -1,29 +1,30 @@
-import { GitlabStorage } from '@tokenize/storage';
+import { GitlabStorage, LocalStorage } from '@tokenize/storage';
 import { get } from '@tokenize/utils';
 import type { Ref, Token, TokenSet } from '../types';
 import { TOKEN_SET_1, TOKEN_SET_2 } from '../ui/data';
-import { LocalStorage } from './localStorage';
 import { isTokenReference } from './utils/is';
 
 export class TokensService {
   private activeTokenSet = TOKEN_SET_1 as unknown as TokenSet;
   private localStorage = new LocalStorage();
-
+  private remoteStorage = new GitlabStorage({
+    accessToken: 'xxxxx',
+    repoPath: 'quin-pro/tokens',
+    branch: 'master',
+  });
   private tokenSets = [TOKEN_SET_1, TOKEN_SET_2] as TokenSet[];
   async getTokens() {
-    // if (!this.tokenSets.length) {
-    //   const fromCache = await this.localStorage.get<TokenSet[]>("tokens");
-    //   console.log("fromCache", fromCache);
-    //   if (fromCache) {
-    //     this.tokenSets = fromCache;
-    //   } else {
-    //     const tokens = await this.remoteStorage.load(
-    //       "src/quin-pro-tokens.json"
-    //     );
-    //     this.tokenSets = [tokens];
-    //     this.localStorage.set("tokens", this.tokenSets);
-    //   }
-    // }
+    if (!this.tokenSets.length) {
+      const fromCache = await this.localStorage.get<TokenSet[]>('tokens');
+      console.log('fromCache', fromCache);
+      if (fromCache) {
+        this.tokenSets = fromCache;
+      } else {
+        const tokens = await this.remoteStorage.load('src/quin-pro-tokens.json');
+        this.tokenSets = [tokens];
+        this.localStorage.set('tokens', this.tokenSets);
+      }
+    }
     return this.tokenSets;
   }
 

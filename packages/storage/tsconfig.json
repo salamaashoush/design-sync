@@ -1,4 +1,7 @@
 {
   "extends": "@tokenize/tsconfig/base.json",
+  "compilerOptions": {
+    "types": ["@figma/plugin-typings"]
+  },
   "include": ["src/**/*"]
 }

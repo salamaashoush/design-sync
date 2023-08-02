@@ -11,13 +11,16 @@
   },
   "dependencies": {
     "fast-memoize": "^2.5.2",
-    "just-clone": "6.2.0"
+    "just-camel-case": "6.2.0",
+    "just-clone": "6.2.0",
+    "just-safe-get": "4.2.0",
+    "just-safe-set": "4.2.1"
   },
   "devDependencies": {
-    "@tokenize/tsconfig": "workspace:*",
     "@tokenize/eslint-config": "workspace:*",
-    "eslint": "^8.41.0",
-    "lint-staged": "^13.2.2",
-    "typescript": "^5.0.4"
+    "@tokenize/tsconfig": "workspace:*",
+    "eslint": "^8.46.0",
+    "lint-staged": "^13.2.3",
+    "typescript": "^5.1.6"
   }
 }

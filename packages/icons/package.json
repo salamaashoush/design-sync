@@ -11,20 +11,20 @@
     "build:icons": "ts-node generate/main.ts"
   },
   "devDependencies": {
-    "@tokenize/tsconfig": "workspace:*",
     "@tokenize/eslint-config": "workspace:*",
-    "eslint": "^8.41.0",
-    "lint-staged": "^13.2.2",
-    "typescript": "^5.0.4",
-    "solid-js": "^1.7.5",
+    "@tokenize/tsconfig": "workspace:*",
+    "@types/node": "^20.4.5",
+    "@types/prettier": "^2.7.3",
+    "cheerio": "1.0.0-rc.12",
+    "eslint": "^8.46.0",
+    "lint-staged": "^13.2.3",
+    "prettier": "^3.0.0",
+    "solid-js": "^1.7.8",
     "svgo": "^3.0.2",
     "ts-node": "^10.9.1",
-    "@types/node": "^20.2.1",
-    "cheerio": "1.0.0-rc.12",
-    "prettier": "^2.8.8",
-    "@types/prettier": "^2.7.2"
+    "typescript": "^5.1.6"
   },
   "peerDependencies": {
-    "solid-js": "^1.7.5"
+    "solid-js": "^1.7.8"
   }
 }

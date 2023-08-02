@@ -1,3 +1,3 @@
-export * from './keyframes.css';
-export * from './theme.css';
-export * from './typography.css';
+export * from './keyframes.css.ts';
+export * from './theme.css.ts';
+export * from './typography.css.ts';

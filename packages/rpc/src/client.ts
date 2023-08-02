@@ -50,13 +50,7 @@ export class RpcClient {
       method,
       params,
     };
-    this.port.postMessage(
-      {
-        pluginMessage: req,
-        pluginId: '1206013659177640379',
-      },
-      '*',
-    );
+    this.port.postMessage(req, '*');
 
     return new Promise((resolve, reject) => {
       const handler = (res: JsonRpcResponse) => {

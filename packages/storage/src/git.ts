@@ -7,7 +7,6 @@ export interface SaveFileOptions {
 export interface GitStorageOptions {
   accessToken: string;
   branch: string;
-  // owner/repo
   repoPath: string;
 }
 
@@ -16,8 +15,8 @@ export interface FileStorage {
   load(filePath: string): Promise<any>;
 }
 
-export abstract class GitStorage implements FileStorage {
-  constructor(protected options: GitStorageOptions) {}
+export abstract class GitStorage<T extends GitStorageOptions = GitStorageOptions> implements FileStorage {
+  constructor(protected options: T) {}
   abstract save(tokens: any, options: SaveFileOptions): Promise<void>;
-  abstract load(filePath: string): Promise<any>;
+  abstract load<D = any>(filePath: string): Promise<D>;
 }

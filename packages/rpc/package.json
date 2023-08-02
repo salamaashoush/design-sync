@@ -10,14 +10,14 @@
     "precommit": "lint-staged"
   },
   "dependencies": {
-    "mitt": "^3.0.0",
-    "@tokenize/utils": "workspace:*"
+    "@tokenize/utils": "workspace:*",
+    "mitt": "^3.0.1"
   },
   "devDependencies": {
-    "@tokenize/tsconfig": "workspace:*",
     "@tokenize/eslint-config": "workspace:*",
-    "eslint": "^8.41.0",
-    "lint-staged": "^13.2.2",
-    "typescript": "^5.0.4"
+    "@tokenize/tsconfig": "workspace:*",
+    "eslint": "^8.46.0",
+    "lint-staged": "^13.2.3",
+    "typescript": "^5.1.6"
   }
 }
