@@ -1,0 +1,11 @@
+{
+  "extends": "@tokenize/tsconfig/base.json",
+  "compilerOptions": {
+    "allowImportingTsExtensions": true,
+    "jsx": "react",
+    "jsxFactory": "h",
+    "jsxFragmentFactory": "Fragment",
+    "types": ["@figma/plugin-typings"]
+  },
+  "include": ["src/**/*", "vanilla-extract-loader.ts"]
+}

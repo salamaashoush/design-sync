@@ -18,6 +18,8 @@ declare global {
     };
   }
   interface RpcCalls {
+    'variables/export': JsonRpcCall<'variables/export', void, void>;
+    'variables/import': JsonRpcCall<'variables/export', void, void>;
     'tokens/get': JsonRpcCall<
       'tokens/get',
       void,

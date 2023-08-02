@@ -1,4 +1,4 @@
-import { PlusIcon } from '@tokenize/figma-icons';
+import { Plus32Icon } from '@tokenize/figma-icons';
 import { Button, Collapsible, createModal } from '@tokenize/uikit';
 import { For } from 'solid-js';
 import { unwrap } from 'solid-js/store';
@@ -23,7 +23,7 @@ export function TokensEditor(props: TokensEditorProps) {
 
   return (
     <div class="overflow-auto flex flex-col">
-      <Collapsible title="Colors" section control={<PlusIcon onClick={open} />}>
+      <Collapsible title="Colors" section control={<Plus32Icon onClick={open} />}>
         <For each={Object.entries(props.set.tokens.color ?? {})}>
           {([key, value]) => (
             <Button

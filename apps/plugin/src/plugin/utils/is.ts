@@ -103,3 +103,23 @@ export function isFontNeeded(token: Token): boolean {
     isTypographyToken(token)
   );
 }
+
+export function isRGBA(color: RGB | RGBA): color is RGBA {
+  return 'a' in color;
+}
+
+export function isObject(value: unknown): value is object {
+  return typeof value === 'object' && value !== null;
+}
+
+export function isColorVariableValue(value: VariableValue): value is RGB | RGBA {
+  return isObject(value) && 'r' in value && 'g' in value && 'b' in value;
+}
+
+export function isVariableAlias(value: VariableValue): value is VariableAlias {
+  return isObject(value) && 'type' in value && value.type === 'VARIABLE_ALIAS' && 'id' in value;
+}
+
+export function isDesignToken(value: unknown): value is Token {
+  return isObject(value) && 'type' in value && 'value' in value;
+}

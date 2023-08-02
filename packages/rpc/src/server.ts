@@ -18,7 +18,7 @@ export class RpcServer {
   private emitter = mitt<RpcServerEvents>();
   private channels = new Set<keyof RpcChannelData>();
   constructor(private port: RpcPort) {
-    port.addEventListener('message', this.onMessage);
+    this.port.addEventListener('message', this.onMessage);
   }
 
   private onMessage = (req: unknown) => {

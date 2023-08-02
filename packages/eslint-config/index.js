@@ -30,5 +30,6 @@ module.exports = {
   },
   rules: {
     '@typescript-eslint/no-unused-vars': ['warn', { ignoreRestSiblings: true, argsIgnorePattern: '^_' }], // Allow unused variables starting with _ (e.g. _foo)
+    '@typescript-eslint/no-explicit-any': 'warn',
   },
 };

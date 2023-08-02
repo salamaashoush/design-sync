@@ -1,0 +1,61 @@
+{
+  "name": "@tokenize/figma-plugin-2",
+  "version": "0.0.0",
+  "description": "Tokenize Figma Plugin",
+  "dependencies": {
+    "@create-figma-plugin/ui": "^2.5.1",
+    "@create-figma-plugin/utilities": "^2.5.1",
+    "@modular-forms/preact": "^0.6.1",
+    "@preact/signals": "^1.1.5",
+    "@tokenize/storage": "workspace:*",
+    "@tokenize/utils": "workspace:*",
+    "@vanilla-extract/css": "^1.12.0",
+    "@vanilla-extract/recipes": "^0.5.0",
+    "@vanilla-extract/sprinkles": "^1.6.1",
+    "clsx": "^2.0.0",
+    "preact": "^10.16.0",
+    "tinycolor2": "^1.6.0",
+    "valibot": "^0.8.0",
+    "@tanstack/react-query": "5.0.0-beta.7",
+    "@dessert-box/react": "^0.7.5"
+  },
+  "devDependencies": {
+    "@create-figma-plugin/build": "^2.5.1",
+    "@create-figma-plugin/tsconfig": "^2.5.1",
+    "@figma/plugin-typings": "1.72.0",
+    "@hyrious/esbuild-plugin-style": "0.3.5",
+    "@tokenize/design-tokens": "workspace:*",
+    "@tokenize/rpc": "workspace:*",
+    "@tokenize/tsconfig": "workspace:*",
+    "@tokenize/utils": "workspace:*",
+    "@tokenize/w3c-tokens": "workspace:*",
+    "@types/tinycolor2": "^1.4.3",
+    "@vanilla-extract/esbuild-plugin": "^2.2.2",
+    "@vanilla-extract/integration": "^6.2.1",
+    "esbuild": "^0.18.17",
+    "typescript": "^5.1.6",
+    "lint-staged": "^13.2.3",
+    "eslint": "8.46.0"
+  },
+  "scripts": {
+    "verify": "tsc --pretty",
+    "build": "build-figma-plugin --minify",
+    "watch": "build-figma-plugin --watch"
+  },
+  "figma-plugin": {
+    "editorType": [
+      "dev",
+      "figma"
+    ],
+    "capabilities": [
+      "inspect"
+    ],
+    "permissions": [
+      "teamlibrary"
+    ],
+    "id": "tokenize-2",
+    "name": "Tokenize 2",
+    "main": "src/main.ts",
+    "ui": "src/ui.tsx"
+  }
+}

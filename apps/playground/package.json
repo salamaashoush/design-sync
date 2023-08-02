@@ -13,22 +13,24 @@
   "devDependencies": {
     "@tokenize/eslint-config": "workspace:*",
     "@tokenize/tsconfig": "workspace:*",
-    "typescript": "^5.0.4",
-    "vite": "^4.3.8",
-    "@unocss/reset": "0.52.0",
-    "vite-plugin-mkcert": "1.15.0",
-    "vite-plugin-solid": "^2.7.0",
-    "vite-plugin-static-copy": "^0.15.0",
+    "@unocss/reset": "0.53.6",
+    "@vanilla-extract/css": "^1.12.0",
+    "@vanilla-extract/recipes": "^0.5.0",
+    "@vanilla-extract/sprinkles": "^1.6.1",
     "@vanilla-extract/vite-plugin": "^3.8.2",
-    "@vanilla-extract/css": "^1.11.0",
-    "@vanilla-extract/sprinkles": "^1.6.0",
-    "@vanilla-extract/recipes": "^0.4.0",
-    "solid-devtools": "^0.26.0"
+    "solid-devtools": "^0.27.6",
+    "typescript": "^5.1.6",
+    "lint-staged": "^13.2.3",
+    "eslint": "8.46.0",
+    "vite": "^4.4.7",
+    "vite-plugin-mkcert": "1.16.0",
+    "vite-plugin-solid": "^2.7.0",
+    "vite-plugin-static-copy": "^0.17.0"
   },
   "dependencies": {
+    "@tokenize/design-tokens": "workspace:*",
     "@tokenize/figma-icons": "workspace:*",
     "@tokenize/uikit": "workspace:*",
-    "@tokenize/design-tokens": "workspace:*",
-    "solid-js": "^1.7.5"
+    "solid-js": "^1.7.8"
   }
 }

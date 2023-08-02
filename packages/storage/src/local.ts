@@ -18,12 +18,12 @@ export class LocalStorage {
     await figma.clientStorage.setAsync(key, this.serialize(value));
   }
 
-  async get<T>(key: string, defaultValue?: T): Promise<T | undefined> {
+  async get<T>(key: string): Promise<T | undefined> {
     const data = await figma.clientStorage.getAsync(key);
     if (data) {
       return this.deserialize(data);
     }
-    return defaultValue;
+    return undefined;
   }
 
   async remove(key: string): Promise<void> {
@@ -41,5 +41,3 @@ export class LocalStorage {
     }
   }
 }
-
-export const localStorage = new LocalStorage();

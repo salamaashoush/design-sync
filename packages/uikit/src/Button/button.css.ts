@@ -29,10 +29,10 @@ export const button = recipe({
     intent: {
       primary: {
         background: theme.color.bgBrand,
-        color: theme.color.textOnbrand,
+        color: theme.color.textOnBrand,
         selectors: {
           '&:enabled:active, &:enabled:focus': {
-            border: `2px solid ${theme.color.borderOnbrand}`,
+            border: `2px solid ${theme.color.borderOnBrand}`,
           },
           '&:disabled': {
             backgroundColor: theme.color.bgDisabled,
@@ -70,12 +70,12 @@ export const button = recipe({
         backgroundColor: theme.color.bgDanger,
         ':disabled': {
           backgroundColor: theme.color.bgDanger,
-          color: theme.color.textOndanger,
+          color: theme.color.textOnDanger,
           opacity: 0.4,
         },
         selectors: {
           '&:enabled:active, &:enabled:focus': {
-            border: `2px solid ${theme.color.borderOndanger}`,
+            border: `2px solid ${theme.color.borderOnDanger}`,
           },
         },
       },

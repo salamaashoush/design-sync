@@ -32,7 +32,7 @@ const letterSpacing = {
   ui14Neg: '-.001em',
 };
 
-export const theme = createGlobalTheme('body', {
+export const theme = createGlobalTheme(':root', {
   color: {
     transparent: 'transparent',
     current: 'currentColor',
@@ -228,6 +228,11 @@ export const theme = createGlobalTheme('body', {
     xl: '48px',
     xxl: '64px',
     xxxl: '80px',
+    extraSmall: 'var(--space-extra-small, 8px)',
+    small: 'var(--space-small, 12px)',
+    medium: 'var(--space-medium, 16px)',
+    large: 'var(--space-large, 24px)',
+    extraLarge: 'var(--space-extra-large, 32px)',
   },
   sizing: {
     xxxs: '4px',
