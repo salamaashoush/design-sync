@@ -2,7 +2,7 @@ import { RpcServer } from '@tokenize/rpc';
 import { paintStylesToDesignTokens, shadowStylesToDesignTokens, textStylesToDesignTokens } from '../plugin/styles';
 import { syncService } from '../plugin/syncService';
 import { varaiblesService } from '../plugin/variablesService';
-import { RemoteStorageWithouthId } from '../types';
+import { RemoteStorage, RemoteStorageWithoutId } from '../types';
 import { UIVraibleCollection } from './calls';
 
 export const server = new RpcServer({
@@ -83,13 +83,15 @@ export function setupRpcServerHandlers() {
         },
         collections: collections.length > 0 ? await varaiblesService.exportToDesignTokens(collections) : [],
       };
+      await syncService.loadTokens();
       console.log('exported collections', tokens);
     },
   );
 
-  server.handle('remoteStorages/get', async () => syncService.getRemoteStorages());
-  server.handle('remoteStorages/add', async (storage: RemoteStorageWithouthId) =>
-    syncService.addRemoteStorage(storage),
-  );
+  server.handle('remoteStorages/all', async () => syncService.getRemoteStorages());
+  server.handle('remoteStorages/add', async (storage: RemoteStorageWithoutId) => syncService.addRemoteStorage(storage));
   server.handle('remoteStorages/remove', async (storageId: string) => syncService.removeRemoteStorage(storageId));
+  server.handle('remoteStorages/activate', async (storageId: string) => syncService.activateRemoteStorage(storageId));
+  server.handle('remoteStorages/update', async (storage: RemoteStorage) => syncService.updateRemoteStorage(storage));
+  server.handle('remoteStorages/getActive', async () => syncService.getActiveRemoteStorage());
 }

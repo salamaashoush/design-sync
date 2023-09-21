@@ -13,10 +13,10 @@ export interface DesignTokensGroupMetadata {
 }
 
 export type RemoteStorageType = 'github' | 'gitlab' | 'bitbucket' | 'azure-devops';
-export interface RemoteStorage {
+export interface RemoteStorage extends GitStorageOptions {
   id: string;
   name: string;
   type: RemoteStorageType;
-  settings: GitStorageOptions;
+  filePath: string;
 }
-export type RemoteStorageWithouthId = Omit<RemoteStorage, 'id'>;
+export type RemoteStorageWithoutId = Omit<RemoteStorage, 'id'>;

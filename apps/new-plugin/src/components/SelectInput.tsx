@@ -1,37 +1,36 @@
 import { Dropdown, DropdownOption, Text } from '@create-figma-plugin/ui';
-import { ReadonlySignal } from '@preact/signals';
-import { JSX, h } from 'preact';
-import { forwardRef } from 'preact/compat';
+import { h } from 'preact';
 import { FormField } from './FormField';
 import { errorStyle } from './formField.css.ts';
 
-type SelectInputProps = {
+interface SelectInputProps {
   name: string;
   label: string;
   options: DropdownOption[];
   placeholder?: string;
-  value: ReadonlySignal<string | undefined>;
-  error?: ReadonlySignal<string>;
+  value?: string | null;
+  error?: string;
   required?: boolean;
-  onChange: JSX.GenericEventHandler<HTMLInputElement>;
-};
+  onValueChange: (value: string) => void;
+}
 
-export const SelectInput = forwardRef<HTMLInputElement, SelectInputProps>(({ label, value, error, ...props }, ref) => {
+export function SelectInput({ label, value, error, ...props }: SelectInputProps) {
   return (
     <FormField label={label}>
       <Dropdown
         {...props}
+        onValueChange={props.onValueChange}
         variant="border"
         id={props.name}
-        value={value.value ?? ''}
-        aria-invalid={!!error?.value}
+        value={value ?? null}
+        aria-invalid={!!error}
         aria-errormessage={`${props.name}-error`}
       />
-      {error?.value && (
+      {error && (
         <Text className={errorStyle} id={`${props.name}-error`}>
           {error}
         </Text>
       )}
     </FormField>
   );
-});
+}

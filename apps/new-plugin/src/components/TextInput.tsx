@@ -5,19 +5,19 @@ import { forwardRef } from 'preact/compat';
 import { FormField } from './FormField';
 import { errorStyle } from './formField.css.ts';
 
-type TextInputProps = {
+interface TextInputProps {
   name: string;
   type?: 'text' | 'email' | 'tel' | 'password' | 'url' | 'date';
   label: string;
   placeholder?: string;
-  value: ReadonlySignal<string | undefined>;
+  value: ReadonlySignal<string | undefined | null>;
   error: ReadonlySignal<string>;
   required?: boolean;
   ref: Ref<HTMLInputElement>;
   onInput: JSX.GenericEventHandler<HTMLInputElement>;
   onChange: JSX.GenericEventHandler<HTMLInputElement>;
   onBlur: JSX.FocusEventHandler<HTMLInputElement>;
-};
+}
 
 export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(({ label, value, error, ...props }, ref) => {
   return (

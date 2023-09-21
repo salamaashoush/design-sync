@@ -1,8 +1,9 @@
-import { useMemo } from 'preact/hooks';
 import { useRpcMutation, useRpcQuery } from './useRpcCall';
 
 export function useRemoteStorages() {
-  const { data, refetch } = useRpcQuery('remoteStorages/get');
+  const { data: remoteStorages, refetch } = useRpcQuery('remoteStorages/all');
+  const { data: activeRemoteStorage, refetch: refetchActive } = useRpcQuery('remoteStorages/getActive');
+
   const { mutateAsync: addRemoteStorage } = useRpcMutation('remoteStorages/add', {
     onSuccess: () => {
       refetch();
@@ -16,15 +17,20 @@ export function useRemoteStorages() {
 
   const { mutateAsync: activateRemoteStorage } = useRpcMutation('remoteStorages/activate', {
     onSuccess: () => {
+      refetchActive();
+    },
+  });
+
+  const { mutateAsync: updateRemoteStorage } = useRpcMutation('remoteStorages/update', {
+    onSuccess: () => {
       refetch();
     },
   });
 
-  const activeRemoteStorage = useMemo(() => data?.find((storage) => storage.active), [data]);
-
   return {
     activeRemoteStorage,
-    remoteStorages: data,
+    updateRemoteStorage,
+    remoteStorages,
     addRemoteStorage,
     removeRemoteStorage,
     activateRemoteStorage,

@@ -4,29 +4,45 @@ import { useCallback, useState } from 'preact/hooks';
 import { Box } from '../../components/Box';
 import { Section } from '../../components/Section';
 import { useRemoteStorages } from '../../hooks/useRemoteStorages';
-import { RemoteStorageType } from '../../types';
-import { RemoteStorageCard } from './RemoteStorageCard';
-import { RemoteStorageForm, RemoteStorageFormData } from './RemoteStorageForm';
+import { RemoteStorage, RemoteStorageWithoutId } from '../../types';
+import { RemoteStorageCard } from './RemoteStorageCard/RemoteStorageCard';
+import { RemoteStorageForm } from './RemoteStorageForm';
 
 export function Settings() {
-  const { remoteStorages, addRemoteStorage, removeRemoteStorage, activateRemoteStorage, activeRemoteStorage } =
-    useRemoteStorages();
+  const {
+    remoteStorages,
+    addRemoteStorage,
+    removeRemoteStorage,
+    activateRemoteStorage,
+    updateRemoteStorage,
+    activeRemoteStorage,
+  } = useRemoteStorages();
 
   const [open, setOpen] = useState(false);
-  const handleModalOpen = useCallback(() => setOpen(true), []);
-  const handleModalClose = useCallback(() => setOpen(false), []);
+  const [inEdit, setInEdit] = useState<RemoteStorage | undefined>(undefined);
+
+  const handleModalOpen = useCallback(() => {
+    setOpen(true);
+  }, [inEdit]);
+
+  const handleModalClose = useCallback(() => {
+    if (inEdit) {
+      setInEdit(undefined);
+    }
+    setOpen(false);
+  }, [inEdit]);
+
   const handleFormSubmit = useCallback(
-    (values: RemoteStorageFormData) => {
-      addRemoteStorage([
-        {
-          name: values.name,
-          type: values.type as RemoteStorageType,
-          settings: values,
-        },
-      ]);
+    (values: RemoteStorageWithoutId) => {
+      if (inEdit) {
+        updateRemoteStorage([{ ...values, id: inEdit.id }]);
+        setInEdit(undefined);
+      } else {
+        addRemoteStorage([values]);
+      }
       handleModalClose();
     },
-    [handleModalClose],
+    [handleModalClose, inEdit],
   );
 
   return (
@@ -39,14 +55,18 @@ export function Settings() {
       }
     >
       <Modal open={open} onCloseButtonClick={handleModalClose} title="Add remote storage" position="bottom">
-        {open && <RemoteStorageForm onSubmit={handleFormSubmit} />}
+        {open && <RemoteStorageForm key={inEdit?.id ?? ''} onSubmit={handleFormSubmit} values={inEdit} />}
       </Modal>
       <Box flexDirection="column" gap="extraSmall">
         {remoteStorages?.map((remoteStorage) => (
           <RemoteStorageCard
             onDelete={() => removeRemoteStorage([remoteStorage.id])}
-            onEdit={() => activateRemoteStorage([remoteStorage.id])}
-            seleted={activeRemoteStorage?.id === remoteStorage.id}
+            onEdit={() => {
+              setInEdit(remoteStorage);
+              handleModalOpen();
+            }}
+            onActivate={() => activateRemoteStorage([remoteStorage.id])}
+            selected={activeRemoteStorage?.id === remoteStorage.id}
             name={remoteStorage.name}
           />
         ))}

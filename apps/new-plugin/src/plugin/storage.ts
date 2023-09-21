@@ -14,13 +14,13 @@ export const localStorage = new LocalStorage();
 export function createGitStorage(remoteStorage: RemoteStorage) {
   switch (remoteStorage.type) {
     case 'github':
-      return new GithubStorage(remoteStorage.settings);
+      return new GithubStorage(remoteStorage);
     case 'gitlab':
-      return new GitlabStorage(remoteStorage.settings);
+      return new GitlabStorage(remoteStorage);
     case 'bitbucket':
-      return new BitbucketStorage(remoteStorage.settings);
+      return new BitbucketStorage(remoteStorage);
     case 'azure-devops':
-      return new AzureDevOpsStorage(remoteStorage.settings);
+      return new AzureDevOpsStorage(remoteStorage);
     default:
       throw new Error(`Unknown remote storage type: ${remoteStorage.type}`);
   }

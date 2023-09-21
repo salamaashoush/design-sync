@@ -178,7 +178,7 @@ export const theme = createGlobalTheme(':root', {
     iconOnSuccess: 'var(--figma-color-icon-onsuccess)',
     iconOnSuccessSecondary: 'var(--figma-color-icon-onsuccess-secondary)',
     iconOnSuccessTertiary: 'var(--figma-color-icon-onsuccess-tertiary)',
-    iconOninverse: 'var(--figma-color-icon-oninverse)',
+    iconOnInverse: 'var(--figma-color-icon-oninverse)',
     border: 'var(--figma-color-border)',
     borderStrong: 'var(--figma-color-border-strong)',
     borderBrand: 'var(--figma-color-border-brand)',

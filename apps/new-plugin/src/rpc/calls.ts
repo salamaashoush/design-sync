@@ -1,5 +1,5 @@
 import { JsonRpcCall } from '@tokenize/rpc';
-import { RemoteStorageWithouthId } from '../types';
+import { RemoteStorage, RemoteStorageWithoutId } from '../types';
 
 export interface UIItem {
   id: string;
@@ -13,10 +13,6 @@ export interface GetStylesResponse {
   typography: UIItem[];
   gradients: UIItem[];
   shadows: UIItem[];
-}
-
-export interface UIRemoteStorage extends UIItem {
-  active: boolean;
 }
 
 export interface SyncTokenParams {
@@ -37,10 +33,12 @@ declare global {
     'tokens/sync': JsonRpcCall<'tokens/sync', SyncTokenParams, void>;
     'variables/get': JsonRpcCall<'variables/get', void, GetVariablesResponse>;
     'styles/get': JsonRpcCall<'styles/get', void, GetStylesResponse>;
-    'remoteStorages/get': JsonRpcCall<'remoteStorages/get', void, UIRemoteStorage[]>;
-    'remoteStorages/add': JsonRpcCall<'remoteStorages/add', RemoteStorageWithouthId, void>;
+    'remoteStorages/all': JsonRpcCall<'remoteStorages/all', void, RemoteStorage[]>;
+    'remoteStorages/getActive': JsonRpcCall<'remoteStorages/getActive', void, RemoteStorage>;
+    'remoteStorages/add': JsonRpcCall<'remoteStorages/add', RemoteStorageWithoutId, void>;
     'remoteStorages/remove': JsonRpcCall<'remoteStorages/remove', string, void>;
     'remoteStorages/activate': JsonRpcCall<'remoteStorages/activate', string, void>;
+    'remoteStorages/update': JsonRpcCall<'remoteStorages/update', RemoteStorage, void>;
     'remoteStorages/pull': JsonRpcCall<'remoteStorages/pull', string, void>;
     'remoteStorages/push': JsonRpcCall<'remoteStorages/push', string, void>;
   }

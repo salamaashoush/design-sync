@@ -1,7 +1,7 @@
 import { GitStorage } from '@tokenize/storage';
 import { get, isObject } from '@tokenize/utils';
 import { DesignTokensGroup, isTokenAlias, type DesignToken, type TokenAlais } from '@tokenize/w3c-tokens';
-import { RemoteStorage, RemoteStorageWithouthId } from '../types';
+import { RemoteStorage, RemoteStorageWithoutId } from '../types';
 import { createGitStorage, localStorage } from './storage';
 
 export class SyncService {
@@ -27,27 +27,13 @@ export class SyncService {
     return true;
   }
 
-  async getTokens(group: string) {
-    // if (!this.tokenSets.length) {
-    //   const fromCache = await this.localStorage.get<DesignTokensGroup[]>('tokens');
-    //   console.log('fromCache', fromCache);
-    //   if (fromCache) {
-    //     this.tokenSets = fromCache;
-    //   } else {
-    //     const tokens = await this.remoteStorage.load('src/quin-pro-tokens.json');
-    //     this.tokenSets = [tokens];
-    //     this.localStorage.set('tokens', this.tokenSets);
-    //   }
+  async loadTokens() {
+    const tokens = await this.storageService?.load<DesignTokensGroup>('src/tokens.json');
+    console.log('loaded tokens', this.storageService?.options, tokens);
+    // if (tokens) {
+    //   this.tokens.set(group, tokens);
     // }
-    return this.tokens.get(group);
-  }
-
-  async loadTokens(group: string) {
-    const tokens = await this.storageService?.load<DesignTokensGroup>(`src/${group}.json`);
-    if (tokens) {
-      this.tokens.set(group, tokens);
-    }
-    return tokens;
+    // return tokens;
   }
 
   async saveTokens(group: string, tokens: DesignTokensGroup) {
@@ -58,15 +44,15 @@ export class SyncService {
     this.tokens.set(group, tokens);
   }
 
-  getRemoteStorages() {
-    return Array.from(this.remoteStorages.values()).map((storage) => ({
-      name: storage.name,
-      id: storage.id,
-      active: this.activeStorageId === storage.id,
-    }));
+  getActiveRemoteStorage() {
+    return this.remoteStorages.get(this.activeStorageId!);
   }
 
-  addRemoteStorage(storage: RemoteStorageWithouthId) {
+  getRemoteStorages() {
+    return Array.from(this.remoteStorages.values());
+  }
+
+  addRemoteStorage(storage: RemoteStorageWithoutId) {
     const id = Date.now().toString();
     this.remoteStorages.set(id, {
       ...storage,
@@ -78,6 +64,20 @@ export class SyncService {
   removeRemoteStorage(id: string) {
     this.remoteStorages.delete(id);
     localStorage.set('remoteStorages', Array.from(this.remoteStorages.values()));
+  }
+
+  updateRemoteStorage(storage: RemoteStorage) {
+    this.remoteStorages.set(storage.id, storage);
+    localStorage.set('remoteStorages', Array.from(this.remoteStorages.values()));
+  }
+
+  async activateRemoteStorage(id: string) {
+    const storage = this.remoteStorages.get(id);
+    if (storage) {
+      this.storageService = createGitStorage(storage);
+      this.activeStorageId = id;
+      localStorage.set('activeStorage', id);
+    }
   }
 
   getTokenByRefOrPath(ref: TokenAlais, name?: string) {

@@ -1,5 +1,5 @@
 import { Button } from '@create-figma-plugin/ui';
-import { useForm, valiForm } from '@modular-forms/preact';
+import { setValue, useForm, valiForm } from '@modular-forms/preact';
 import { h } from 'preact';
 import { Input, enumType, object, optional, string, url } from 'valibot';
 import { Box } from '../../components/Box';
@@ -18,7 +18,7 @@ const RemoteStorageFormSchema = object({
 
 export type RemoteStorageFormData = Input<typeof RemoteStorageFormSchema>;
 
-const RemoteStorageOptions = [
+const REMOTE_STORAGES = [
   { value: 'github', text: 'GitHub' },
   { value: 'gitlab', text: 'GitLab' },
   { value: 'bitbucket', text: 'Bitbucket' },
@@ -28,6 +28,7 @@ const RemoteStorageOptions = [
 interface RemoteStorageFormProps {
   onSubmit: (values: RemoteStorageFormData) => void;
   values?: RemoteStorageFormData;
+  editMode?: boolean;
 }
 export function RemoteStorageForm(props: RemoteStorageFormProps) {
   const [syncProviderForm, { Form, Field }] = useForm<RemoteStorageFormData>({
@@ -46,9 +47,13 @@ export function RemoteStorageForm(props: RemoteStorageFormProps) {
           <SelectInput
             label="Type"
             placeholder="Select a type"
-            options={RemoteStorageOptions}
-            value={field.value}
-            error={field.error}
+            options={REMOTE_STORAGES}
+            error={field.error.value}
+            value={field.value.value}
+            required
+            onValueChange={(value) => {
+              setValue(syncProviderForm, 'type', value as any);
+            }}
             {...props}
           />
         )}
@@ -124,7 +129,7 @@ export function RemoteStorageForm(props: RemoteStorageFormProps) {
       </Field>
       <Box justify="flex-end" paddingX="medium">
         <Button type="submit" loading={syncProviderForm.submitting.value} disabled={syncProviderForm.submitting.value}>
-          Add
+          {props.editMode ? 'Update' : 'Add'}
         </Button>
       </Box>
     </Form>
