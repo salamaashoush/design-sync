@@ -1,5 +1,5 @@
-import { theme } from '@tokenize/design-tokens';
-import { ui11Medium } from '@tokenize/design-tokens/src/typography.css';
+import { theme } from '@design-sync/design-tokens';
+import { ui11Medium } from '@design-sync/design-tokens/src/typography.css';
 import { recipe, RecipeVariants } from '@vanilla-extract/recipes';
 
 export const button = recipe({

@@ -1,4 +1,4 @@
-import { Checkbox, Collapsible } from '@tokenize/uikit';
+import { Checkbox, Collapsible } from '@design-sync/uikit';
 
 export function CheckboxExample() {
   return (

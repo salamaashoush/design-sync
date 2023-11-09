@@ -1,4 +1,4 @@
-import { RpcClient } from '@tokenize/rpc';
+import { RpcClient } from '@design-sync/rpc';
 
 export const client = new RpcClient({
   postMessage: (message) =>

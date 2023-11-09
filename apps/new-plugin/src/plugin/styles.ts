@@ -1,6 +1,6 @@
-import { camelCase, set } from '@tokenize/utils';
-import { TokenDefinition } from '@tokenize/w3c-tokens';
-import { serailzeColor, serializeFontWeight, serializeLetterSpacing, serializeLineHeight } from './utils';
+import { camelCase, set } from '@design-sync/utils';
+import { TokenDefinition } from '@design-sync/w3c-dtfm';
+import { serializeColor, serializeFontWeight, serializeLetterSpacing, serializeLineHeight } from './utils';
 
 export function textStylesToDesignTokens() {
   const styles = figma.getLocalTextStyles();
@@ -42,7 +42,7 @@ export function shadowStylesToDesignTokens() {
         $description: description,
         $type: 'shadow',
         $value: {
-          color: serailzeColor(color),
+          color: serializeColor(color),
           blur: `${radius}px`,
           spread: spread ? `${spread}px` : '0px',
           offsetX: `${offset.x}px`,
@@ -55,35 +55,39 @@ export function shadowStylesToDesignTokens() {
   return tokens;
 }
 
-export function paintStylesToDesignTokens(exportSolid = false, exportGradient = true) {
+export function paintStylesToDesignTokens() {
   const styles = figma.getLocalPaintStyles();
-  const tokens: Record<string, any> = {};
+  const colors: Record<string, any> = {};
+  const gradients: Record<string, any> = {};
   for (const style of styles) {
     const { name, description, paints } = style;
     const normalizedPath = name.replace(/\//g, '.').split('.').map(camelCase).join('.');
     for (const paint of paints) {
-      if (paint.type.startsWith('GRADIENT_') && exportGradient) {
+      if (paint.type.startsWith('GRADIENT_')) {
         const { gradientStops } = paint as GradientPaint;
         const token: TokenDefinition<'gradient'> = {
           $description: description,
           $type: 'gradient',
           $value: gradientStops.map(({ color, position }) => ({
-            color: serailzeColor(color),
+            color: serializeColor(color),
             position,
           })),
         };
-        set(tokens, normalizedPath, token);
+        set(gradients, normalizedPath, token);
       }
-      if (paint.type === 'SOLID' && exportSolid) {
+      if (paint.type === 'SOLID') {
         const { color, opacity } = paint as SolidPaint;
         const token: TokenDefinition<'color'> = {
           $description: description,
           $type: 'color',
-          $value: serailzeColor(color, opacity),
+          $value: serializeColor(color, opacity),
         };
-        set(tokens, normalizedPath, token);
+        set(colors, normalizedPath, token);
       }
     }
   }
-  return tokens;
+  return {
+    colors,
+    gradients,
+  };
 }

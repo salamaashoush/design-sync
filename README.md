@@ -1,4 +1,4 @@
-# Tokenize(Name is WIP)
+# DesignSync
 
 [![figma](https://img.shields.io/badge/built%20for-figma-fb6558.svg?style=for-the-badge&logo=figma)](https://pnpm.io/)
 [![pnpm](https://img.shields.io/badge/maintained%20with-pnpm-f69220.svg?style=for-the-badge&logo=pnpm)](https://pnpm.io/)

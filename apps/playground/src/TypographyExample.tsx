@@ -1,5 +1,5 @@
-import { ui11, ui11Bold, ui11Medium } from '@tokenize/design-tokens';
-import { Collapsible, Label, SectionTitle } from '@tokenize/uikit';
+import { ui11, ui11Bold, ui11Medium } from '@design-sync/design-tokens';
+import { Collapsible, Label, SectionTitle } from '@design-sync/uikit';
 
 export function TypographyExample() {
   return (

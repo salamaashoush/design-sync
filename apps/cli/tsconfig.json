@@ -1,0 +1,10 @@
+{
+  "extends": "@design-sync/tsconfig/base.json",
+  "include": ["src", "build.config.ts"],
+  "ts-node": {
+    "compilerOptions": {
+      "module": "commonjs",
+      "esModuleInterop": true
+    }
+  }
+}

@@ -1,5 +1,5 @@
 {
-  "name": "tokenize",
+  "name": "design-sync",
   "version": "0.0.0",
   "description": "",
   "private": true,
@@ -8,7 +8,7 @@
     "apps/*"
   ],
   "scripts": {
-    "build": "turbo run build --scope=@tokenize/figma-plugin",
+    "build": "turbo run build --parallel",
     "test": "turbo test",
     "lint": "turbo lint",
     "lint:fix": "turbo lint",
@@ -21,14 +21,14 @@
   "dependencies": {
     "husky": "^8.0.3",
     "prettier": "^3.0.3",
-    "turbo": "^1.10.14",
+    "turbo": "^1.10.16",
     "typescript": "^5.2.2"
   },
   "resolutions": {
     "esbuild": "^0.18.17"
   },
-  "packageManager": "pnpm@8.6.0",
+  "packageManager": "pnpm@8.10.2",
   "engines": {
-    "node": ">=20.0.0"
+    "node": ">=21.0.0"
   }
 }

@@ -1,4 +1,4 @@
-import { isObject, memoize } from '@tokenize/utils';
+import { isObject, memoize } from '@design-sync/utils';
 import {
   Color,
   DesignToken,
@@ -7,7 +7,7 @@ import {
   isFontFamilyToken,
   isFontWeightToken,
   isTypographyToken,
-} from '@tokenize/w3c-tokens';
+} from '@design-sync/w3c-dtfm';
 import tiny from 'tinycolor2';
 
 export function isTextNode(node: SceneNode): node is TextNode {
@@ -30,7 +30,7 @@ export function isVariableAlias(value: VariableValue): value is VariableAlias {
   return isObject(value) && 'type' in value && value.type === 'VARIABLE_ALIAS' && 'id' in value;
 }
 
-export const deserialzeColor = memoize((color: string, alpha = false): RGBA | RGB => {
+export const deserializeColor = memoize((color: string, alpha = false): RGBA | RGB => {
   if (color.includes('gradient')) {
     console.warn('gradient color is not supported');
     return { r: 0, g: 0, b: 0, a: 0 };
@@ -154,7 +154,7 @@ export function numberToHex(value: number) {
   return hex.length === 1 ? '0' + hex : hex;
 }
 
-export function serailzeColor(color: RGBA | RGB, opacity?: number): Color {
+export function serializeColor(color: RGBA | RGB, opacity?: number): Color {
   const { r, g, b } = color;
   const hex = [numberToHex(r), numberToHex(g), numberToHex(b)];
   if (isRGBA(color) && color.a !== 1) {
@@ -210,4 +210,20 @@ export function serializeFontWeight(fontWeight: string): FontWeight {
     default:
       return fontWeight as FontWeight;
   }
+}
+
+export function stringToUint8Array(str: string) {
+  const ret = new Uint8Array(str.length);
+  for (let i = 0; i < str.length; i++) {
+    ret[i] = str.charCodeAt(i);
+  }
+  return ret;
+}
+
+export function uint8ArrayToString(array: Uint8Array) {
+  let str = '';
+  for (let i = 0; i < array.length; i++) {
+    str += String.fromCharCode(array[i]);
+  }
+  return str;
 }

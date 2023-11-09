@@ -1,13 +1,13 @@
-import { GitStorage } from '@tokenize/storage';
-import { get, isObject } from '@tokenize/utils';
-import { DesignTokensGroup, isTokenAlias, type DesignToken, type TokenAlais } from '@tokenize/w3c-tokens';
+import { GitStorage } from '@design-sync/storage';
+import { get, isObject } from '@design-sync/utils';
+import { isTokenAlias, normalizeTokenAlias, type DesignToken, type TokenAlias } from '@design-sync/w3c-dtfm';
 import { RemoteStorage, RemoteStorageWithoutId } from '../types';
 import { createGitStorage, localStorage } from './storage';
 
 export class SyncService {
   private remoteStorages: Map<string, RemoteStorage> = new Map();
   private storageService: GitStorage | null = null;
-  private tokens = new Map<string, DesignTokensGroup>();
+  private tokens = new Map<string, object>();
   private activeStorageId: string | undefined;
 
   async init() {
@@ -28,20 +28,23 @@ export class SyncService {
   }
 
   async loadTokens() {
-    const tokens = await this.storageService?.load<DesignTokensGroup>('src/tokens.json');
+    const filePath = this.getActiveRemoteStorage()?.filePath ?? 'tokens.json';
+    const tokens = await this.storageService?.load<object>(filePath);
     console.log('loaded tokens', this.storageService?.options, tokens);
-    // if (tokens) {
-    //   this.tokens.set(group, tokens);
-    // }
-    // return tokens;
+    if (tokens) {
+      this.tokens.set(filePath, tokens);
+    }
+    return tokens;
   }
 
-  async saveTokens(group: string, tokens: DesignTokensGroup) {
+  async saveTokens(tokens: object) {
+    const filePath = this.getActiveRemoteStorage()?.filePath ?? 'tokens.json';
+    console.log('saving tokens', this.storageService?.options, tokens);
     await this.storageService?.save(tokens, {
-      commitMessage: `Update ${group} tokens`,
-      filePath: `src/${group}.json`,
+      commitMessage: `Update tokens.json`,
+      filePath,
     });
-    this.tokens.set(group, tokens);
+    this.tokens.set(filePath, tokens);
   }
 
   getActiveRemoteStorage() {
@@ -80,8 +83,8 @@ export class SyncService {
     }
   }
 
-  getTokenByRefOrPath(ref: TokenAlais, name?: string) {
-    const path = ref.replace(/[$,{}]/g, '');
+  getTokenByRefOrPath(ref: TokenAlias, name?: string) {
+    const path = normalizeTokenAlias(ref);
     if (name) {
       const group = this.tokens.get(name);
       if (group) {

@@ -8,7 +8,7 @@ export function isString(value: unknown): value is string {
   return typeof value === 'string';
 }
 
-export function isNumricString(value: string): boolean {
+export function isNumericString(value: string): boolean {
   const split = (value[0] === '-' ? value.substring(1) : value).split(MATH_OPERATOR_REGEX);
   let i = -1;
   while (++i < split.length) {
@@ -18,4 +18,8 @@ export function isNumricString(value: string): boolean {
     }
   }
   return true;
+}
+
+export function isValidJsObjectKey(key: string) {
+  return /^[a-zA-Z_$][0-9a-zA-Z_$]*$/.test(key);
 }

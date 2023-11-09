@@ -1,13 +1,11 @@
 node_modules
+coverage
 dist
 .turbo
 build
-
-# yarn
-.pnp.*
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/sdks
-!.yarn/versions
+types
+.vscode
+.DS_Store
+.eslintcache
+*.log*
+*.env*

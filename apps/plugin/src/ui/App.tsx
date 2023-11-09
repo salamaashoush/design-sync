@@ -1,4 +1,4 @@
-import { Button, ModalsProvider, Resizable, ResizableEvent } from '@tokenize/uikit';
+import { Button, ModalsProvider, Resizable, ResizableEvent } from '@design-sync/uikit';
 import { Component, Show, createResource, onCleanup, onMount } from 'solid-js';
 import { client } from '../rpc/client';
 import { Token, TokenSet } from '../types';
@@ -45,7 +45,6 @@ const App: Component = () => {
       <Resizable onResize={handleResize}>
         <Button onClick={exportVariables}>Export Variables</Button>
         <Button onClick={importVariables}>Import Variables</Button>
-
         <Show when={setsRes()?.sets} fallback={<div>Loading...</div>}>
           <Tokens sets={setsRes()?.sets as TokenSet[]} onTokenClick={handleTokenClick} />
         </Show>

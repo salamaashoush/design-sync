@@ -1,4 +1,4 @@
-import { createIdGenerator } from '@tokenize/utils';
+import { createIdGenerator } from '@design-sync/utils';
 import mitt from 'mitt';
 import type { RpcCallParams } from './calls';
 import type { RpcPort } from './port';

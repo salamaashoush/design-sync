@@ -1,5 +1,5 @@
-import { slideDown, slideUp, theme } from '@tokenize/design-tokens';
-import { ui11 } from '@tokenize/design-tokens/src/typography.css';
+import { slideDown, slideUp, theme } from '@design-sync/design-tokens';
+import { ui11 } from '@design-sync/design-tokens/src/typography.css';
 import { style } from '@vanilla-extract/css';
 
 export const collapsible = style({

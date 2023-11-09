@@ -1,10 +1,10 @@
-import { camelCase, get, isObject, set } from '@tokenize/utils';
-import { DesignToken, DesignTokensGroup, isDesignToken, isTokenAlias } from '@tokenize/w3c-tokens';
+import { camelCase, get, isObject, set } from '@design-sync/utils';
+import { DesignToken, DesignTokensGroup, isDesignToken, isTokenAlias } from '@design-sync/w3c-dtfm';
 import { DesignTokensGroupMetadata, DesignTokensMode } from '../types';
-import { convertValue, deserialzeColor, isColorVariableValue, isVariableAlias, serailzeColor } from './utils';
+import { convertValue, deserializeColor, isColorVariableValue, isVariableAlias, serializeColor } from './utils';
 import { SUPPORTED_TOKEN_TYPES, designTokenTypeToVariableType, guessTokenTypeFromScopes } from './variables';
 
-export class VaraiblesStore {
+export class VariablesStore {
   private store: Map<string, Variable> = new Map();
   constructor() {
     const collections = figma.variables.getLocalVariableCollections();
@@ -55,12 +55,9 @@ export class VaraiblesStore {
   }
 }
 
-interface TokensBag {
-  default?: Record<string, any>;
-}
-export class VaraiblesService {
+export class VariablesService {
   private aliasesToProcess: Record<string, any> = {};
-  constructor(private variablesStore: VaraiblesStore = new VaraiblesStore()) {}
+  constructor(private variablesStore: VariablesStore = new VariablesStore()) {}
 
   getLocalCollections(ids?: string[]) {
     const all = figma.variables.getLocalVariableCollections();
@@ -106,12 +103,12 @@ export class VaraiblesService {
     return variable;
   }
 
-  private createVariableAlais(collection: VariableCollection, modeId: string, key: string, ref: string) {
+  private createVariableAlias(collection: VariableCollection, modeId: string, key: string, ref: string) {
     const refVariable = this.variablesStore.getByName(ref);
     if (!refVariable) {
       throw new Error(`Variable ${ref} not found`);
     }
-    console.log('createVariableAlais', refVariable, key, this.aliasesToProcess);
+    console.log('createVariableAlias', refVariable, key, this.aliasesToProcess);
     return this.createOrUpdateVariable(collection, modeId, refVariable.resolvedType, key, {
       type: 'VARIABLE_ALIAS',
       id: `${refVariable.id}`,
@@ -126,7 +123,7 @@ export class VaraiblesService {
         const { key, valueKey, modeId } = aliasesValues[i];
         if (this.variablesStore.findVariable(valueKey)) {
           aliasesValues.splice(i, 1);
-          this.variablesStore.set(key, this.createVariableAlais(collection, modeId, key, valueKey));
+          this.variablesStore.set(key, this.createVariableAlias(collection, modeId, key, valueKey));
         }
       }
       generations--;
@@ -143,7 +140,7 @@ export class VaraiblesService {
       if (isTokenAlias(tokenValue.$value)) {
         const valueKey = tokenValue.$value.trim().replace(/\./g, '/').replace(/[${}]/g, '');
         if (this.variablesStore.has(valueKey)) {
-          this.createVariableAlais(collection, modeId, tokenKey, valueKey);
+          this.createVariableAlias(collection, modeId, tokenKey, valueKey);
         } else {
           this.aliasesToProcess[tokenKey] = {
             key: tokenKey,
@@ -155,7 +152,7 @@ export class VaraiblesService {
       } else {
         const value =
           type === 'COLOR'
-            ? deserialzeColor(tokenValue.$value as string)
+            ? deserializeColor(tokenValue.$value as string)
             : convertValue(tokenValue.$value as string).value;
         this.createOrUpdateVariable(collection, modeId, type, tokenKey, value);
       }
@@ -226,40 +223,45 @@ export class VaraiblesService {
     this.createCollectionFromDesignTokens(group);
   }
 
-  exportCollectionToDesignTokens({ name: collectionName, modes, variableIds }: VariableCollection) {
+  private serializeVariableValue(value: VariableValue, resolvedType: VariableResolvedDataType) {
+    if (value !== undefined && ['COLOR', 'FLOAT'].includes(resolvedType ?? '')) {
+      if (isVariableAlias(value)) {
+        return `{${figma.variables.getVariableById(value.id)!.name.replace(/\//g, '.')}}`;
+      }
+      if (resolvedType === 'COLOR' && isColorVariableValue(value)) {
+        return serializeColor(value);
+      }
+      return value.toString();
+    }
+    return '';
+  }
+
+  exportCollectionToDesignTokens({ name: collectionName, modes, variableIds, defaultModeId }: VariableCollection) {
     const tokens: Record<string, any> = {
       $name: collectionName,
       $extensions:
         modes?.length > 1
           ? {
-              modes: modes.map((m) => ({ name: m.name, id: m.modeId, path: camelCase(`${collectionName}/${m.name}`) })),
+              modes: modes.map(({ name }) => camelCase(name)),
             }
           : undefined,
     };
-    for (const mode of modes) {
-      for (const variableId of variableIds) {
-        const { name, resolvedType, valuesByMode, description, scopes } = figma.variables.getVariableById(variableId)!;
-        const value = valuesByMode?.[mode.modeId];
-        const modeKey = mode.name === 'Value' ? undefined : camelCase(`${collectionName}/${mode.name}`);
-        if (value !== undefined && ['COLOR', 'FLOAT'].includes(resolvedType ?? '')) {
-          const normalizedPath = `${name.replace(/\//g, '.').split('.').map(camelCase).join('.')}`;
-          const fullPath = modeKey ? `${modeKey}.${normalizedPath}` : normalizedPath;
-          const token: DesignToken = {
-            $value: '' as any,
-            $description: description ?? '',
-            $type: resolvedType === 'COLOR' ? 'color' : guessTokenTypeFromScopes(scopes),
-          };
-
-          if (isVariableAlias(value)) {
-            token.$value = `{${figma.variables.getVariableById(value.id)!.name.replace(/\//g, '.')}}`;
-          } else if (resolvedType === 'COLOR' && isColorVariableValue(value)) {
-            token.$value = serailzeColor(value);
-          } else {
-            token.$value = value;
-          }
-          set(tokens, fullPath, token);
+    for (const variableId of variableIds) {
+      const { name, resolvedType, valuesByMode, description, scopes } = figma.variables.getVariableById(variableId)!;
+      const fullPath = `${name.replace(/\//g, '.').split('.').map(camelCase).join('.')}`;
+      const token: DesignToken = {
+        $value: this.serializeVariableValue(valuesByMode?.[defaultModeId], resolvedType),
+        $description: description ?? '',
+        $type: resolvedType === 'COLOR' ? 'color' : guessTokenTypeFromScopes(scopes),
+      };
+      if (modes?.length > 1) {
+        for (const mode of modes) {
+          const value = valuesByMode?.[mode.modeId];
+          const modeKey = camelCase(mode.name === 'Value' ? 'default' : mode.name);
+          set(token, `$extensions.mode.${modeKey}`, this.serializeVariableValue(value, resolvedType));
         }
       }
+      set(tokens, fullPath, token);
     }
     const hasModes = Object.keys(tokens).length > 1;
     return hasModes ? tokens : tokens.default;
@@ -293,4 +295,4 @@ export class VaraiblesService {
   }
 }
 
-export const varaiblesService = new VaraiblesService();
+export const variablesService = new VariablesService();

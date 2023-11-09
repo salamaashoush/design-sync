@@ -1,4 +1,0 @@
-{
-  "extends": "@tokenize/tsconfig/base.json",
-  "include": ["src/**/*"]
-}

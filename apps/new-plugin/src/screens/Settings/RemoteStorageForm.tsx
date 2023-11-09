@@ -1,7 +1,7 @@
 import { Button } from '@create-figma-plugin/ui';
 import { setValue, useForm, valiForm } from '@modular-forms/preact';
 import { h } from 'preact';
-import { Input, enumType, object, optional, string, url } from 'valibot';
+import { Input, enumType, nullish, object, string, url } from 'valibot';
 import { Box } from '../../components/Box';
 import { SelectInput } from '../../components/SelectInput';
 import { TextInput } from '../../components/TextInput';
@@ -13,7 +13,7 @@ const RemoteStorageFormSchema = object({
   accessToken: string(),
   branch: string(),
   filePath: string(),
-  baseUrl: optional(string([url()])),
+  baseUrl: nullish(string([url()])),
 });
 
 export type RemoteStorageFormData = Input<typeof RemoteStorageFormSchema>;
@@ -33,6 +33,7 @@ interface RemoteStorageFormProps {
 export function RemoteStorageForm(props: RemoteStorageFormProps) {
   const [syncProviderForm, { Form, Field }] = useForm<RemoteStorageFormData>({
     validate: valiForm(RemoteStorageFormSchema),
+    validateOn: 'touched',
     revalidateOn: 'change',
     initialValues: {
       type: 'github',
@@ -120,6 +121,11 @@ export function RemoteStorageForm(props: RemoteStorageFormProps) {
         {(field, props) => (
           <TextInput
             {...props}
+            onChange={(e) => {
+              const value = e.currentTarget.value || undefined;
+              console.log(value);
+              setValue(syncProviderForm, 'baseUrl', value);
+            }}
             label="Base URL (optional)"
             placeholder='e.g. "https://api.github.com"'
             value={field.value}

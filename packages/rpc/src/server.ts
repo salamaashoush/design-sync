@@ -1,4 +1,4 @@
-import { getErrorMessage } from '@tokenize/utils';
+import { getErrorMessage } from '@design-sync/utils';
 import mitt from 'mitt';
 import type { RpcPort } from './port';
 import type { JsonRpcResponse } from './types';

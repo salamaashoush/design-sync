@@ -1,5 +1,5 @@
+import { CheckboxCheckedControlsIcon, CheckboxMixedControlsIcon } from '@design-sync/figma-icons';
 import { Checkbox as KCheckbox } from '@kobalte/core';
-import { CheckboxCheckedControlsIcon, CheckboxMixedControlsIcon } from '@tokenize/figma-icons';
 import { ComponentProps } from 'solid-js';
 import { control, indicator, label, root } from './checkbox.css';
 

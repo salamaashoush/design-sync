@@ -1,5 +1,5 @@
-import { GitlabStorage, LocalStorage } from '@tokenize/storage';
-import { get } from '@tokenize/utils';
+import { GitlabStorage, LocalStorage } from '@design-sync/storage';
+import { get } from '@design-sync/utils';
 import type { Ref, Token, TokenSet } from '../types';
 import { TOKEN_SET_1, TOKEN_SET_2 } from '../ui/data';
 import { isTokenReference } from './utils/is';

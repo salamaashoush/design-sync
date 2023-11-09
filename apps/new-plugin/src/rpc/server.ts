@@ -1,7 +1,7 @@
-import { RpcServer } from '@tokenize/rpc';
+import { RpcServer } from '@design-sync/rpc';
 import { paintStylesToDesignTokens, shadowStylesToDesignTokens, textStylesToDesignTokens } from '../plugin/styles';
 import { syncService } from '../plugin/syncService';
-import { varaiblesService } from '../plugin/variablesService';
+import { variablesService } from '../plugin/variablesService';
 import { RemoteStorage, RemoteStorageWithoutId } from '../types';
 import { UIVraibleCollection } from './calls';
 
@@ -22,8 +22,8 @@ export function setupRpcServerHandlers() {
   });
 
   server.handle('variables/get', async () => {
-    const collections = varaiblesService.getLocalCollections();
-    const libraryCollections = await varaiblesService.getLibraryCollections();
+    const collections = variablesService.getLocalCollections();
+    const libraryCollections = await variablesService.getLibraryCollections();
     return {
       local: collections.map((c) => ({ id: c.id, name: c.name, type: 'local' }) as UIVraibleCollection),
       library: libraryCollections.map((c) => ({ id: c.key, name: c.name, type: 'library' }) as UIVraibleCollection),
@@ -72,21 +72,19 @@ export function setupRpcServerHandlers() {
   //     gradients,
   //   });
   // });
-  server.handle(
-    'tokens/sync',
-    async ({ collections, exportColors, exportGradients, exportShadows, exportTypography }) => {
-      const tokens = {
-        styles: {
-          ...(exportGradients || exportColors ? paintStylesToDesignTokens(exportColors, exportGradients) : {}),
-          ...(exportTypography ? textStylesToDesignTokens() : {}),
-          ...(exportShadows ? shadowStylesToDesignTokens() : {}),
-        },
-        collections: collections.length > 0 ? await varaiblesService.exportToDesignTokens(collections) : [],
-      };
-      await syncService.loadTokens();
-      console.log('exported collections', tokens);
-    },
-  );
+  server.handle('tokens/sync', async ({ collections, exportPaints, exportShadows, exportTypography }) => {
+    const tokens = {
+      styles: {
+        ...(exportPaints ? paintStylesToDesignTokens() : {}),
+        typography: exportTypography ? textStylesToDesignTokens() : {},
+        shadows: exportShadows ? shadowStylesToDesignTokens() : {},
+      },
+      collections: collections.length > 0 ? await variablesService.exportToDesignTokens(collections, true) : [],
+    };
+    await syncService.loadTokens();
+    // await syncService.saveTokens(tokens);
+    console.log('exported collections', tokens);
+  });
 
   server.handle('remoteStorages/all', async () => syncService.getRemoteStorages());
   server.handle('remoteStorages/add', async (storage: RemoteStorageWithoutId) => syncService.addRemoteStorage(storage));

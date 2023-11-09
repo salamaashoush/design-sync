@@ -1,4 +1,4 @@
 module.exports = {
   root: true,
-  extends: '@tokenize/eslint-config',
+  extends: '@design-sync/eslint-config',
 };

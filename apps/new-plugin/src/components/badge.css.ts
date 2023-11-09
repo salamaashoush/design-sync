@@ -1,4 +1,4 @@
-import { theme } from '@tokenize/design-tokens';
+import { theme } from '@design-sync/design-tokens';
 import { style } from '@vanilla-extract/css';
 
 export const badgeStyle = style({

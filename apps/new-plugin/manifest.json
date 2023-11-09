@@ -1,10 +1,17 @@
 {
   "api": "1.0.0",
-  "editorType": ["dev", "figma"],
+  "editorType": [
+    "dev",
+    "figma"
+  ],
   "id": "tokenize-2",
   "name": "Tokenize 2",
   "main": "build/main.js",
   "ui": "build/ui.js",
-  "capabilities": ["inspect"],
-  "permissions": ["teamlibrary"]
+  "capabilities": [
+    "inspect"
+  ],
+  "permissions": [
+    "teamlibrary"
+  ]
 }

@@ -1,5 +1,5 @@
+import { CaretRight16Icon } from '@design-sync/figma-icons';
 import { Collapsible as KCollapsible } from '@kobalte/core';
-import { CaretRight16Icon } from '@tokenize/figma-icons';
 import { JSX, ParentProps } from 'solid-js';
 import {
   collapsible,

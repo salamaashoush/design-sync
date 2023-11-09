@@ -1,36 +1,36 @@
 {
-  "name": "@tokenize/playground",
+  "name": "@design-sync/playground",
   "version": "0.0.0",
   "description": "TokenizePlayground",
   "scripts": {
     "dev": "vite",
     "lint": "eslint ./src --ext .ts,.tsx,.js,.jsx",
-    "lint:fix": "yarn lint --fix",
+    "lint:fix": "pnpm run lint --fix",
     "verify": "tsc --pretty",
     "precommit": "lint-staged"
   },
   "license": "MIT",
   "devDependencies": {
-    "@tokenize/eslint-config": "workspace:*",
-    "@tokenize/tsconfig": "workspace:*",
-    "@unocss/reset": "0.56.0",
+    "@design-sync/eslint-config": "workspace:*",
+    "@design-sync/tsconfig": "workspace:*",
+    "@unocss/reset": "0.57.1",
     "@vanilla-extract/css": "^1.13.0",
     "@vanilla-extract/recipes": "^0.5.0",
     "@vanilla-extract/sprinkles": "^1.6.1",
     "@vanilla-extract/vite-plugin": "^3.9.0",
-    "solid-devtools": "^0.27.7",
+    "eslint": "8.52.0",
+    "lint-staged": "^15.0.2",
+    "solid-devtools": "^0.28.1",
     "typescript": "^5.2.2",
-    "lint-staged": "^13.3.0",
-    "eslint": "8.49.0",
-    "vite": "^4.4.9",
+    "vite": "^4.5.0",
     "vite-plugin-mkcert": "1.16.0",
-    "vite-plugin-solid": "^2.7.0",
+    "vite-plugin-solid": "^2.7.2",
     "vite-plugin-static-copy": "^0.17.0"
   },
   "dependencies": {
-    "@tokenize/design-tokens": "workspace:*",
-    "@tokenize/figma-icons": "workspace:*",
-    "@tokenize/uikit": "workspace:*",
-    "solid-js": "^1.7.12"
+    "@design-sync/design-tokens": "workspace:*",
+    "@design-sync/figma-icons": "workspace:*",
+    "@design-sync/uikit": "workspace:*",
+    "solid-js": "^1.8.5"
   }
 }
