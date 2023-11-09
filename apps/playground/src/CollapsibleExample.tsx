@@ -1,5 +1,5 @@
-import { Plus32Icon } from '@tokenize/figma-icons';
-import { Collapsible, IconButton } from '@tokenize/uikit';
+import { Plus32Icon } from '@design-sync/figma-icons';
+import { Collapsible, IconButton } from '@design-sync/uikit';
 
 export function CollapsibleExample() {
   return (

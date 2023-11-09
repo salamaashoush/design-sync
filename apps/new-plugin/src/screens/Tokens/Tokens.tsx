@@ -11,18 +11,12 @@ import { CollectionList } from './CollectionList';
 export function Tokens() {
   const { mutateAsync } = useRpcMutation('tokens/sync');
   const exportTypography = useSignal(false);
-  const exportColors = useSignal(false);
   const exportShadows = useSignal(false);
-  const exportGradients = useSignal(false);
+  const exportPaints = useSignal(false);
 
   const selected = useSignal<string[]>([]);
   const canExport = useComputed(
-    () =>
-      selected.value.length > 0 ||
-      exportTypography.value ||
-      exportColors.value ||
-      exportShadows.value ||
-      exportGradients.value,
+    () => selected.value.length > 0 || exportTypography.value || exportShadows.value || exportPaints.value,
   );
   const isSelected = useCallback((id: string) => selected.value.includes(id), [selected]);
   const onSelect = useCallback(
@@ -40,10 +34,9 @@ export function Tokens() {
     mutateAsync([
       {
         collections: selected.value,
-        exportColors: exportColors.value,
         exportTypography: exportTypography.value,
         exportShadows: exportShadows.value,
-        exportGradients: exportGradients.value,
+        exportPaints: exportPaints.value,
       },
     ]);
   }, []);
@@ -67,19 +60,14 @@ export function Tokens() {
             onSelect={(selected) => (exportTypography.value = selected)}
           />
           <CollectionListItem
-            label="Colors"
-            selected={exportColors.value}
-            onSelect={(selected) => (exportColors.value = selected)}
-          />
-          <CollectionListItem
             label="Shadows"
             selected={exportShadows.value}
             onSelect={(selected) => (exportShadows.value = selected)}
           />
           <CollectionListItem
-            label="Gradients"
-            selected={exportGradients.value}
-            onSelect={(selected) => (exportGradients.value = selected)}
+            label="Paint Styles (Gradient, Solid)"
+            selected={exportPaints.value}
+            onSelect={(selected) => (exportPaints.value = selected)}
           />
         </Box>
       </Section>

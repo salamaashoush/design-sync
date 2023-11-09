@@ -10,7 +10,7 @@ interface TextInputProps {
   type?: 'text' | 'email' | 'tel' | 'password' | 'url' | 'date';
   label: string;
   placeholder?: string;
-  value: ReadonlySignal<string | undefined | null>;
+  value?: ReadonlySignal<string | null | undefined>;
   error: ReadonlySignal<string>;
   required?: boolean;
   ref: Ref<HTMLInputElement>;
@@ -27,7 +27,7 @@ export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(({ label, 
         variant="border"
         ref={ref}
         id={props.name}
-        value={value.value ?? ''}
+        value={value?.value ?? ''}
         aria-invalid={!!error}
         aria-errormessage={`${props.name}-error`}
       />

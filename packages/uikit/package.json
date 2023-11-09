@@ -1,32 +1,32 @@
 {
-  "name": "@tokenize/uikit",
+  "name": "@design-sync/uikit",
   "version": "0.0.1",
   "description": "Tokenize uikit",
   "main": "src/index.ts",
   "scripts": {
     "lint": "eslint ./src --ext .ts,.tsx,.js,.jsx",
-    "lint:fix": "yarn lint --fix",
+    "lint:fix": "pnpm run lint --fix",
     "verify": "tsc --pretty",
     "precommit": "lint-staged"
   },
   "dependencies": {
-    "@kobalte/core": "^0.11.0",
+    "@design-sync/design-tokens": "workspace:*",
+    "@design-sync/figma-icons": "workspace:*",
+    "@kobalte/core": "^0.11.2",
     "@kobalte/vanilla-extract": "^0.5.0",
-    "@tokenize/design-tokens": "workspace:*",
-    "@tokenize/figma-icons": "workspace:*",
     "@vanilla-extract/css": "^1.13.0",
     "@vanilla-extract/recipes": "^0.5.0",
     "@vanilla-extract/sprinkles": "^1.6.1"
   },
   "peerDependencies": {
-    "solid-js": "^1.7.12"
+    "solid-js": "^1.8.3"
   },
   "devDependencies": {
-    "@tokenize/eslint-config": "workspace:*",
-    "@tokenize/tsconfig": "workspace:*",
-    "eslint": "^8.49.0",
-    "lint-staged": "^14.0.1",
-    "solid-js": "^1.7.12",
+    "@design-sync/eslint-config": "workspace:*",
+    "@design-sync/tsconfig": "workspace:*",
+    "eslint": "^8.53.0",
+    "lint-staged": "^15.0.2",
+    "solid-js": "^1.8.5",
     "typescript": "^5.2.2"
   }
 }

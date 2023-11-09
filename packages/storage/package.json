@@ -1,20 +1,20 @@
 {
-  "name": "@tokenize/storage",
+  "name": "@design-sync/storage",
   "version": "0.0.1",
   "description": "Tokenize storage",
   "main": "src/index.ts",
   "scripts": {
     "lint": "eslint ./src --ext .ts,.tsx,.js,.jsx",
-    "lint:fix": "yarn lint --fix",
+    "lint:fix": "pnpm run lint --fix",
     "verify": "tsc --pretty",
     "precommit": "lint-staged"
   },
   "devDependencies": {
-    "@figma/plugin-typings": "^1.77.0",
-    "@tokenize/eslint-config": "workspace:*",
-    "@tokenize/tsconfig": "workspace:*",
-    "eslint": "^8.49.0",
-    "lint-staged": "^14.0.1",
+    "@design-sync/eslint-config": "workspace:*",
+    "@design-sync/tsconfig": "workspace:*",
+    "@figma/plugin-typings": "^1.80.0",
+    "eslint": "^8.53.0",
+    "lint-staged": "^15.0.2",
     "typescript": "^5.2.2"
   }
 }

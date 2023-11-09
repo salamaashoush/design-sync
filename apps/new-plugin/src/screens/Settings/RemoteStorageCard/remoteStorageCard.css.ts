@@ -1,4 +1,4 @@
-import { theme } from '@tokenize/design-tokens';
+import { theme } from '@design-sync/design-tokens';
 import { recipe } from '@vanilla-extract/recipes';
 
 export const remoteStorageCard = recipe({

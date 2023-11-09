@@ -1,4 +1,4 @@
-import { theme, ui11 } from '@tokenize/design-tokens';
+import { theme, ui11 } from '@design-sync/design-tokens';
 import { style } from '@vanilla-extract/css';
 
 export const root = style({

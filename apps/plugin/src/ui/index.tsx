@@ -1,4 +1,4 @@
-import '@tokenize/design-tokens/src/figma-themes.css';
+import '@design-sync/design-tokens/src/figma-themes.css';
 import '@unocss/reset/tailwind.css';
 
 import { render } from 'solid-js/web';

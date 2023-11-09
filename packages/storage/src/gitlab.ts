@@ -16,7 +16,7 @@ export class GitlabStorage extends GitStorage {
     const actions = [
       {
         action: exists ? 'update' : 'create',
-        file_path: 'src/quin-pro-tokens.json',
+        file_path: filePath,
         content,
       },
     ];

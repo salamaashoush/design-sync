@@ -1,4 +1,4 @@
-import { GitStorageOptions } from '@tokenize/storage';
+import { GitStorageOptions } from '@design-sync/storage';
 
 export interface DesignTokensMode {
   name: string;

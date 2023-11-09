@@ -1,5 +1,5 @@
-import { Plus32Icon } from '@tokenize/figma-icons';
-import { Button, Collapsible, createModal } from '@tokenize/uikit';
+import { Plus32Icon } from '@design-sync/figma-icons';
+import { Button, Collapsible, createModal } from '@design-sync/uikit';
 import { For } from 'solid-js';
 import { unwrap } from 'solid-js/store';
 import { Token, TokenSet } from '../types';

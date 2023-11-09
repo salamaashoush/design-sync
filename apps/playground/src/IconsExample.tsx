@@ -1,6 +1,6 @@
-import { theme } from '@tokenize/design-tokens';
-import * as Icons from '@tokenize/figma-icons';
-import { Collapsible } from '@tokenize/uikit';
+import { theme } from '@design-sync/design-tokens';
+import * as Icons from '@design-sync/figma-icons';
+import { Collapsible } from '@design-sync/uikit';
 import { For } from 'solid-js';
 
 export function IconsExample() {

@@ -1,4 +1,4 @@
-import { JsonRpcCall } from '@tokenize/rpc';
+import { JsonRpcCall } from '@design-sync/rpc';
 import { RemoteStorage, RemoteStorageWithoutId } from '../types';
 
 export interface UIItem {
@@ -17,9 +17,8 @@ export interface GetStylesResponse {
 
 export interface SyncTokenParams {
   collections: string[];
-  exportColors: boolean;
+  exportPaints: boolean;
   exportTypography: boolean;
-  exportGradients: boolean;
   exportShadows: boolean;
 }
 interface GetVariablesResponse {

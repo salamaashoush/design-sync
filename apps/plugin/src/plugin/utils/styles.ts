@@ -1,4 +1,4 @@
-import { camelCase, set } from '@tokenize/utils';
+import { camelCase, set } from '@design-sync/utils';
 import { Token } from '../../types';
 import { serializeFontWeight, serializeLineHeight } from './convert';
 

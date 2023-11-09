@@ -1,12 +1,12 @@
-import { TokenType } from '@tokenize/w3c-tokens';
+import { TokenType } from '@design-sync/w3c-dtfm';
 
-export function varaibleScopeToTokenType(scope: VariableScope): TokenType {
+export function variableScopeToTokenType(scope: VariableScope): TokenType {
   switch (scope) {
     case 'GAP':
     case 'CORNER_RADIUS':
     case 'WIDTH_HEIGHT':
       return 'dimension';
-    case 'STROKE':
+    case 'STROKE_COLOR':
     case 'ALL_FILLS':
     case 'TEXT_FILL':
     case 'FRAME_FILL':
@@ -18,8 +18,8 @@ export function varaibleScopeToTokenType(scope: VariableScope): TokenType {
 }
 
 export function guessTokenTypeFromScopes(scopes: VariableScope[]): TokenType {
-  const types = scopes.map(varaibleScopeToTokenType);
-  return types[0] || 'other';
+  const types = scopes.map(variableScopeToTokenType);
+  return (types[0] as TokenType) || 'other';
 }
 
 export function designTokenTypeToVariableType(type: TokenType) {

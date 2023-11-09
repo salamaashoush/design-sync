@@ -1,23 +1,23 @@
 {
-  "name": "@tokenize/rpc",
+  "name": "@design-sync/rpc",
   "version": "0.0.1",
   "description": "RPC for Tokenize",
   "main": "src/index.ts",
   "scripts": {
     "lint": "eslint ./src --ext .ts,.tsx,.js,.jsx",
-    "lint:fix": "yarn lint --fix",
+    "lint:fix": "pnpm run lint --fix",
     "verify": "tsc --pretty",
     "precommit": "lint-staged"
   },
   "dependencies": {
-    "@tokenize/utils": "workspace:*",
+    "@design-sync/utils": "workspace:*",
     "mitt": "^3.0.1"
   },
   "devDependencies": {
-    "@tokenize/eslint-config": "workspace:*",
-    "@tokenize/tsconfig": "workspace:*",
-    "eslint": "^8.49.0",
-    "lint-staged": "^14.0.1",
+    "@design-sync/eslint-config": "workspace:*",
+    "@design-sync/tsconfig": "workspace:*",
+    "eslint": "^8.53.0",
+    "lint-staged": "^15.0.2",
     "typescript": "^5.2.2"
   }
 }

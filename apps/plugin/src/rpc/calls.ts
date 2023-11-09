@@ -1,4 +1,4 @@
-import { JsonRpcCall } from '@tokenize/rpc';
+import { JsonRpcCall } from '@design-sync/rpc';
 import type { Token, TokenSet } from '../types';
 
 interface SelectionData {

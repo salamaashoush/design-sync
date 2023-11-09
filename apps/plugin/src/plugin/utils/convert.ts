@@ -1,4 +1,4 @@
-import { memoize } from '@tokenize/utils';
+import { memoize } from '@design-sync/utils';
 import tiny from 'tinycolor2';
 import { isRGBA } from './is';
 

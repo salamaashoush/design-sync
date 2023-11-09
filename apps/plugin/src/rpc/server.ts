@@ -1,4 +1,4 @@
-import { RpcServer } from '@tokenize/rpc';
+import { RpcServer } from '@design-sync/rpc';
 
 export const server = new RpcServer({
   addEventListener: figma.ui.on,

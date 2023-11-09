@@ -1,4 +1,4 @@
-import { Button, Collapsible } from '@tokenize/uikit';
+import { Button, Collapsible } from '@design-sync/uikit';
 
 export function ButtonExample() {
   return (

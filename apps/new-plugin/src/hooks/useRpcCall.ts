@@ -1,5 +1,5 @@
+import { RpcCallParams, RpcCallResult } from '@design-sync/rpc';
 import { UseMutationOptions, UseQueryOptions, useMutation, useQuery } from '@tanstack/react-query';
-import { RpcCallParams, RpcCallResult } from '@tokenize/rpc';
 import { client } from '../rpc/client';
 
 type UseRpcQueryOptions<Call extends keyof RpcCalls, T = RpcCallResult<Call>> = Omit<

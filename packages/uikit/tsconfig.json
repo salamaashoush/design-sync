@@ -1,4 +1,4 @@
 {
-  "extends": "@tokenize/tsconfig/solid.json",
+  "extends": "@design-sync/tsconfig/solid.json",
   "include": ["src/**/*"]
 }

@@ -1,0 +1,34 @@
+{
+  "name": "@design-sync/cli",
+  "version": "0.0.1",
+  "scripts": {
+    "cli": "tsx src/main.ts",
+    "lint": "eslint ./src --ext .ts,.tsx,.js,.jsx",
+    "lint:fix": "pnpm run lint --fix",
+    "verify": "tsc --pretty",
+    "precommit": "lint-staged"
+  },
+  "dependencies": {
+    "@design-sync/utils": "workspace:*",
+    "@design-sync/w3c-dtfm": "workspace:*",
+    "ajv": "^8.12.0",
+    "citty": "^0.1.4",
+    "consola": "^3.2.3",
+    "giget": "^1.1.3",
+    "unconfig": "^0.3.11"
+  },
+  "devDependencies": {
+    "@design-sync/eslint-config": "workspace:*",
+    "@design-sync/tsconfig": "workspace:*",
+    "@types/node": "^20.9.0",
+    "@vanilla-extract/css": "^1.13.0",
+    "eslint": "^8.53.0",
+    "prettier": "^3.0.3",
+    "tsx": "^4.0.0",
+    "typescript": "^5.2.2",
+    "unbuild": "^2.0.0"
+  },
+  "bin": {
+    "design-sync": "bin/design-sync.js"
+  }
+}
