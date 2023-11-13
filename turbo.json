@@ -13,6 +13,7 @@
     "format": {},
     "test:types": {},
     "dev": {},
-    "precommit": {}
+    "precommit": {},
+    "ci:publish": {}
   }
 }
