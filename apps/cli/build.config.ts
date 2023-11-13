@@ -7,4 +7,5 @@ export default defineBuildConfig({
   },
   clean: true,
   declaration: true,
+  externals: ['prettier'],
 });
