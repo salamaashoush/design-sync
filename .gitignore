@@ -9,3 +9,5 @@ types
 .eslintcache
 *.log*
 *.env*
+.pnpm-store
+.npmrc
