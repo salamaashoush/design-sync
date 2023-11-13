@@ -21,7 +21,7 @@
     "@vanilla-extract/recipes": "^0.5.0",
     "@vanilla-extract/sprinkles": "^1.6.1",
     "clsx": "^2.0.0",
-    "culori": "^3.2.0",
+    "tinycolor2": "^1.6.0",
     "preact": "^10.18.2",
     "valibot": "^0.20.1"
   },
@@ -35,7 +35,7 @@
     "@design-sync/w3c-dtfm": "workspace:*",
     "@figma/plugin-typings": "1.79.0",
     "@hyrious/esbuild-plugin-style": "0.3.5",
-    "@types/culori": "^2.0.4",
+    "@types/tinycolor2": "^1.4.6",
     "@vanilla-extract/esbuild-plugin": "^2.3.0",
     "@vanilla-extract/integration": "^6.2.2",
     "esbuild": "^0.19.5",
