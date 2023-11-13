@@ -6,7 +6,7 @@
   "scripts": {
     "lint": "eslint ./src --ext .ts,.tsx,.js,.jsx",
     "lint:fix": "pnpm run lint --fix",
-    "verify": "tsc --pretty",
+    "test:types": "tsc --noEmit --skipLibCheck",
     "precommit": "lint-staged"
   },
   "devDependencies": {
@@ -14,7 +14,7 @@
     "@design-sync/tsconfig": "workspace:*",
     "@figma/plugin-typings": "^1.80.0",
     "eslint": "^8.53.0",
-    "lint-staged": "^15.0.2",
+    "lint-staged": "^15.1.0",
     "typescript": "^5.2.2"
   }
 }

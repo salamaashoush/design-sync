@@ -1,6 +1,0 @@
-{
-  "repo": "gh:kadena-community/design-system#main",
-  "branch": "main",
-  "out": "dist",
-  "tokensPath": "build/kda-design-system.tokens.json"
-}

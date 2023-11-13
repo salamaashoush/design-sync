@@ -6,7 +6,7 @@
   "scripts": {
     "lint": "eslint ./src --ext .ts,.tsx,.js,.jsx",
     "lint:fix": "pnpm run lint --fix",
-    "verify": "tsc --pretty",
+    "test:types": "tsc --noEmit --skipLibCheck",
     "precommit": "lint-staged"
   },
   "dependencies": {
@@ -25,7 +25,7 @@
     "@design-sync/eslint-config": "workspace:*",
     "@design-sync/tsconfig": "workspace:*",
     "eslint": "^8.53.0",
-    "lint-staged": "^15.0.2",
+    "lint-staged": "^15.1.0",
     "solid-js": "^1.8.5",
     "typescript": "^5.2.2"
   }

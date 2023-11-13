@@ -89,6 +89,7 @@ export function normalizeTypographyValue(value: unknown) {
   const normalized = {} as Typography;
   for (const [k, v] of Object.entries(value)) {
     if (isTokenAlias(v)) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (normalized as any)[k] = v;
       continue;
     }
@@ -103,6 +104,7 @@ export function normalizeTypographyValue(value: unknown) {
         break;
       }
       default: {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (normalized as any)[k] = typeof v === 'string' && parseFloat(v) >= 0 ? normalizeDimensionValue(v) : v;
         break;
       }

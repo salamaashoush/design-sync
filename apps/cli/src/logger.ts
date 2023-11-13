@@ -1,3 +1,3 @@
 import { consola } from 'consola';
 
-export const logger = consola.withTag('Tokenize');
+export const logger = consola.withTag('DesignSync');

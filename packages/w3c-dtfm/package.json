@@ -1,6 +1,6 @@
 {
   "name": "@design-sync/w3c-dtfm",
-  "version": "0.0.1",
+  "version": "0.0.0",
   "description": "Design tokens module format (DTFM) utils and types",
   "repository": "salamaashoush/tokenize",
   "license": "MIT",
@@ -14,11 +14,11 @@
   "scripts": {
     "build": "unbuild",
     "dev": "npm run build -- --watch",
-    "play": "tsx playground/index.ts",
+    "play": "jiti playground",
     "lint": "eslint --cache --ext .ts,.js,.mjs,.cjs . && prettier -c src test",
     "lint:fix": "eslint --cache --ext .ts,.js,.mjs,.cjs . --fix && prettier -c src test -w",
     "prepack": "pnpm run build",
-    "release": "pnpm test && changelogen --release && pnpm publish && git push --follow-tags",
+    "release": "pnpm test && pnpm publish",
     "test": "pnpm lint && pnpm test:types && vitest run --coverage",
     "test:types": "tsc --noEmit --skipLibCheck",
     "precommit": "lint-staged"
@@ -35,9 +35,8 @@
     "@vitest/coverage-v8": "^0.34.6",
     "changelogen": "^0.5.5",
     "eslint": "^8.53.0",
-    "tsx": "^4.0.0",
     "jiti": "^1.21.0",
-    "lint-staged": "^15.0.2",
+    "lint-staged": "^15.1.0",
     "prettier": "^3.0.3",
     "typescript": "^5.2.2",
     "unbuild": "^2.0.0",
@@ -61,6 +60,5 @@
     "main": "./dist/index.cjs",
     "module": "./dist/index.mjs",
     "types": "./dist/index.d.ts"
-  },
-  "packageManager": "pnpm@8.10.2"
+  }
 }

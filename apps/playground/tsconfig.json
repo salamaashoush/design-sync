@@ -1,7 +1,0 @@
-{
-  "extends": "@design-sync/tsconfig/solid.json",
-  "compilerOptions": {
-    "types": ["vite/client"]
-  },
-  "include": ["src/**/*"]
-}

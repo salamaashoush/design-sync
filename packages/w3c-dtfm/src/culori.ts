@@ -1,4 +1,3 @@
-/* eslint-disable import/no-unresolved */
 import 'culori/css';
 import {
   filterBrightness,
@@ -106,6 +105,7 @@ export function parseModifierValue(value: unknown) {
     return parsed;
   }
   if (typeof value === 'object' && value !== null) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return parseModifierValue((value as any).value);
   }
   throw new Error(`invalid number value ${value}`);
