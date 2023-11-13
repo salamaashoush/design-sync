@@ -1,29 +1,38 @@
-name: Release
-
-permissions:
-  contents: write
-
+name: Changesets
 on:
   push:
-    tags:
-      - 'v*'
-
+    branches:
+      - main
+env:
+  CI: true
+  PNPM_CACHE_FOLDER: .pnpm-store
 jobs:
-  release:
+  version:
+    timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: checkout code repository
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v2
-
-      - name: Set node
+      - name: setup node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 16.x
-
-      - run: npx changelogithub
+          node-version: 21.x
+      - name: install pnpm
+        run: npm i pnpm@latest -g
+      - name: Setup npmrc
+        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > .npmrc
+      - name: setup pnpm config
+        run: pnpm config set store-dir $PNPM_CACHE_FOLDER
+      - name: install dependencies
+        run: pnpm install
+      - name: create and publish versions
+        uses: changesets/action@v1
+        with:
+          version: pnpm ci:version
+          commit: 'chore: update versions'
+          title: 'chore: update versions'
+          publish: pnpm ci:publish
         env:
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
