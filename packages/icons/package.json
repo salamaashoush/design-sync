@@ -4,6 +4,7 @@
   "description": "Tokenize Figma Icons",
   "license": "MIT",
   "main": "src/components/index.ts",
+  "private": true,
   "scripts": {
     "lint": "eslint ./src --ext .ts,.tsx,.js,.jsx",
     "lint:fix": "pnpm lint --fix",

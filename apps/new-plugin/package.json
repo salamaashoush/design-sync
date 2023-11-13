@@ -2,6 +2,7 @@
   "name": "@design-sync/figma-plugin-2",
   "version": "0.0.1",
   "description": "Tokenize Figma Plugin",
+  "private": true,
   "scripts": {
     "test:types": "tsc --noEmit --skipLibCheck",
     "build": "build-figma-plugin --minify",
