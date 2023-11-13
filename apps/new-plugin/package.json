@@ -1,6 +1,6 @@
 {
   "name": "@design-sync/figma-plugin-2",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Tokenize Figma Plugin",
   "scripts": {
     "test:types": "tsc --noEmit --skipLibCheck",
