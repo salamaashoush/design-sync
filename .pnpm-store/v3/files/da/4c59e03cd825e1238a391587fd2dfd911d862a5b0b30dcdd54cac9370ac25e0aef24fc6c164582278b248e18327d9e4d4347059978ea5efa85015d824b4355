@@ -1,0 +1,70 @@
+import { focusWithoutScrolling, mergeRefs } from "@kobalte/utils";
+import { Show, splitProps } from "solid-js";
+import { DismissableLayer } from "../dismissable-layer";
+import { PopperPositioner } from "../popper";
+import { createFocusScope, createHideOutside, createPreventScroll, } from "../primitives";
+import { useSelectContext } from "./select-context";
+/**
+ * The component that pops out when the select is open.
+ */
+export function SelectContent(props) {
+    let ref;
+    const context = useSelectContext();
+    const [local, others] = splitProps(props, [
+        "ref",
+        "id",
+        "style",
+        "onCloseAutoFocus",
+        "onFocusOutside",
+    ]);
+    const onEscapeKeyDown = (e) => {
+        // `createSelectableList` prevent escape key down,
+        // which prevent our `onDismiss` in `DismissableLayer` to run,
+        // so we force "close on escape" here.
+        context.close();
+    };
+    const onFocusOutside = (e) => {
+        local.onFocusOutside?.(e);
+        // When focus is trapped (in modal mode), a `focusout` event may still happen.
+        // We make sure we don't trigger our `onDismiss` in such case.
+        if (context.isOpen() && context.isModal()) {
+            e.preventDefault();
+        }
+    };
+    // aria-hide everything except the content (better supported equivalent to setting aria-modal)
+    createHideOutside({
+        isDisabled: () => !(context.isOpen() && context.isModal()),
+        targets: () => (ref ? [ref] : []),
+    });
+    createPreventScroll({
+        ownerRef: () => ref,
+        isDisabled: () => !(context.isOpen() && (context.isModal() || context.preventScroll())),
+    });
+    createFocusScope({
+        trapFocus: () => context.isOpen() && context.isModal(),
+        onMountAutoFocus: e => {
+            // We prevent open autofocus because it's handled by the `Listbox`.
+            e.preventDefault();
+        },
+        onUnmountAutoFocus: e => {
+            local.onCloseAutoFocus?.(e);
+            if (!e.defaultPrevented) {
+                focusWithoutScrolling(context.triggerRef());
+                e.preventDefault();
+            }
+        },
+    }, () => ref);
+    return (<Show when={context.contentPresence.isPresent()}>
+      <PopperPositioner>
+        <DismissableLayer ref={mergeRefs(el => {
+            context.setContentRef(el);
+            context.contentPresence.setRef(el);
+            ref = el;
+        }, local.ref)} disableOutsidePointerEvents={context.isModal() && context.isOpen()} excludedElements={[context.triggerRef]} style={{
+            "--kb-select-content-transform-origin": "var(--kb-popper-content-transform-origin)",
+            position: "relative",
+            ...local.style,
+        }} onEscapeKeyDown={onEscapeKeyDown} onFocusOutside={onFocusOutside} onDismiss={context.close} {...context.dataset()} {...others}/>
+      </PopperPositioner>
+    </Show>);
+}

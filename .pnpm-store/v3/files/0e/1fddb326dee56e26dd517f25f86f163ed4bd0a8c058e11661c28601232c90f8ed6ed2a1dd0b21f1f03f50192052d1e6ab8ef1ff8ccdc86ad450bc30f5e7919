@@ -1,0 +1,8 @@
+/**
+ * Validates and submits the form.
+ *
+ * @param form The form to be submitted.
+ */
+export function submit(form) {
+    form.element.peek()?.requestSubmit();
+}

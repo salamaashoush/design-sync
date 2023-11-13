@@ -1,0 +1,10 @@
+import type { ZodType } from 'zod';
+import type { FieldValues, ValidateForm } from '../types';
+/**
+ * Creates a validation functions that parses the Zod schema of a form.
+ *
+ * @param schema A Zod schema.
+ *
+ * @returns A validation function.
+ */
+export declare function zodForm<TFieldValues extends FieldValues>(schema: ZodType<any, any, TFieldValues>): ValidateForm<TFieldValues>;

@@ -1,0 +1,16 @@
+import type { FieldArrayPath, FieldValues, FormStore, ResponseData } from '../types';
+/**
+ * Value type of the replace options.
+ */
+export type SwapOptions = {
+    at: number;
+    and: number;
+};
+/**
+ * Swaps two fields of a field array by their index.
+ *
+ * @param form The form of the field array.
+ * @param name The name of the field array.
+ * @param options The swap options.
+ */
+export declare function swap<TFieldValues extends FieldValues, TResponseData extends ResponseData>(form: FormStore<TFieldValues, TResponseData>, name: FieldArrayPath<TFieldValues>, { at: index1, and: index2 }: SwapOptions): void;

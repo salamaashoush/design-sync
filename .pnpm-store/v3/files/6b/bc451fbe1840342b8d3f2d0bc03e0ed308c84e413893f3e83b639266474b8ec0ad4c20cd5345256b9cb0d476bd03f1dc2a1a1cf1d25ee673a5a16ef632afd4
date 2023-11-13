@@ -1,0 +1,10 @@
+var l=Object.defineProperty;var b=Object.getOwnPropertyDescriptor;var g=Object.getOwnPropertyNames,r=Object.getOwnPropertySymbols;var u=Object.prototype.hasOwnProperty,O=Object.prototype.propertyIsEnumerable;var o=(t,e,n)=>e in t?l(t,e,{enumerable:!0,configurable:!0,writable:!0,value:n}):t[e]=n,p=(t,e)=>{for(var n in e||(e={}))u.call(e,n)&&o(t,n,e[n]);if(r)for(var n of r(e))O.call(e,n)&&o(t,n,e[n]);return t};var P=(t,e)=>{for(var n in e)l(t,n,{get:e[n],enumerable:!0})},j=(t,e,n,s)=>{if(e&&typeof e=="object"||typeof e=="function")for(let i of g(e))!u.call(t,i)&&i!==n&&l(t,i,{get:()=>e[i],enumerable:!(s=b(e,i))||s.enumerable});return t};var C=t=>j(l({},"__esModule",{value:!0}),t);var w={};P(w,{default:()=>v,style:()=>d});module.exports=C(w);function d({minify:t=!0,charset:e="utf8"}={}){let n;return{name:"style",setup({onResolve:s,onLoad:i,esbuild:a}){let c={logLevel:"silent",bundle:!0,write:!1,charset:e,minify:t},y=()=>a||n||(n=require("esbuild"));i({filter:/\.css$/},async f=>{let{errors:m,warnings:_,outputFiles:h}=await y().build(p({entryPoints:[f.path]},c)),x=h[0].text.trimEnd();return{errors:m,warnings:_,contents:`import { inject_style } from "__style_helper__"
+inject_style(${JSON.stringify(x)})`}}),s({filter:/^__style_helper__$/},()=>({path:"index.js",namespace:"style-helper"})),i({filter:/.*/,namespace:"style-helper"},()=>({contents:`export function inject_style(text) {
+  if (typeof document !== 'undefined') {
+    var style = document.createElement('style')
+    var node = document.createTextNode(text)
+    style.appendChild(node)
+    document.head.appendChild(style)
+  }
+}`}))}}}var v=d;0&&(module.exports={style});
+//# sourceMappingURL=index.js.map

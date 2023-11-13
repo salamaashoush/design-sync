@@ -1,0 +1,13 @@
+/**
+ * Creates a validation functions that parses the Zod schema of a field.
+ *
+ * @param schema A Zod schema.
+ *
+ * @returns A validation function.
+ */
+export function zodField(schema) {
+    return (value) => {
+        const result = schema.safeParse(value);
+        return result.success ? '' : result.error.issues[0].message;
+    };
+}

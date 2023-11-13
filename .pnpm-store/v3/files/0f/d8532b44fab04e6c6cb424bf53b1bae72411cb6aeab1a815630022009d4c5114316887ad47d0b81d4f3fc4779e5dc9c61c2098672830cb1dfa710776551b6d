@@ -1,0 +1,20 @@
+import type { FieldArrayPath, FieldPath, FieldPathValue, FieldValues, FormStore, InternalFieldArrayStore, InternalFieldStore, Maybe, MaybeArray, ResponseData, TransformField, ValidateField, ValidateFieldArray } from '../types';
+/**
+ * Value type of the lifecycle properties.
+ */
+type LifecycleProps<TFieldValues extends FieldValues, TResponseData extends ResponseData, TFieldName extends FieldPath<TFieldValues>> = {
+    of: FormStore<TFieldValues, TResponseData>;
+    name: TFieldName | FieldArrayPath<TFieldValues>;
+    store: InternalFieldStore<TFieldValues, TFieldName> | InternalFieldArrayStore;
+    validate?: Maybe<MaybeArray<ValidateField<FieldPathValue<TFieldValues, TFieldName>>> | MaybeArray<ValidateFieldArray<number[]>>>;
+    transform?: Maybe<MaybeArray<TransformField<FieldPathValue<TFieldValues, TFieldName>>>>;
+    keepActive?: Maybe<boolean>;
+    keepState?: Maybe<boolean>;
+};
+/**
+ * Handles the lifecycle dependent state of a field or field array.
+ *
+ * @param props The lifecycle properties.
+ */
+export declare function useLifecycle<TFieldValues extends FieldValues, TResponseData extends ResponseData, TFieldName extends FieldPath<TFieldValues>>({ of: form, name, store, validate, transform, keepActive, keepState, }: LifecycleProps<TFieldValues, TResponseData, TFieldName>): void;
+export {};

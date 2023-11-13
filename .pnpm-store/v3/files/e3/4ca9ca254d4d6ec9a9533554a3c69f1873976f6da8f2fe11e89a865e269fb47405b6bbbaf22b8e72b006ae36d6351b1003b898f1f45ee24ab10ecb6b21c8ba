@@ -1,0 +1,1 @@
+{"version":3,"file":"UnsupportedTypeError.d.ts","sourceRoot":"","sources":["../../../src/core/UnsupportedTypeError.ts"],"names":[],"mappings":"AAGA,MAAM,CAAC,OAAO,OAAO,oBAAqB,SAAQ,KAAK;IAClC,KAAK,EAAE,OAAO;gBAAd,KAAK,EAAE,OAAO;CAGlC"}

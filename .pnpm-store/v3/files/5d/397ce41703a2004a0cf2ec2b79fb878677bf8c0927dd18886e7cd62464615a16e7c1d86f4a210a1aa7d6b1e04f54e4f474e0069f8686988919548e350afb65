@@ -1,0 +1,67 @@
+{
+  "name": "@solid-primitives/event-listener",
+  "version": "2.3.0",
+  "description": "SolidJS Primitives to manage creating event listeners.",
+  "author": "David Di Biase <dave.dibiase@gmail.com>",
+  "contributors": [
+    "Damian Tarnawski <gthetarnav@gmail.com>"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/solidjs-community/solid-primitives/tree/main/packages/event-listener",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/solidjs-community/solid-primitives.git"
+  },
+  "primitive": {
+    "name": "event-listener",
+    "stage": 3,
+    "list": [
+      "createEventListener",
+      "createEventSignal",
+      "createEventListenerMap",
+      "WindowEventListener",
+      "DocumentEventListener"
+    ],
+    "category": "Browser APIs"
+  },
+  "private": false,
+  "sideEffects": false,
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "browser": {},
+  "types": "./dist/index.d.ts",
+  "exports": {
+    "import": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "require": "./dist/index.cjs"
+  },
+  "keywords": [
+    "event",
+    "listener",
+    "solid",
+    "primitives"
+  ],
+  "dependencies": {
+    "@solid-primitives/utils": "^6.2.1"
+  },
+  "peerDependencies": {
+    "solid-js": "^1.6.12"
+  },
+  "typesVersions": {},
+  "devDependencies": {
+    "solid-js": "^1.7.11"
+  },
+  "scripts": {
+    "dev": "tsx ../../scripts/dev.ts",
+    "build": "tsx ../../scripts/build.ts",
+    "vitest": "vitest -c ../../configs/vitest.config.ts",
+    "test": "pnpm run vitest",
+    "test:ssr": "pnpm run vitest --mode ssr"
+  }
+}

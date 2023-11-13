@@ -1,0 +1,1 @@
+{"version":3,"file":"async.d.ts","sourceRoot":"","sources":["../../../../src/core/cross/async.ts"],"names":[],"mappings":"AAAA,OAAO,sBAAsB,MAAM,eAAe,CAAC;AACnD,OAAO,KAAK,EAAE,yBAAyB,EAAE,MAAM,gBAAgB,CAAC;AAChE,OAAO,KAAK,EAAE,WAAW,EAAE,MAAM,WAAW,CAAC;AAE7C,MAAM,MAAM,8BAA8B,GAAG,yBAAyB,CAAA;AAEtE,MAAM,CAAC,OAAO,OAAO,uBAAwB,SAAQ,sBAAsB;IACzE,QAAQ,CAAC,IAAI,EAAE,WAAW,CAAW;CACtC"}

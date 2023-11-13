@@ -1,0 +1,367 @@
+/*!
+ * Portions of this file are based on code from react-spectrum.
+ * Apache License Version 2.0, Copyright 2020 Adobe.
+ *
+ * Credits to the React Spectrum team:
+ * https://github.com/adobe/react-spectrum/blob/8f2f2acb3d5850382ebe631f055f88c704aa7d17/packages/@react-aria/selection/src/useSelectableCollection.ts
+ */
+import { access, callHandler, createEventListener, focusWithoutScrolling, getFocusableTreeWalker, scrollIntoView, } from "@kobalte/utils";
+import { createEffect, createMemo, mergeProps, on, onMount } from "solid-js";
+import { useLocale } from "../i18n";
+import { createTypeSelect } from "./create-type-select";
+import { isCtrlKeyPressed, isNonContiguousSelectionModifier } from "./utils";
+/**
+ * Handles interactions with selectable collections.
+ * @param props Props for the collection.
+ * @param ref The ref attached to the element representing the collection.
+ * @param scrollRef The ref attached to the scrollable body. Used to provide automatic scrolling on item focus for non-virtualized collections. If not provided, defaults to the collection ref.
+ */
+export function createSelectableCollection(props, ref, scrollRef) {
+    const defaultProps = {
+        selectOnFocus: () => access(props.selectionManager).selectionBehavior() === "replace",
+    };
+    props = mergeProps(defaultProps, props);
+    const finalScrollRef = () => scrollRef?.() ?? ref();
+    const { direction } = useLocale();
+    // Store the scroll position, so we can restore it later.
+    let scrollPos = { top: 0, left: 0 };
+    createEventListener(() => (!access(props.isVirtualized) ? finalScrollRef() : undefined), "scroll", () => {
+        const scrollEl = finalScrollRef();
+        if (!scrollEl) {
+            return;
+        }
+        scrollPos = {
+            top: scrollEl.scrollTop,
+            left: scrollEl.scrollLeft,
+        };
+    });
+    const { typeSelectHandlers } = createTypeSelect({
+        isDisabled: () => access(props.disallowTypeAhead),
+        keyboardDelegate: () => access(props.keyboardDelegate),
+        selectionManager: () => access(props.selectionManager),
+    });
+    const onKeyDown = e => {
+        callHandler(e, typeSelectHandlers.onKeyDown);
+        // Prevent option + tab from doing anything since it doesn't move focus to the cells, only buttons/checkboxes
+        if (e.altKey && e.key === "Tab") {
+            e.preventDefault();
+        }
+        const refEl = ref();
+        // Keyboard events bubble through portals. Don't handle keyboard events
+        // for elements outside the collection (e.g. menus).
+        if (!refEl?.contains(e.target)) {
+            return;
+        }
+        const manager = access(props.selectionManager);
+        const selectOnFocus = access(props.selectOnFocus);
+        const navigateToKey = (key) => {
+            if (key != null) {
+                manager.setFocusedKey(key);
+                if (e.shiftKey && manager.selectionMode() === "multiple") {
+                    manager.extendSelection(key);
+                }
+                else if (selectOnFocus && !isNonContiguousSelectionModifier(e)) {
+                    manager.replaceSelection(key);
+                }
+            }
+        };
+        const delegate = access(props.keyboardDelegate);
+        const shouldFocusWrap = access(props.shouldFocusWrap);
+        const focusedKey = manager.focusedKey();
+        switch (e.key) {
+            case "ArrowDown": {
+                if (delegate.getKeyBelow) {
+                    e.preventDefault();
+                    let nextKey;
+                    if (focusedKey != null) {
+                        nextKey = delegate.getKeyBelow(focusedKey);
+                    }
+                    else {
+                        nextKey = delegate.getFirstKey?.();
+                    }
+                    if (nextKey == null && shouldFocusWrap) {
+                        nextKey = delegate.getFirstKey?.(focusedKey);
+                    }
+                    navigateToKey(nextKey);
+                }
+                break;
+            }
+            case "ArrowUp": {
+                if (delegate.getKeyAbove) {
+                    e.preventDefault();
+                    let nextKey;
+                    if (focusedKey != null) {
+                        nextKey = delegate.getKeyAbove(focusedKey);
+                    }
+                    else {
+                        nextKey = delegate.getLastKey?.();
+                    }
+                    if (nextKey == null && shouldFocusWrap) {
+                        nextKey = delegate.getLastKey?.(focusedKey);
+                    }
+                    navigateToKey(nextKey);
+                }
+                break;
+            }
+            case "ArrowLeft": {
+                if (delegate.getKeyLeftOf) {
+                    e.preventDefault();
+                    const isRTL = direction() === "rtl";
+                    let nextKey;
+                    if (focusedKey != null) {
+                        nextKey = delegate.getKeyLeftOf(focusedKey);
+                    }
+                    else {
+                        nextKey = isRTL ? delegate.getFirstKey?.() : delegate.getLastKey?.();
+                    }
+                    navigateToKey(nextKey);
+                }
+                break;
+            }
+            case "ArrowRight": {
+                if (delegate.getKeyRightOf) {
+                    e.preventDefault();
+                    const isRTL = direction() === "rtl";
+                    let nextKey;
+                    if (focusedKey != null) {
+                        nextKey = delegate.getKeyRightOf(focusedKey);
+                    }
+                    else {
+                        nextKey = isRTL ? delegate.getLastKey?.() : delegate.getFirstKey?.();
+                    }
+                    navigateToKey(nextKey);
+                }
+                break;
+            }
+            case "Home":
+                if (delegate.getFirstKey) {
+                    e.preventDefault();
+                    const firstKey = delegate.getFirstKey(focusedKey, isCtrlKeyPressed(e));
+                    if (firstKey != null) {
+                        manager.setFocusedKey(firstKey);
+                        if (isCtrlKeyPressed(e) && e.shiftKey && manager.selectionMode() === "multiple") {
+                            manager.extendSelection(firstKey);
+                        }
+                        else if (selectOnFocus) {
+                            manager.replaceSelection(firstKey);
+                        }
+                    }
+                }
+                break;
+            case "End":
+                if (delegate.getLastKey) {
+                    e.preventDefault();
+                    const lastKey = delegate.getLastKey(focusedKey, isCtrlKeyPressed(e));
+                    if (lastKey != null) {
+                        manager.setFocusedKey(lastKey);
+                        if (isCtrlKeyPressed(e) && e.shiftKey && manager.selectionMode() === "multiple") {
+                            manager.extendSelection(lastKey);
+                        }
+                        else if (selectOnFocus) {
+                            manager.replaceSelection(lastKey);
+                        }
+                    }
+                }
+                break;
+            case "PageDown":
+                if (delegate.getKeyPageBelow && focusedKey != null) {
+                    e.preventDefault();
+                    const nextKey = delegate.getKeyPageBelow(focusedKey);
+                    navigateToKey(nextKey);
+                }
+                break;
+            case "PageUp":
+                if (delegate.getKeyPageAbove && focusedKey != null) {
+                    e.preventDefault();
+                    const nextKey = delegate.getKeyPageAbove(focusedKey);
+                    navigateToKey(nextKey);
+                }
+                break;
+            case "a":
+                if (isCtrlKeyPressed(e) &&
+                    manager.selectionMode() === "multiple" &&
+                    access(props.disallowSelectAll) !== true) {
+                    e.preventDefault();
+                    manager.selectAll();
+                }
+                break;
+            case "Escape":
+                if (!e.defaultPrevented) {
+                    e.preventDefault();
+                    if (!access(props.disallowEmptySelection)) {
+                        manager.clearSelection();
+                    }
+                }
+                break;
+            case "Tab": {
+                if (!access(props.allowsTabNavigation)) {
+                    // There may be elements that are "tabbable" inside a collection (e.g. in a grid cell).
+                    // However, collections should be treated as a single tab stop, with arrow key navigation internally.
+                    // We don't control the rendering of these, so we can't override the tabIndex to prevent tabbing.
+                    // Instead, we handle the Tab key, and move focus manually to the first/last tabbable element
+                    // in the collection, so that the browser default behavior will apply starting from that element
+                    // rather than the currently focused one.
+                    if (e.shiftKey) {
+                        refEl.focus();
+                    }
+                    else {
+                        const walker = getFocusableTreeWalker(refEl, { tabbable: true });
+                        let next;
+                        let last;
+                        do {
+                            last = walker.lastChild();
+                            if (last) {
+                                next = last;
+                            }
+                        } while (last);
+                        if (next && !next.contains(document.activeElement)) {
+                            focusWithoutScrolling(next);
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+    };
+    const onFocusIn = e => {
+        const manager = access(props.selectionManager);
+        const delegate = access(props.keyboardDelegate);
+        const selectOnFocus = access(props.selectOnFocus);
+        if (manager.isFocused()) {
+            // If a focus event bubbled through a portal, reset focus state.
+            if (!e.currentTarget.contains(e.target)) {
+                manager.setFocused(false);
+            }
+            return;
+        }
+        // Focus events can bubble through portals. Ignore these events.
+        if (!e.currentTarget.contains(e.target)) {
+            return;
+        }
+        manager.setFocused(true);
+        if (manager.focusedKey() == null) {
+            const navigateToFirstKey = (key) => {
+                if (key == null) {
+                    return;
+                }
+                manager.setFocusedKey(key);
+                if (selectOnFocus) {
+                    manager.replaceSelection(key);
+                }
+            };
+            // If the user hasn't yet interacted with the collection, there will be no focusedKey set.
+            // Attempt to detect whether the user is tabbing forward or backward into the collection
+            // and either focus the first or last item accordingly.
+            const relatedTarget = e.relatedTarget;
+            if (relatedTarget &&
+                e.currentTarget.compareDocumentPosition(relatedTarget) & Node.DOCUMENT_POSITION_FOLLOWING) {
+                navigateToFirstKey(manager.lastSelectedKey() ?? delegate.getLastKey?.());
+            }
+            else {
+                navigateToFirstKey(manager.firstSelectedKey() ?? delegate.getFirstKey?.());
+            }
+        }
+        else if (!access(props.isVirtualized)) {
+            const scrollEl = finalScrollRef();
+            if (scrollEl) {
+                // Restore the scroll position to what it was before.
+                scrollEl.scrollTop = scrollPos.top;
+                scrollEl.scrollLeft = scrollPos.left;
+                // Refocus and scroll the focused item into view if it exists within the scrollable region.
+                const element = scrollEl.querySelector(`[data-key="${manager.focusedKey()}"]`);
+                if (element) {
+                    // This prevents a flash of focus on the first/last element in the collection
+                    focusWithoutScrolling(element);
+                    scrollIntoView(scrollEl, element);
+                }
+            }
+        }
+    };
+    const onFocusOut = e => {
+        const manager = access(props.selectionManager);
+        // Don't set blurred and then focused again if moving focus within the collection.
+        if (!e.currentTarget.contains(e.relatedTarget)) {
+            manager.setFocused(false);
+        }
+    };
+    const onMouseDown = e => {
+        // Ignore events that bubbled through portals.
+        if (finalScrollRef() === e.target) {
+            // Prevent focus going to the collection when clicking on the scrollbar.
+            e.preventDefault();
+        }
+    };
+    const tryAutoFocus = () => {
+        const autoFocus = access(props.autoFocus);
+        if (!autoFocus) {
+            return;
+        }
+        const manager = access(props.selectionManager);
+        const delegate = access(props.keyboardDelegate);
+        let focusedKey;
+        // Check focus strategy to determine which item to focus
+        if (autoFocus === "first") {
+            focusedKey = delegate.getFirstKey?.();
+        }
+        if (autoFocus === "last") {
+            focusedKey = delegate.getLastKey?.();
+        }
+        // If there are any selected keys, make the first one the new focus target
+        const selectedKeys = manager.selectedKeys();
+        if (selectedKeys.size) {
+            focusedKey = selectedKeys.values().next().value;
+        }
+        manager.setFocused(true);
+        manager.setFocusedKey(focusedKey);
+        const refEl = ref();
+        // If no default focus key is selected, focus the collection itself.
+        if (refEl && focusedKey == null && !access(props.shouldUseVirtualFocus)) {
+            focusWithoutScrolling(refEl);
+        }
+    };
+    onMount(() => {
+        if (props.deferAutoFocus) {
+            setTimeout(tryAutoFocus, 0); // TODO: does this work EVERY time ?
+        }
+        else {
+            tryAutoFocus();
+        }
+    });
+    // If not virtualized, scroll the focused element into view when the focusedKey changes.
+    // When virtualized, the Virtualizer should handle this.
+    createEffect(on([
+        finalScrollRef,
+        () => access(props.isVirtualized),
+        () => access(props.selectionManager).focusedKey(),
+    ], newValue => {
+        const [scrollEl, isVirtualized, focusedKey] = newValue;
+        if (isVirtualized) {
+            focusedKey && props.scrollToKey?.(focusedKey);
+        }
+        else {
+            if (focusedKey && scrollEl) {
+                const element = scrollEl.querySelector(`[data-key="${focusedKey}"]`);
+                if (element) {
+                    scrollIntoView(scrollEl, element);
+                }
+            }
+        }
+    }));
+    // If nothing is focused within the collection, make the collection itself tabbable.
+    // This will be marshalled to either the first or last item depending on where focus came from.
+    // If using virtual focus, don't set a tabIndex at all so that VoiceOver on iOS 14 doesn't try
+    // to move real DOM focus to the element anyway.
+    const tabIndex = createMemo(() => {
+        if (access(props.shouldUseVirtualFocus)) {
+            return undefined;
+        }
+        return access(props.selectionManager).focusedKey() == null ? 0 : -1;
+    });
+    return {
+        tabIndex,
+        onKeyDown,
+        onMouseDown,
+        onFocusIn,
+        onFocusOut,
+    };
+}

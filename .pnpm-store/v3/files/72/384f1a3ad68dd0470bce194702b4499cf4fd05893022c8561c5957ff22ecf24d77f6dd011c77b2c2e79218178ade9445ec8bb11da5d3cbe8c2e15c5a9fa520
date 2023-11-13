@@ -1,0 +1,18 @@
+import type { FieldArrayPath, FieldPath, FieldValues, FormStore, Maybe, ResponseData } from '../types';
+/**
+ * Value type of the get error options.
+ */
+export type GetErrorOptions = Partial<{
+    shouldActive: boolean;
+    shouldTouched: boolean;
+    shouldDirty: boolean;
+}>;
+/**
+ * Returns the error of the specified field or field array.
+ *
+ * @param form The form of the field or field array.
+ * @param name The name of the field or field array.
+ *
+ * @returns The error of the field or field array.
+ */
+export declare function getError<TFieldValues extends FieldValues, TResponseData extends ResponseData>(form: FormStore<TFieldValues, TResponseData>, name: FieldPath<TFieldValues> | FieldArrayPath<TFieldValues>, { shouldActive, shouldTouched, shouldDirty, }?: Maybe<GetErrorOptions>): string | undefined;

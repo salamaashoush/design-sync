@@ -1,0 +1,5 @@
+export function importFresh(filePath) {
+    const timestamp = Date.now();
+    return import(`${filePath}?${timestamp}`);
+}
+//# sourceMappingURL=import-fresh.js.map

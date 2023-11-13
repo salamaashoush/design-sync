@@ -1,0 +1,40 @@
+.fileUploadDropzone {
+  position: relative;
+  z-index: var(--z-index-1);
+  width: 100%;
+  padding: 32px 0;
+}
+
+.isDropActive {
+  background-color: var(--figma-color-bg-selected-secondary);
+}
+
+.input,
+.border {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.input {
+  z-index: var(
+    --z-index-1
+  ); /* stack `.input` over all other elements within `.fileUploadDropzone` */
+  display: block;
+  opacity: 0;
+}
+
+.border {
+  border: 1px dashed var(--figma-color-border);
+}
+.input:active ~ .border,
+.input:focus ~ .border,
+.isDropActive .border {
+  border-color: var(--figma-color-border-brand-strong);
+}
+
+.children {
+  text-align: center;
+}

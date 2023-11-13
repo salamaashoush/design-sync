@@ -1,0 +1,11 @@
+/**
+ * Creates a validation functions that validates the pattern of a string.
+ *
+ * @param requirement The regex pattern.
+ * @param error The error message.
+ *
+ * @returns A validation function.
+ */
+export function pattern(requirement, error) {
+    return (value) => (value && !requirement.test(value) ? error : '');
+}

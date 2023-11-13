@@ -1,0 +1,1 @@
+{"version":3,"file":"create-image-element-from-bytes-async.js","sourceRoot":"","sources":["../../src/image/create-image-element-from-bytes-async.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,+BAA+B,EAAE,MAAM,2CAA2C,CAAA;AAQ3F,MAAM,CAAC,KAAK,UAAU,gCAAgC,CACpD,KAAiB;IAEjB,OAAO,+BAA+B,CAAC,IAAI,IAAI,CAAC,CAAC,KAAK,CAAC,CAAC,CAAC,CAAA;AAC3D,CAAC"}

@@ -1,0 +1,33 @@
+import { getFieldArrayStore } from './getFieldArrayStore';
+import { getFieldStore } from './getFieldStore';
+/**
+ * Sets an error response if a form error was not set at any field or field
+ * array.
+ *
+ * @param form The form of the errors.
+ * @param formErrors The form errors.
+ * @param options The error options.
+ */
+export function setErrorResponse(form, formErrors, { shouldActive = true }) {
+    // Combine errors that were not set for any field or field array into one
+    // general form error response message
+    const message = Object.entries(formErrors)
+        .reduce((errors, [name, error]) => {
+        if ([
+            getFieldStore(form, name),
+            getFieldArrayStore(form, name),
+        ].every((fieldOrFieldArray) => !fieldOrFieldArray ||
+            (shouldActive && !fieldOrFieldArray.active.peek()))) {
+            errors.push(error);
+        }
+        return errors;
+    }, [])
+        .join(' ');
+    // If there is a error message, set it as form response
+    if (message) {
+        form.response.value = {
+            status: 'error',
+            message,
+        };
+    }
+}

@@ -1,0 +1,1 @@
+{"version":3,"file":"create-image-paint.js","sourceRoot":"","sources":["../../src/image/create-image-paint.ts"],"names":[],"mappings":"AAMA,MAAM,UAAU,gBAAgB,CAAC,KAAiB;IAChD,MAAM,KAAK,GAAG,KAAK,CAAC,WAAW,CAAC,KAAK,CAAC,CAAA;IACtC,OAAO;QACL,SAAS,EAAE,KAAK,CAAC,IAAI;QACrB,SAAS,EAAE,MAAM;QACjB,aAAa,EAAE,GAAG;QAClB,IAAI,EAAE,OAAO;KACd,CAAA;AACH,CAAC"}

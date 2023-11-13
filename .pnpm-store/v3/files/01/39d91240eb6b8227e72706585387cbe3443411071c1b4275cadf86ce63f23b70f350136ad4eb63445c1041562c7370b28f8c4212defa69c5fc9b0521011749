@@ -1,0 +1,18 @@
+/**
+ * Creates a validation functions that parses the Valibot schema of a form.
+ *
+ * @param schema A Valibot schema.
+ *
+ * @returns A validation function.
+ */
+export function valiForm(schema) {
+    return async (values) => {
+        const result = await schema._parse(values, { abortPipeEarly: true });
+        return result.issues
+            ? result.issues.reduce((errors, issue) => ({
+                ...errors,
+                [issue.path.map(({ key }) => key).join('.')]: issue.message,
+            }), {})
+            : {};
+    };
+}

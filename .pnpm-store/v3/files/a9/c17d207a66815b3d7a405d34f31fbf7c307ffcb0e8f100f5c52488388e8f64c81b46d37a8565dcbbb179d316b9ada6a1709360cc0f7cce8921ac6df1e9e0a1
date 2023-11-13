@@ -1,0 +1,35 @@
+function composeClassNames(...classNames) {
+  const classes = classNames.filter(className => {
+    return Boolean(className) && className !== ' ';
+  }).map(className => {
+    return className === null || className === void 0 ? void 0 : className.toString().trim();
+  });
+  return classes.length === 0 ? undefined : classes.join(' ');
+}
+function extractAtomsFromProps(props, atomsFn) {
+  let hasAtomProps = false;
+  let atomProps = {};
+  let otherProps = {};
+  let customProps = {};
+
+  for (const key in props) {
+    if (key[0] === '_' && key[1] === '_') {
+      const actualKey = key.substring(2);
+      customProps[actualKey] = props[key];
+    } else if (atomsFn.properties.has(key)) {
+      hasAtomProps = true;
+      atomProps[key] = props[key];
+    } else {
+      otherProps[key] = props[key];
+    }
+  }
+
+  return {
+    hasAtomProps,
+    atomProps,
+    otherProps,
+    customProps
+  };
+}
+
+export { composeClassNames, extractAtomsFromProps };

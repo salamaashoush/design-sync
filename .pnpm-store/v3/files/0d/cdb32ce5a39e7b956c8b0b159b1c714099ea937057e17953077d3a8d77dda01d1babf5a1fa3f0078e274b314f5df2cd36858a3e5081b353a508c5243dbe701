@@ -1,0 +1,11 @@
+import type { MaybeValue, TransformField } from '../types';
+import { type TransformOptions } from './toCustom';
+/**
+ * Creates a transformation functions that removes the leading and trailing
+ * white space and line terminator characters from a string.
+ *
+ * @param options The transform options.
+ *
+ * @returns A transformation functions.
+ */
+export declare function toTrimmed<TValue extends MaybeValue<string>>(options: TransformOptions): TransformField<TValue>;

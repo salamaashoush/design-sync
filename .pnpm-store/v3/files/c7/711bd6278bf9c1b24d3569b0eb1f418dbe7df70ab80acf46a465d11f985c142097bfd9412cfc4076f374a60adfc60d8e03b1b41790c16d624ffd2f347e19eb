@@ -1,0 +1,1 @@
+{"version":3,"file":"sync.d.ts","sourceRoot":"","sources":["../../../../src/core/cross/sync.ts"],"names":[],"mappings":"AAAA,OAAO,qBAAqB,MAAM,cAAc,CAAC;AACjD,OAAO,KAAK,EAAE,WAAW,EAAE,MAAM,WAAW,CAAC;AAC7C,OAAO,KAAK,EAAE,yBAAyB,EAAE,MAAM,gBAAgB,CAAC;AAEhE,MAAM,MAAM,6BAA6B,GAAG,yBAAyB,CAAA;AAErE,MAAM,CAAC,OAAO,OAAO,sBAAuB,SAAQ,qBAAqB;IACvE,QAAQ,CAAC,IAAI,EAAE,WAAW,CAAW;CACtC"}

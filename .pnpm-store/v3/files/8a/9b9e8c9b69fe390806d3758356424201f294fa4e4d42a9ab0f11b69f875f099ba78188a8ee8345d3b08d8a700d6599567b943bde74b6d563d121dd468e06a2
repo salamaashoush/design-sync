@@ -1,0 +1,1273 @@
+"use strict";
+var __defProp = Object.defineProperty;
+var __defNormalProp = (obj, key, value2) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value: value2 }) : obj[key] = value2;
+var __publicField = (obj, key, value2) => {
+  __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value2);
+  return value2;
+};
+Object.defineProperty(exports, Symbol.toStringTag, { value: "Module" });
+const hooks = require("preact/hooks");
+const signals = require("@preact/signals");
+const jsxRuntime = require("preact/jsx-runtime");
+function valiField(schema) {
+  return async (value2) => {
+    const result = await schema._parse(value2, {
+      abortPipeEarly: true
+    });
+    return result.issues?.[0]?.message || "";
+  };
+}
+function valiForm(schema) {
+  return async (values) => {
+    const result = await schema._parse(values, {
+      abortPipeEarly: true
+    });
+    return result.issues ? result.issues.reduce((errors, issue) => ({
+      ...errors,
+      [issue.path.map(({
+        key
+      }) => key).join(".")]: issue.message
+    }), {}) : {};
+  };
+}
+function zodField(schema) {
+  return (value2) => {
+    const result = schema.safeParse(value2);
+    return result.success ? "" : result.error.issues[0].message;
+  };
+}
+function zodForm(schema) {
+  return (values) => {
+    const result = schema.safeParse(values);
+    return result.success ? {} : result.error.issues.reduce((errors, error) => {
+      const path = error.path.join(".");
+      if (!errors[path]) {
+        errors[path] = error.message;
+      }
+      return errors;
+    }, {});
+  };
+}
+function useFormStore({
+  initialValues = {},
+  validateOn = "submit",
+  revalidateOn = "input",
+  validate: validate2
+} = {}) {
+  return hooks.useMemo(
+    () => ({
+      internal: {
+        // Props
+        initialValues,
+        validate: validate2,
+        validateOn,
+        revalidateOn,
+        // Signals
+        fieldNames: signals.signal([]),
+        fieldArrayNames: signals.signal([]),
+        // Stores
+        fields: {},
+        fieldArrays: {},
+        // Other
+        validators: /* @__PURE__ */ new Set()
+      },
+      // Signals
+      element: signals.signal(null),
+      submitCount: signals.signal(0),
+      submitting: signals.signal(false),
+      submitted: signals.signal(false),
+      validating: signals.signal(false),
+      touched: signals.signal(false),
+      dirty: signals.signal(false),
+      invalid: signals.signal(false),
+      response: signals.signal({})
+    }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
+}
+function useForm(options) {
+  const form = useFormStore(options);
+  return hooks.useMemo(() => [form, {
+    Form: (props) => Form({
+      ...props,
+      of: form
+    }),
+    Field: (props) => Field({
+      ...props,
+      of: form
+    }),
+    FieldArray: (props) => FieldArray({
+      ...props,
+      of: form
+    })
+  }], [form]);
+}
+function getElementInput(element, field, type) {
+  const {
+    checked,
+    files,
+    options,
+    value: value2,
+    valueAsDate,
+    valueAsNumber
+  } = element;
+  return !type || type === "string" ? value2 : type === "string[]" ? options ? [...options].filter((e) => e.selected && !e.disabled).map((e) => e.value) : checked ? [...field.value.peek() || [], value2] : (field.value.peek() || []).filter((v) => v !== value2) : type === "number" ? valueAsNumber : type === "boolean" ? checked : type === "File" && files ? files[0] : type === "File[]" && files ? [...files] : type === "Date" && valueAsDate ? valueAsDate : field.value.peek();
+}
+function getFieldAndArrayStores(form) {
+  return [...Object.values(form.internal.fields), ...Object.values(form.internal.fieldArrays)];
+}
+function getFieldArrayStore(form, name) {
+  return form.internal.fieldArrays[name];
+}
+function getPathIndex(name, path) {
+  return +path.replace(`${name}.`, "").split(".")[0];
+}
+function removeInvalidNames(form, names) {
+  getFieldArrayNames(form, false).forEach((fieldArrayName) => {
+    const lastIndex = getFieldArrayStore(form, fieldArrayName).items.peek().length - 1;
+    names.filter((name) => name.startsWith(`${fieldArrayName}.`) && getPathIndex(fieldArrayName, name) > lastIndex).forEach((name) => {
+      names.splice(names.indexOf(name), 1);
+    });
+  });
+}
+function getFieldArrayNames(form, shouldValid = true) {
+  const fieldArrayNames = [...form.internal.fieldArrayNames.peek()];
+  if (shouldValid) {
+    removeInvalidNames(form, fieldArrayNames);
+  }
+  return fieldArrayNames;
+}
+function getFieldArrayState(form, name) {
+  const fieldArray = getFieldArrayStore(form, name);
+  return fieldArray ? {
+    startItems: fieldArray.startItems.peek(),
+    items: fieldArray.items.peek(),
+    error: fieldArray.error.peek(),
+    touched: fieldArray.touched.peek(),
+    dirty: fieldArray.dirty.peek()
+  } : void 0;
+}
+function getFieldNames(form, shouldValid = true) {
+  const fieldNames = [...form.internal.fieldNames.peek()];
+  if (shouldValid) {
+    removeInvalidNames(form, fieldNames);
+  }
+  return fieldNames;
+}
+function getFieldStore(form, name) {
+  return form.internal.fields[name];
+}
+function getFieldState(form, name) {
+  const field = getFieldStore(form, name);
+  return field ? {
+    startValue: field.startValue.peek(),
+    value: field.value.peek(),
+    error: field.error.peek(),
+    touched: field.touched.peek(),
+    dirty: field.dirty.peek()
+  } : void 0;
+}
+function getFilteredNames(form, arg2, shouldValid) {
+  const allFieldNames = getFieldNames(form, shouldValid);
+  const allFieldArrayNames = getFieldArrayNames(form, shouldValid);
+  if (typeof arg2 === "string" || Array.isArray(arg2)) {
+    return (typeof arg2 === "string" ? [arg2] : arg2).reduce((tuple, name) => {
+      const [fieldNames, fieldArrayNames] = tuple;
+      if (allFieldArrayNames.includes(name)) {
+        allFieldArrayNames.forEach((fieldArrayName) => {
+          if (fieldArrayName.startsWith(name)) {
+            fieldArrayNames.add(fieldArrayName);
+          }
+        });
+        allFieldNames.forEach((fieldName) => {
+          if (fieldName.startsWith(name)) {
+            fieldNames.add(fieldName);
+          }
+        });
+      } else {
+        fieldNames.add(name);
+      }
+      return tuple;
+    }, [/* @__PURE__ */ new Set(), /* @__PURE__ */ new Set()]).map((set) => [...set]);
+  }
+  return [allFieldNames, allFieldArrayNames];
+}
+function getOptions(arg1, arg2) {
+  return (typeof arg1 !== "string" && !Array.isArray(arg1) ? arg1 : arg2) || {};
+}
+function getPathValue(path, object) {
+  return path.split(".").reduce((value2, key) => value2?.[key], object);
+}
+let counter = 0;
+function getUniqueId() {
+  return counter++;
+}
+function isFieldDirty(startValue, currentValue) {
+  const toValue = (item) => item instanceof Blob ? item.size : item;
+  return Array.isArray(startValue) && Array.isArray(currentValue) ? startValue.map(toValue).join() !== currentValue.map(toValue).join() : startValue instanceof Date && currentValue instanceof Date ? startValue.getTime() !== currentValue.getTime() : Number.isNaN(startValue) && Number.isNaN(currentValue) ? false : startValue !== currentValue;
+}
+function updateFormDirty(form, dirty) {
+  form.dirty.value = dirty || getFieldAndArrayStores(form).some((fieldOrFieldArray) => fieldOrFieldArray.active.peek() && fieldOrFieldArray.dirty.peek());
+}
+function updateFieldDirty(form, field) {
+  const dirty = isFieldDirty(field.startValue.peek(), field.value.peek());
+  if (dirty !== field.dirty.peek()) {
+    signals.batch(() => {
+      field.dirty.value = dirty;
+      updateFormDirty(form, dirty);
+    });
+  }
+}
+function validateIfRequired(form, fieldOrFieldArray, name, {
+  on: modes,
+  shouldFocus = false
+}) {
+  if (modes.includes((form.internal.validateOn === "submit" ? form.submitted.peek() : fieldOrFieldArray.error.peek()) ? form.internal.revalidateOn : form.internal.validateOn)) {
+    validate(form, name, {
+      shouldFocus
+    });
+  }
+}
+function handleFieldEvent(form, field, name, event, validationModes, inputValue) {
+  signals.batch(() => {
+    field.value.value = field.transform.reduce((current, transformation) => transformation(current, event), inputValue ?? field.value.value);
+    field.touched.value = true;
+    form.touched.value = true;
+    updateFieldDirty(form, field);
+    validateIfRequired(form, field, name, {
+      on: validationModes
+    });
+  });
+}
+function initializeFieldArrayStore(form, name) {
+  if (!getFieldArrayStore(form, name)) {
+    const initialItems = getPathValue(name, form.internal.initialValues)?.map(() => getUniqueId()) || [];
+    form.internal.fieldArrays[name] = {
+      // Signals
+      initialItems: signals.signal(initialItems),
+      startItems: signals.signal(initialItems),
+      items: signals.signal(initialItems),
+      error: signals.signal(""),
+      active: signals.signal(false),
+      touched: signals.signal(false),
+      dirty: signals.signal(false),
+      // Other
+      validate: [],
+      consumers: /* @__PURE__ */ new Set()
+    };
+    form.internal.fieldArrayNames.value = [...form.internal.fieldArrayNames.peek(), name];
+  }
+  return getFieldArrayStore(form, name);
+}
+function initializeFieldStore(form, name) {
+  if (!getFieldStore(form, name)) {
+    const initialValue = getPathValue(name, form.internal.initialValues);
+    form.internal.fields[name] = {
+      // Signals
+      elements: signals.signal([]),
+      initialValue: signals.signal(initialValue),
+      startValue: signals.signal(initialValue),
+      value: signals.signal(initialValue),
+      error: signals.signal(""),
+      active: signals.signal(false),
+      touched: signals.signal(false),
+      dirty: signals.signal(false),
+      // Other
+      validate: [],
+      transform: [],
+      consumers: /* @__PURE__ */ new Set()
+    };
+    form.internal.fieldNames.value = [...form.internal.fieldNames.peek(), name];
+  }
+  return getFieldStore(form, name);
+}
+function readSignal(signal, peek) {
+  return peek ? signal.peek() : signal.value;
+}
+function setErrorResponse(form, formErrors, {
+  shouldActive = true
+}) {
+  const message = Object.entries(formErrors).reduce((errors, [name, error]) => {
+    if ([getFieldStore(form, name), getFieldArrayStore(form, name)].every((fieldOrFieldArray) => !fieldOrFieldArray || shouldActive && !fieldOrFieldArray.active.peek())) {
+      errors.push(error);
+    }
+    return errors;
+  }, []).join(" ");
+  if (message) {
+    form.response.value = {
+      status: "error",
+      message
+    };
+  }
+}
+function setFieldArrayState(form, name, state) {
+  const fieldArray = initializeFieldArrayStore(form, name);
+  fieldArray.startItems.value = state.startItems;
+  fieldArray.items.value = state.items;
+  fieldArray.error.value = state.error;
+  fieldArray.touched.value = state.touched;
+  fieldArray.dirty.value = state.dirty;
+}
+function setFieldState(form, name, state) {
+  const field = initializeFieldStore(form, name);
+  field.startValue.value = state.startValue;
+  field.value.value = state.value;
+  field.error.value = state.error;
+  field.touched.value = state.touched;
+  field.dirty.value = state.dirty;
+}
+function setFieldArrayValue(form, name, {
+  at: index,
+  value: value2
+}) {
+  signals.batch(() => {
+    const updateStores = (prevPath, data) => {
+      Object.entries(data).forEach(([path, value22]) => {
+        const compoundPath = `${prevPath}.${path}`;
+        if (!value22 || typeof value22 !== "object" || Array.isArray(value22) || value22 instanceof Date || value22 instanceof Blob) {
+          setFieldState(form, compoundPath, {
+            startValue: value22,
+            value: value22,
+            error: "",
+            touched: false,
+            dirty: false
+          });
+        }
+        if (Array.isArray(value22)) {
+          const items = value22.map(() => getUniqueId());
+          setFieldArrayState(form, compoundPath, {
+            startItems: [...items],
+            items,
+            error: "",
+            touched: false,
+            dirty: false
+          });
+        }
+        if (value22 && typeof value22 === "object") {
+          updateStores(compoundPath, value22);
+        }
+      });
+    };
+    updateStores(name, {
+      [index]: value2
+    });
+  });
+}
+function sortArrayPathIndex(name) {
+  return (pathA, pathB) => getPathIndex(name, pathA) - getPathIndex(name, pathB);
+}
+function updateFieldArrayDirty(form, fieldArray) {
+  const dirty = fieldArray.startItems.peek().join() !== fieldArray.items.peek().join();
+  if (dirty !== fieldArray.dirty.peek()) {
+    signals.batch(() => {
+      fieldArray.dirty.value = dirty;
+      updateFormDirty(form, dirty);
+    });
+  }
+}
+function updateFormInvalid(form, invalid) {
+  form.invalid.value = invalid || getFieldAndArrayStores(form).some((fieldOrFieldArray) => fieldOrFieldArray.active.peek() && fieldOrFieldArray.error.peek());
+}
+function updateFormState(form) {
+  let touched = false, dirty = false, invalid = false;
+  for (const fieldOrFieldArray of getFieldAndArrayStores(form)) {
+    if (fieldOrFieldArray.active.peek()) {
+      if (fieldOrFieldArray.touched.peek()) {
+        touched = true;
+      }
+      if (fieldOrFieldArray.dirty.peek()) {
+        dirty = true;
+      }
+      if (fieldOrFieldArray.error.peek()) {
+        invalid = true;
+      }
+    }
+    if (touched && dirty && invalid) {
+      break;
+    }
+  }
+  signals.batch(() => {
+    form.touched.value = touched;
+    form.dirty.value = dirty;
+    form.invalid.value = invalid;
+  });
+}
+function focus(form, name) {
+  getFieldStore(form, name)?.elements.peek()[0]?.focus();
+}
+function setError(form, name, error, {
+  shouldActive = true,
+  shouldTouched = false,
+  shouldDirty = false,
+  shouldFocus = !!error
+} = {}) {
+  signals.batch(() => {
+    for (const fieldOrFieldArray of [getFieldStore(form, name), getFieldArrayStore(form, name)]) {
+      if (fieldOrFieldArray && (!shouldActive || fieldOrFieldArray.active.peek()) && (!shouldTouched || fieldOrFieldArray.touched.peek()) && (!shouldDirty || fieldOrFieldArray.dirty.peek())) {
+        fieldOrFieldArray.error.value = error;
+        if (error && "value" in fieldOrFieldArray && shouldFocus) {
+          focus(form, name);
+        }
+      }
+    }
+    updateFormInvalid(form, !!error);
+  });
+}
+function clearError(form, name, options) {
+  setError(form, name, "", options);
+}
+function clearResponse(form) {
+  form.response.value = {};
+}
+function getError(form, name, {
+  shouldActive = true,
+  shouldTouched = false,
+  shouldDirty = false
+} = {}) {
+  const field = getFieldStore(form, name);
+  const fieldArray = getFieldArrayStore(form, name);
+  for (const fieldOrFieldArray of [field, fieldArray]) {
+    if (fieldOrFieldArray && (!shouldActive || fieldOrFieldArray.active.value) && (!shouldTouched || fieldOrFieldArray.touched.value) && (!shouldDirty || fieldOrFieldArray.dirty.value)) {
+      return fieldOrFieldArray.error.value;
+    }
+  }
+  if (!field && !fieldArray) {
+    form.internal.fieldNames.value;
+    form.internal.fieldArrayNames.value;
+  }
+  return void 0;
+}
+function getErrors(form, arg2, arg3) {
+  const [fieldNames, fieldArrayNames] = getFilteredNames(form, arg2);
+  const {
+    shouldActive = true,
+    shouldTouched = false,
+    shouldDirty = false
+  } = getOptions(arg2, arg3);
+  if (typeof arg2 !== "string" && !Array.isArray(arg2)) {
+    form.internal.fieldNames.value;
+    form.internal.fieldArrayNames.value;
+  } else {
+    fieldArrayNames.forEach((fieldArrayName) => getFieldArrayStore(form, fieldArrayName).items.value);
+  }
+  return [...fieldNames.map((name) => [name, getFieldStore(form, name)]), ...fieldArrayNames.map((name) => [name, getFieldArrayStore(form, name)])].reduce((formErrors, [name, fieldOrFieldArray]) => {
+    if (fieldOrFieldArray.error.value && (!shouldActive || fieldOrFieldArray.active.value) && (!shouldTouched || fieldOrFieldArray.touched.value) && (!shouldDirty || fieldOrFieldArray.dirty.value)) {
+      formErrors[name] = fieldOrFieldArray.error.value;
+    }
+    return formErrors;
+  }, {});
+}
+function getValue(form, name, {
+  shouldActive = true,
+  shouldTouched = false,
+  shouldDirty = false,
+  shouldValid = false
+} = {}) {
+  const field = initializeFieldStore(form, name);
+  if ((!shouldActive || field.active.value) && (!shouldTouched || field.touched.value) && (!shouldDirty || field.dirty.value) && (!shouldValid || !field.error.value)) {
+    return field.value.value;
+  }
+  return void 0;
+}
+function getValues(form, arg2, arg3) {
+  const [fieldNames, fieldArrayNames] = getFilteredNames(form, arg2);
+  const {
+    shouldActive = true,
+    shouldTouched = false,
+    shouldDirty = false,
+    shouldValid = false,
+    peek = false
+  } = getOptions(arg2, arg3);
+  if (!peek) {
+    if (typeof arg2 !== "string" && !Array.isArray(arg2)) {
+      form.internal.fieldNames.value;
+    } else {
+      fieldArrayNames.forEach((fieldArrayName) => getFieldArrayStore(form, fieldArrayName).items.value);
+    }
+  }
+  return fieldNames.reduce((values, name) => {
+    const field = getFieldStore(form, name);
+    if ((!shouldActive || readSignal(field.active, peek)) && (!shouldTouched || readSignal(field.touched, peek)) && (!shouldDirty || readSignal(field.dirty, peek)) && (!shouldValid || !readSignal(field.error, peek))) {
+      (typeof arg2 === "string" ? name.replace(`${arg2}.`, "") : name).split(".").reduce((object, key, index, keys) => object[key] = index === keys.length - 1 ? (
+        // If it is last key, add value
+        readSignal(field.value, peek)
+      ) : (
+        // Otherwise return object or array
+        typeof object[key] === "object" && object[key] || (isNaN(+keys[index + 1]) ? {} : [])
+      ), values);
+    }
+    return values;
+  }, typeof arg2 === "string" ? [] : {});
+}
+function hasField(form, name, {
+  shouldActive = true,
+  shouldTouched = false,
+  shouldDirty = false,
+  shouldValid = false
+} = {}) {
+  return signals.computed(() => {
+    const field = getFieldStore(form, name);
+    if (!field) {
+      form.internal.fieldNames.value;
+    }
+    return !!field && (!shouldActive || field.active.value) && (!shouldTouched || field.touched.value) && (!shouldDirty || field.dirty.value) && (!shouldValid || !field.error.value);
+  }).value;
+}
+function hasFieldArray(form, name, {
+  shouldActive = true,
+  shouldTouched = false,
+  shouldDirty = false,
+  shouldValid = false
+} = {}) {
+  return signals.computed(() => {
+    const fieldArray = getFieldArrayStore(form, name);
+    if (!fieldArray) {
+      form.internal.fieldArrayNames.value;
+    }
+    return !!fieldArray && (!shouldActive || fieldArray.active.value) && (!shouldTouched || fieldArray.touched.value) && (!shouldDirty || fieldArray.dirty.value) && (!shouldValid || !fieldArray.error.value);
+  }).value;
+}
+function insert(form, name, options) {
+  const fieldArray = getFieldArrayStore(form, name);
+  if (fieldArray) {
+    const arrayLength = fieldArray.items.peek().length;
+    const {
+      at: index = arrayLength,
+      value: value2
+    } = options;
+    if (index >= 0 && index <= arrayLength) {
+      signals.batch(() => {
+        if (index < arrayLength) {
+          const filterName = (value22) => value22.startsWith(`${name}.`) && getPathIndex(name, value22) >= index;
+          const getNextIndexName = (fieldOrFieldArrayName, fieldOrFieldArrayIndex) => fieldOrFieldArrayName.replace(`${name}.${fieldOrFieldArrayIndex}`, `${name}.${fieldOrFieldArrayIndex + 1}`);
+          getFieldNames(form).filter(filterName).sort(sortArrayPathIndex(name)).reverse().forEach((fieldName) => {
+            setFieldState(form, getNextIndexName(fieldName, getPathIndex(name, fieldName)), getFieldState(form, fieldName));
+          });
+          getFieldArrayNames(form).filter(filterName).sort(sortArrayPathIndex(name)).reverse().forEach((fieldArrayName) => {
+            setFieldArrayState(form, getNextIndexName(fieldArrayName, getPathIndex(name, fieldArrayName)), getFieldArrayState(form, fieldArrayName));
+          });
+        }
+        setFieldArrayValue(form, name, {
+          at: index,
+          value: value2
+        });
+        const nextItems = [...fieldArray.items.peek()];
+        nextItems.splice(index, 0, getUniqueId());
+        fieldArray.items.value = nextItems;
+        fieldArray.touched.value = true;
+        form.touched.value = true;
+        fieldArray.dirty.value = true;
+        form.dirty.value = true;
+      });
+    }
+    setTimeout(() => validateIfRequired(form, fieldArray, name, {
+      on: ["touched", "input"]
+    }), 250);
+  }
+}
+function move(form, name, {
+  from: fromIndex,
+  to: toIndex
+}) {
+  const fieldArray = getFieldArrayStore(form, name);
+  if (fieldArray) {
+    const lastIndex = fieldArray.items.peek().length - 1;
+    if (fromIndex >= 0 && fromIndex <= lastIndex && toIndex >= 0 && toIndex <= lastIndex && fromIndex !== toIndex) {
+      const filterName = (value2) => {
+        if (value2.startsWith(name)) {
+          const fieldIndex = getPathIndex(name, value2);
+          return fieldIndex >= fromIndex && fieldIndex <= toIndex || fieldIndex <= fromIndex && fieldIndex >= toIndex;
+        }
+      };
+      const getPrevIndexName = (fieldOrFieldArrayName, fieldOrFieldArrayIndex) => fieldOrFieldArrayName.replace(`${name}.${fieldOrFieldArrayIndex}`, fromIndex < toIndex ? `${name}.${fieldOrFieldArrayIndex - 1}` : `${name}.${fieldOrFieldArrayIndex + 1}`);
+      const getToIndexName = (fieldOrFieldArrayName) => fieldOrFieldArrayName.replace(`${name}.${fromIndex}`, `${name}.${toIndex}`);
+      const fieldNames = getFieldNames(form).filter(filterName).sort(sortArrayPathIndex(name));
+      const fieldArrayNames = getFieldArrayNames(form).filter(filterName).sort(sortArrayPathIndex(name));
+      if (fromIndex > toIndex) {
+        fieldNames.reverse();
+        fieldArrayNames.reverse();
+      }
+      const fieldStateMap = /* @__PURE__ */ new Map();
+      const fieldArrayStateMap = /* @__PURE__ */ new Map();
+      signals.batch(() => {
+        fieldNames.forEach((fieldName) => {
+          const fieldState = getFieldState(form, fieldName);
+          const fieldIndex = getPathIndex(name, fieldName);
+          if (fieldIndex === fromIndex) {
+            fieldStateMap.set(fieldName, fieldState);
+          } else {
+            setFieldState(form, getPrevIndexName(fieldName, fieldIndex), fieldState);
+          }
+        });
+        fieldStateMap.forEach((fieldState, fieldName) => {
+          setFieldState(form, getToIndexName(fieldName), fieldState);
+        });
+        fieldArrayNames.forEach((fieldArrayName) => {
+          const fieldArrayState = getFieldArrayState(form, fieldArrayName);
+          const fieldArrayIndex = getPathIndex(name, fieldArrayName);
+          if (fieldArrayIndex === fromIndex) {
+            fieldArrayStateMap.set(fieldArrayName, fieldArrayState);
+          } else {
+            setFieldArrayState(form, getPrevIndexName(fieldArrayName, fieldArrayIndex), fieldArrayState);
+          }
+        });
+        fieldArrayStateMap.forEach((fieldArrayState, fieldArrayName) => {
+          setFieldArrayState(form, getToIndexName(fieldArrayName), fieldArrayState);
+        });
+        const nextItems = [...fieldArray.items.peek()];
+        nextItems.splice(toIndex, 0, nextItems.splice(fromIndex, 1)[0]);
+        fieldArray.items.value = nextItems;
+        fieldArray.touched.value = true;
+        form.touched.value = true;
+        updateFieldArrayDirty(form, fieldArray);
+      });
+    }
+  }
+}
+function remove(form, name, {
+  at: index
+}) {
+  const fieldArray = getFieldArrayStore(form, name);
+  if (fieldArray) {
+    const lastIndex = fieldArray.items.peek().length - 1;
+    if (index >= 0 && index <= lastIndex) {
+      const filterName = (value2) => value2.startsWith(`${name}.`) && getPathIndex(name, value2) > index;
+      const getPrevIndexName = (fieldOrFieldArrayName, fieldOrFieldArrayIndex) => fieldOrFieldArrayName.replace(`${name}.${fieldOrFieldArrayIndex}`, `${name}.${fieldOrFieldArrayIndex - 1}`);
+      signals.batch(() => {
+        getFieldNames(form).filter(filterName).sort(sortArrayPathIndex(name)).forEach((fieldName) => {
+          setFieldState(form, getPrevIndexName(fieldName, getPathIndex(name, fieldName)), getFieldState(form, fieldName));
+        });
+        getFieldArrayNames(form).filter(filterName).sort(sortArrayPathIndex(name)).forEach((fieldArrayName) => {
+          setFieldArrayState(form, getPrevIndexName(fieldArrayName, getPathIndex(name, fieldArrayName)), getFieldArrayState(form, fieldArrayName));
+        });
+        const nextItems = [...fieldArray.items.peek()];
+        nextItems.splice(index, 1);
+        fieldArray.items.value = nextItems;
+        fieldArray.touched.value = true;
+        form.touched.value = true;
+        updateFieldArrayDirty(form, fieldArray);
+        validateIfRequired(form, fieldArray, name, {
+          on: ["touched", "input"]
+        });
+      });
+    }
+  }
+}
+function replace(form, name, options) {
+  const fieldArray = getFieldArrayStore(form, name);
+  if (fieldArray) {
+    const {
+      at: index
+    } = options;
+    const lastIndex = fieldArray.items.peek().length - 1;
+    if (index >= 0 && index <= lastIndex) {
+      signals.batch(() => {
+        setFieldArrayValue(form, name, options);
+        const nextItems = [...fieldArray.items.peek()];
+        nextItems[index] = getUniqueId();
+        fieldArray.items.value = nextItems;
+        fieldArray.touched.value = true;
+        form.touched.value = true;
+        fieldArray.dirty.value = true;
+        form.dirty.value = true;
+      });
+    }
+  }
+}
+function reset(form, arg2, arg3) {
+  const [fieldNames, fieldArrayNames] = getFilteredNames(form, arg2, false);
+  const resetSingleField = typeof arg2 === "string" && fieldNames.length === 1;
+  const resetEntireForm = !resetSingleField && !Array.isArray(arg2);
+  const options = getOptions(arg2, arg3);
+  const {
+    initialValue,
+    initialValues,
+    keepResponse = false,
+    keepSubmitCount = false,
+    keepSubmitted = false,
+    keepValues = false,
+    keepDirtyValues = false,
+    keepItems = false,
+    keepDirtyItems = false,
+    keepErrors = false,
+    keepTouched = false,
+    keepDirty = false
+  } = options;
+  signals.batch(() => {
+    fieldNames.forEach((name) => {
+      const field = getFieldStore(form, name);
+      if (resetSingleField ? "initialValue" in options : initialValues) {
+        field.initialValue.value = resetSingleField ? initialValue : getPathValue(name, initialValues);
+      }
+      const keepDirtyValue = keepDirtyValues && field.dirty.peek();
+      if (!keepValues && !keepDirtyValue) {
+        field.startValue.value = field.initialValue.peek();
+        field.value.value = field.initialValue.peek();
+        field.elements.peek().forEach((element) => {
+          if (element.type === "file") {
+            element.value = "";
+          }
+        });
+      }
+      if (!keepTouched) {
+        field.touched.value = false;
+      }
+      if (!keepDirty && !keepValues && !keepDirtyValue) {
+        field.dirty.value = false;
+      }
+      if (!keepErrors) {
+        field.error.value = "";
+      }
+    });
+    fieldArrayNames.forEach((name) => {
+      const fieldArray = getFieldArrayStore(form, name);
+      const keepCurrentDirtyItems = keepDirtyItems && fieldArray.dirty.peek();
+      if (!keepItems && !keepCurrentDirtyItems) {
+        if (initialValues) {
+          fieldArray.initialItems.value = getPathValue(name, initialValues)?.map(() => getUniqueId()) || [];
+        }
+        fieldArray.startItems.value = [...fieldArray.initialItems.peek()];
+        fieldArray.items.value = [...fieldArray.initialItems.peek()];
+      }
+      if (!keepTouched) {
+        fieldArray.touched.value = false;
+      }
+      if (!keepDirty && !keepItems && !keepCurrentDirtyItems) {
+        fieldArray.dirty.value = false;
+      }
+      if (!keepErrors) {
+        fieldArray.error.value = "";
+      }
+    });
+    if (resetEntireForm) {
+      if (!keepResponse) {
+        form.response.value = {};
+      }
+      if (!keepSubmitCount) {
+        form.submitCount.value = 0;
+      }
+      if (!keepSubmitted) {
+        form.submitted.value = false;
+      }
+    }
+    updateFormState(form);
+  });
+}
+function setResponse(form, response, {
+  duration
+} = {}) {
+  form.response.value = response;
+  if (duration) {
+    setTimeout(() => {
+      if (form.response.peek() === response) {
+        form.response.value = {};
+      }
+    }, duration);
+  }
+}
+function setValue(form, name, value2, {
+  shouldTouched = true,
+  shouldDirty = true,
+  shouldValidate = true,
+  shouldFocus = true
+} = {}) {
+  signals.batch(() => {
+    const field = initializeFieldStore(form, name);
+    field.value.value = value2;
+    if (shouldTouched) {
+      field.touched.value = true;
+      form.touched.value = true;
+    }
+    if (shouldDirty) {
+      updateFieldDirty(form, field);
+    }
+    if (shouldValidate) {
+      validateIfRequired(form, field, name, {
+        on: ["touched", "input"],
+        shouldFocus
+      });
+    }
+  });
+}
+async function validate(form, arg2, arg3) {
+  const [fieldNames, fieldArrayNames] = getFilteredNames(form, arg2);
+  const {
+    shouldActive = true,
+    shouldFocus = true
+  } = getOptions(arg2, arg3);
+  const validator = getUniqueId();
+  form.internal.validators.add(validator);
+  form.validating.value = true;
+  const formErrors = form.internal.validate ? await form.internal.validate(getValues(form, {
+    shouldActive,
+    peek: true
+  })) : {};
+  let valid = typeof arg2 !== "string" && !Array.isArray(arg2) ? !Object.keys(formErrors).length : true;
+  const [errorFields] = await Promise.all([
+    // Validate each field in list
+    Promise.all(fieldNames.map(async (name) => {
+      const field = getFieldStore(form, name);
+      if (!shouldActive || field.active.peek()) {
+        let localError;
+        for (const validation of field.validate) {
+          localError = await validation(field.value.peek());
+          if (localError) {
+            break;
+          }
+        }
+        const fieldError = localError || formErrors[name] || "";
+        if (fieldError) {
+          valid = false;
+        }
+        field.error.value = fieldError;
+        return fieldError ? name : null;
+      }
+    })),
+    // Validate each field array in list
+    Promise.all(fieldArrayNames.map(async (name) => {
+      const fieldArray = getFieldArrayStore(form, name);
+      if (!shouldActive || fieldArray.active.peek()) {
+        let localError = "";
+        for (const validation of fieldArray.validate) {
+          localError = await validation(fieldArray.items.peek());
+          if (localError) {
+            break;
+          }
+        }
+        const fieldArrayError = localError || formErrors[name] || "";
+        if (fieldArrayError) {
+          valid = false;
+        }
+        fieldArray.error.value = fieldArrayError;
+      }
+    }))
+  ]);
+  signals.batch(() => {
+    setErrorResponse(form, formErrors, {
+      shouldActive
+    });
+    if (shouldFocus) {
+      const name = errorFields.find((name2) => name2);
+      if (name) {
+        focus(form, name);
+      }
+    }
+    updateFormInvalid(form, !valid);
+    form.internal.validators.delete(validator);
+    if (!form.internal.validators.size) {
+      form.validating.value = false;
+    }
+  });
+  return valid;
+}
+function setValues(form, arg2, arg3, arg4) {
+  const isFieldArray = typeof arg2 === "string";
+  const values = isFieldArray ? arg3 : arg2;
+  const options = (isFieldArray ? arg4 : arg3) || {};
+  const {
+    shouldTouched = true,
+    shouldDirty = true,
+    shouldValidate = true,
+    shouldFocus = true
+  } = options;
+  const names = isFieldArray ? [arg2] : [];
+  signals.batch(() => {
+    const setFieldArrayItems = (name, value2) => {
+      const fieldArray = initializeFieldArrayStore(form, name);
+      fieldArray.items.value = value2.map(() => getUniqueId());
+      if (shouldTouched) {
+        fieldArray.touched.value = true;
+        form.touched.value = true;
+      }
+      if (shouldDirty) {
+        fieldArray.dirty.value = true;
+        form.dirty.value = true;
+      }
+    };
+    const setNestedValues = (data, prevPath) => Object.entries(data).forEach(([path, value2]) => {
+      const compoundPath = prevPath ? `${prevPath}.${path}` : path;
+      if (!value2 || typeof value2 !== "object" || Array.isArray(value2)) {
+        setValue(form, compoundPath, value2, {
+          ...options,
+          shouldValidate: false
+        });
+        names.push(compoundPath);
+      }
+      if (Array.isArray(value2)) {
+        setFieldArrayItems(compoundPath, value2);
+      }
+      if (value2 && typeof value2 === "object") {
+        setNestedValues(value2, compoundPath);
+      }
+    });
+    if (isFieldArray) {
+      setFieldArrayItems(arg2, arg3);
+    }
+    setNestedValues(values, isFieldArray ? arg2 : void 0);
+    if (shouldValidate && ["touched", "input"].includes(form.internal.validateOn === "submit" && form.submitted ? form.internal.revalidateOn : form.internal.validateOn)) {
+      validate(form, names, {
+        shouldFocus
+      });
+    }
+  });
+}
+function submit(form) {
+  form.element.peek()?.requestSubmit();
+}
+function swap(form, name, {
+  at: index1,
+  and: index2
+}) {
+  const fieldArray = getFieldArrayStore(form, name);
+  if (fieldArray) {
+    const lastIndex = fieldArray.items.peek().length - 1;
+    if (index1 >= 0 && index1 <= lastIndex && index2 >= 0 && index2 <= lastIndex && index1 !== index2) {
+      const index1Prefix = `${name}.${index1}`;
+      const index2Prefix = `${name}.${index2}`;
+      const fieldStateMap = /* @__PURE__ */ new Map();
+      const fieldArrayStateMap = /* @__PURE__ */ new Map();
+      const filterName = (value2) => value2.startsWith(`${name}.`) && [index1, index2].includes(getPathIndex(name, value2));
+      const swapIndex = (value2) => value2.startsWith(index1Prefix) ? value2.replace(index1Prefix, index2Prefix) : value2.replace(index2Prefix, index1Prefix);
+      getFieldNames(form).filter(filterName).forEach((fieldName) => fieldStateMap.set(fieldName, getFieldState(form, fieldName)));
+      getFieldArrayNames(form).filter(filterName).forEach((fieldArrayName) => fieldArrayStateMap.set(fieldArrayName, getFieldArrayState(form, fieldArrayName)));
+      signals.batch(() => {
+        fieldStateMap.forEach((fieldState, fieldName) => setFieldState(form, swapIndex(fieldName), fieldState));
+        fieldArrayStateMap.forEach((fieldArrayState, fieldArrayName) => setFieldArrayState(form, swapIndex(fieldArrayName), fieldArrayState));
+        const nextItems = [...fieldArray.items.peek()];
+        nextItems[index1] = fieldArray.items.peek()[index2];
+        nextItems[index2] = fieldArray.items.peek()[index1];
+        fieldArray.items.value = nextItems;
+        fieldArray.touched.value = true;
+        form.touched.value = true;
+        updateFieldArrayDirty(form, fieldArray);
+      });
+    }
+  }
+}
+function useLifecycle({
+  of: form,
+  name,
+  store,
+  validate: validate2,
+  transform,
+  keepActive = false,
+  keepState = true
+}) {
+  hooks.useEffect(() => {
+    store.validate = validate2 ? Array.isArray(validate2) ? validate2 : [validate2] : [];
+    if ("transform" in store) {
+      store.transform = transform ? Array.isArray(transform) ? transform : [transform] : [];
+    }
+  }, [store, transform, validate2]);
+  hooks.useEffect(() => {
+    const consumer = getUniqueId();
+    store.consumers.add(consumer);
+    if (!store.active.peek()) {
+      signals.batch(() => {
+        store.active.value = true;
+        updateFormState(form);
+      });
+    }
+    return () => {
+      setTimeout(() => {
+        store.consumers.delete(consumer);
+        signals.batch(() => {
+          if (!keepActive && !store.consumers.size) {
+            store.active.value = false;
+            if (!keepState) {
+              reset(form, name);
+            } else {
+              updateFormState(form);
+            }
+          }
+        });
+        if ("elements" in store) {
+          store.elements.value = store.elements.peek().filter((element) => element.isConnected);
+        }
+      });
+    };
+  }, [form, name, store, keepActive, keepState]);
+}
+function useLiveSignal(value2) {
+  const signal = signals.useSignal(value2);
+  if (signal.peek() !== value2)
+    signal.value = value2;
+  return signals.useComputed(() => signal.value.value);
+}
+function Field({
+  children,
+  type,
+  ...props
+}) {
+  const {
+    of: form,
+    name
+  } = props;
+  const field = hooks.useMemo(() => initializeFieldStore(form, name), [form, name]);
+  useLifecycle({
+    ...props,
+    store: field
+  });
+  const value2 = useLiveSignal(field.value);
+  const error = useLiveSignal(field.error);
+  const active = useLiveSignal(field.active);
+  const touched = useLiveSignal(field.touched);
+  const dirty = useLiveSignal(field.dirty);
+  return jsxRuntime.jsx(jsxRuntime.Fragment, {
+    children: children(hooks.useMemo(
+      () => ({
+        name,
+        value: value2,
+        error,
+        active,
+        touched,
+        dirty
+      }),
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      [name]
+    ), hooks.useMemo(() => ({
+      name,
+      ref(element) {
+        if (element) {
+          field.elements.value = [...field.elements.value, element];
+          signals.effect(() => {
+            if (element.type !== "radio" && field.startValue.value === void 0 && field.value.peek() === void 0) {
+              const input = getElementInput(element, field, type);
+              field.startValue.value = input;
+              field.value.value = input;
+            }
+          });
+        }
+      },
+      onInput(event) {
+        handleFieldEvent(form, field, name, event, ["touched", "input"], getElementInput(event.currentTarget, field, type));
+      },
+      onChange(event) {
+        handleFieldEvent(form, field, name, event, ["change"]);
+      },
+      onBlur(event) {
+        handleFieldEvent(form, field, name, event, ["touched", "blur"]);
+      }
+    }), [field, form, name, type]))
+  });
+}
+function FieldArray({
+  children,
+  ...props
+}) {
+  const {
+    of: form,
+    name
+  } = props;
+  const fieldArray = hooks.useMemo(() => initializeFieldArrayStore(form, name), [form, name]);
+  useLifecycle({
+    ...props,
+    store: fieldArray
+  });
+  const items = useLiveSignal(fieldArray.items);
+  const error = useLiveSignal(fieldArray.error);
+  const active = useLiveSignal(fieldArray.active);
+  const touched = useLiveSignal(fieldArray.touched);
+  const dirty = useLiveSignal(fieldArray.dirty);
+  return jsxRuntime.jsx(jsxRuntime.Fragment, {
+    children: children(hooks.useMemo(
+      () => ({
+        name,
+        items,
+        error,
+        active,
+        touched,
+        dirty
+      }),
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      [name]
+    ))
+  });
+}
+class FormError extends Error {
+  constructor(arg1, arg2) {
+    super(typeof arg1 === "string" ? arg1 : "");
+    __publicField(this, "name", "FormError");
+    __publicField(this, "errors");
+    this.errors = typeof arg1 === "string" ? arg2 || {} : arg1;
+  }
+}
+function Form({
+  of: form,
+  onSubmit,
+  responseDuration: duration,
+  keepResponse,
+  shouldActive,
+  shouldTouched,
+  shouldDirty,
+  shouldFocus,
+  ...props
+}) {
+  return jsxRuntime.jsx("form", {
+    noValidate: true,
+    ...props,
+    ref: (element) => form.element.value = element,
+    onSubmit: async (event) => {
+      event.preventDefault();
+      signals.batch(() => {
+        if (!keepResponse) {
+          form.response.value = {};
+        }
+        form.submitCount.value++;
+        form.submitted.value = true;
+        form.submitting.value = true;
+      });
+      const options = {
+        duration,
+        shouldActive,
+        shouldTouched,
+        shouldDirty,
+        shouldFocus
+      };
+      try {
+        if (await validate(form, options)) {
+          await onSubmit(getValues(form, options), event);
+        }
+      } catch (error) {
+        signals.batch(() => {
+          if (error instanceof FormError) {
+            Object.entries(error.errors).forEach(([name, error2]) => {
+              if (error2) {
+                setError(form, name, error2, {
+                  ...options,
+                  shouldFocus: false
+                });
+              }
+            });
+          }
+          if (!(error instanceof FormError) || error.message) {
+            setResponse(form, {
+              status: "error",
+              message: error?.message || "An unknown error has occurred."
+            }, options);
+          }
+        });
+      } finally {
+        form.submitting.value = false;
+      }
+    }
+  });
+}
+function toCustom(action, {
+  on: mode
+}) {
+  return (value2, event) => event.type === mode ? action(value2, event) : value2;
+}
+function toLowerCase(options) {
+  return toCustom((value2) => value2 && value2.toLowerCase(), options);
+}
+function toTrimmed(options) {
+  return toCustom((value2) => value2 && value2.trim(), options);
+}
+function toUpperCase(options) {
+  return toCustom((value2) => value2 && value2.toUpperCase(), options);
+}
+function custom(requirement, error) {
+  return async (value2) => (Array.isArray(value2) ? value2.length : value2 || value2 === 0) && !await requirement(value2) ? error : "";
+}
+function email(error) {
+  return (value2) => value2 && !/^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i.test(value2) ? error : "";
+}
+function maxLength(requirement, error) {
+  return (value2) => value2?.length && value2.length > requirement ? error : "";
+}
+function maxRange(requirement, error) {
+  return (value2) => (value2 || value2 === 0) && value2 > requirement ? error : "";
+}
+function maxSize(requirement, error) {
+  return (value2) => value2 && (Array.isArray(value2) ? [...value2].some((file) => file.size > requirement) : value2.size > requirement) ? error : "";
+}
+function maxTotalSize(requirement, error) {
+  return (value2) => value2?.length && [...value2].reduce((size, file) => size + file.size, 0) > requirement ? error : "";
+}
+function mimeType(requirement, error) {
+  const mimeTypes = Array.isArray(requirement) ? requirement : [requirement];
+  return (value2) => value2 && (Array.isArray(value2) ? [...value2].some((file) => !mimeTypes.includes(file.type)) : !mimeTypes.includes(value2.type)) ? error : "";
+}
+function minLength(requirement, error) {
+  return (value2) => value2?.length && value2.length < requirement ? error : "";
+}
+function minRange(requirement, error) {
+  return (value2) => (value2 || value2 === 0) && value2 < requirement ? error : "";
+}
+function minSize(requirement, error) {
+  return (value2) => value2 && (Array.isArray(value2) ? [...value2].some((file) => file.size < requirement) : value2.size < requirement) ? error : "";
+}
+function minTotalSize(requirement, error) {
+  return (value2) => value2?.length && [...value2].reduce((size, file) => size + file.size, 0) < requirement ? error : "";
+}
+function pattern(requirement, error) {
+  return (value2) => value2 && !requirement.test(value2) ? error : "";
+}
+function required(error) {
+  return (value2) => !value2 && value2 !== 0 || Array.isArray(value2) && !value2.length ? error : "";
+}
+function url(error) {
+  return (value2) => {
+    try {
+      value2 && new URL(value2);
+      return "";
+    } catch (_) {
+      return error;
+    }
+  };
+}
+function value(requirement, error) {
+  return (value2) => (value2 || value2 === 0) && value2 !== requirement ? error : "";
+}
+exports.Field = Field;
+exports.FieldArray = FieldArray;
+exports.Form = Form;
+exports.FormError = FormError;
+exports.clearError = clearError;
+exports.clearResponse = clearResponse;
+exports.custom = custom;
+exports.email = email;
+exports.focus = focus;
+exports.getError = getError;
+exports.getErrors = getErrors;
+exports.getValue = getValue;
+exports.getValues = getValues;
+exports.hasField = hasField;
+exports.hasFieldArray = hasFieldArray;
+exports.insert = insert;
+exports.maxLength = maxLength;
+exports.maxRange = maxRange;
+exports.maxSize = maxSize;
+exports.maxTotalSize = maxTotalSize;
+exports.mimeType = mimeType;
+exports.minLength = minLength;
+exports.minRange = minRange;
+exports.minSize = minSize;
+exports.minTotalSize = minTotalSize;
+exports.move = move;
+exports.pattern = pattern;
+exports.remove = remove;
+exports.replace = replace;
+exports.required = required;
+exports.reset = reset;
+exports.setError = setError;
+exports.setResponse = setResponse;
+exports.setValue = setValue;
+exports.setValues = setValues;
+exports.submit = submit;
+exports.swap = swap;
+exports.toCustom = toCustom;
+exports.toLowerCase = toLowerCase;
+exports.toTrimmed = toTrimmed;
+exports.toUpperCase = toUpperCase;
+exports.url = url;
+exports.useForm = useForm;
+exports.useFormStore = useFormStore;
+exports.valiField = valiField;
+exports.valiForm = valiForm;
+exports.validate = validate;
+exports.value = value;
+exports.zodField = zodField;
+exports.zodForm = zodForm;

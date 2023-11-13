@@ -1,0 +1,54 @@
+import { batch } from '@preact/signals';
+import { getUniqueId } from './getUniqueId';
+import { setFieldArrayState } from './setFieldArrayState';
+import { setFieldState } from './setFieldState';
+/**
+ * Sets the specified field array value to the corresponding field and field
+ * array stores.
+ *
+ * @param form The form of the field array.
+ * @param name The name of the field array.
+ * @param options The value options.
+ */
+export function setFieldArrayValue(form, name, { at: index, value }) {
+    batch(() => {
+        // Create recursive function to update stores
+        const updateStores = (prevPath, data) => {
+            Object.entries(data).forEach(([path, value]) => {
+                // Create new compound path
+                const compoundPath = `${prevPath}.${path}`;
+                // Set field store if it could be a field value
+                if (!value ||
+                    typeof value !== 'object' ||
+                    Array.isArray(value) ||
+                    value instanceof Date ||
+                    value instanceof Blob) {
+                    setFieldState(form, compoundPath, {
+                        startValue: value,
+                        value,
+                        error: '',
+                        touched: false,
+                        dirty: false,
+                    });
+                }
+                // Set field array store if it could be a field array value
+                if (Array.isArray(value)) {
+                    const items = value.map(() => getUniqueId());
+                    setFieldArrayState(form, compoundPath, {
+                        startItems: [...items],
+                        items,
+                        error: '',
+                        touched: false,
+                        dirty: false,
+                    });
+                }
+                // Update nested stores if it is a field array or nested field
+                if (value && typeof value === 'object') {
+                    updateStores(compoundPath, value);
+                }
+            });
+        };
+        // Update store of field array index
+        updateStores(name, { [index]: value });
+    });
+}

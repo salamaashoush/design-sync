@@ -1,0 +1,42 @@
+import { getFieldArrayStore, getFieldStore, getFilteredNames, getOptions, readSignal, } from '../utils';
+export function getValues(form, arg2, arg3) {
+    // Get filtered field names to get value from
+    const [fieldNames, fieldArrayNames] = getFilteredNames(form, arg2);
+    // Destructure options and set default values
+    const { shouldActive = true, shouldTouched = false, shouldDirty = false, shouldValid = false, peek = false, } = getOptions(arg2, arg3);
+    // If no field or field array name is specified, set listener to be notified
+    // when a new field is added
+    if (!peek) {
+        if (typeof arg2 !== 'string' && !Array.isArray(arg2)) {
+            form.internal.fieldNames.value;
+            // Otherwise if a field array is included, set listener to be notified when
+            // a new field array items is added
+        }
+        else {
+            fieldArrayNames.forEach((fieldArrayName) => getFieldArrayStore(form, fieldArrayName).items.value);
+        }
+    }
+    // Create and return values of form or field array
+    return fieldNames.reduce((values, name) => {
+        // Get store of specified field
+        const field = getFieldStore(form, name);
+        // Add value if field corresponds to filter options
+        if ((!shouldActive || readSignal(field.active, peek)) &&
+            (!shouldTouched || readSignal(field.touched, peek)) &&
+            (!shouldDirty || readSignal(field.dirty, peek)) &&
+            (!shouldValid || !readSignal(field.error, peek))) {
+            // Split name into keys to be able to add values of nested fields
+            (typeof arg2 === 'string' ? name.replace(`${arg2}.`, '') : name)
+                .split('.')
+                .reduce((object, key, index, keys) => (object[key] =
+                index === keys.length - 1
+                    ? // If it is last key, add value
+                        readSignal(field.value, peek)
+                    : // Otherwise return object or array
+                        (typeof object[key] === 'object' && object[key]) ||
+                            (isNaN(+keys[index + 1]) ? {} : [])), values);
+        }
+        // Return modified values object
+        return values;
+    }, typeof arg2 === 'string' ? [] : {});
+}

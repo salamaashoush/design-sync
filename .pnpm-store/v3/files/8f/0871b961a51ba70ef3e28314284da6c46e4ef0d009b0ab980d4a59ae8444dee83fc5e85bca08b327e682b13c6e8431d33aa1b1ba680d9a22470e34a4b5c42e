@@ -1,0 +1,4714 @@
+// src/error/flatten/flatten.ts
+function flatten(arg1) {
+  return (Array.isArray(arg1) ? arg1 : arg1.issues).reduce(
+    (flatErrors, issue) => {
+      if (issue.path) {
+        if (issue.path.every(
+          ({ key }) => typeof key === "string" || typeof key === "number"
+        )) {
+          const path = issue.path.map(({ key }) => key).join(".");
+          if (flatErrors.nested[path]) {
+            flatErrors.nested[path].push(issue.message);
+          } else {
+            flatErrors.nested[path] = [issue.message];
+          }
+        }
+      } else {
+        if (flatErrors.root) {
+          flatErrors.root.push(issue.message);
+        } else {
+          flatErrors.root = [issue.message];
+        }
+      }
+      return flatErrors;
+    },
+    { nested: {} }
+  );
+}
+
+// src/error/ValiError/ValiError.ts
+var ValiError = class extends Error {
+  issues;
+  /**
+   * Creates a Valibot error with useful information.
+   *
+   * @param issues The error issues.
+   */
+  constructor(issues) {
+    super(issues[0].message);
+    this.name = "ValiError";
+    this.issues = issues;
+  }
+};
+
+// src/methods/brand/brand.ts
+var BrandSymbol = Symbol("brand");
+function brand(schema, name) {
+  return schema;
+}
+
+// src/methods/coerce/coerce.ts
+function coerce(schema, action) {
+  return {
+    ...schema,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    _parse(input, info) {
+      return schema._parse(action(input), info);
+    }
+  };
+}
+
+// src/methods/coerce/coerceAsync.ts
+function coerceAsync(schema, action) {
+  return {
+    ...schema,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    async _parse(input, info) {
+      return schema._parse(await action(input), info);
+    }
+  };
+}
+
+// src/utils/getIssues/getIssues.ts
+function getIssues(issues) {
+  return { issues };
+}
+
+// src/utils/getOutput/getOutput.ts
+function getOutput(output) {
+  return { output };
+}
+
+// src/utils/executePipe/utils/getIssue/getIssue.ts
+function getIssue(info, issue) {
+  return {
+    reason: info?.reason,
+    validation: issue.validation,
+    origin: info?.origin || "value",
+    message: issue.message,
+    input: issue.input,
+    path: issue.path,
+    abortEarly: info?.abortEarly,
+    abortPipeEarly: info?.abortPipeEarly,
+    skipPipe: info?.skipPipe
+  };
+}
+
+// src/utils/executePipe/utils/getPipeInfo/getPipeInfo.ts
+function getPipeInfo(info, reason) {
+  return {
+    reason,
+    origin: info?.origin,
+    abortEarly: info?.abortEarly,
+    abortPipeEarly: info?.abortPipeEarly,
+    skipPipe: info?.skipPipe
+  };
+}
+
+// src/utils/executePipe/executePipe.ts
+function executePipe(input, pipe, parseInfo, reason) {
+  if (!pipe || !pipe.length || parseInfo?.skipPipe) {
+    return getOutput(input);
+  }
+  let pipeInfo;
+  let issues;
+  let output = input;
+  for (const action of pipe) {
+    const result = action(output);
+    if (result.issues) {
+      pipeInfo = pipeInfo || getPipeInfo(parseInfo, reason);
+      for (const issueInfo of result.issues) {
+        const issue = getIssue(pipeInfo, issueInfo);
+        issues ? issues.push(issue) : issues = [issue];
+      }
+      if (pipeInfo.abortEarly || pipeInfo.abortPipeEarly) {
+        break;
+      }
+    } else {
+      output = result.output;
+    }
+  }
+  return issues ? getIssues(issues) : getOutput(output);
+}
+
+// src/utils/executePipe/executePipeAsync.ts
+async function executePipeAsync(input, pipe, parseInfo, reason) {
+  if (!pipe || !pipe.length || parseInfo?.skipPipe) {
+    return getOutput(input);
+  }
+  let pipeInfo;
+  let issues;
+  let output = input;
+  for (const action of pipe) {
+    const result = await action(output);
+    if (result.issues) {
+      pipeInfo = pipeInfo || getPipeInfo(parseInfo, reason);
+      for (const issueInfo of result.issues) {
+        const issue = getIssue(pipeInfo, issueInfo);
+        issues ? issues.push(issue) : issues = [issue];
+      }
+      if (pipeInfo.abortEarly || pipeInfo.abortPipeEarly) {
+        break;
+      }
+    } else {
+      output = result.output;
+    }
+  }
+  return issues ? getIssues(issues) : getOutput(output);
+}
+
+// src/utils/getDefaultArgs/getDefaultArgs.ts
+function getDefaultArgs(arg1, arg2) {
+  return Array.isArray(arg1) ? [void 0, arg1] : [arg1, arg2];
+}
+
+// src/utils/getErrorMessage/getErrorMessage.ts
+function getErrorMessage(error) {
+  return typeof error === "function" ? error() : error;
+}
+
+// src/utils/getPipeIssues/getPipeIssues.ts
+function getPipeIssues(validation, error, input) {
+  return getIssues([
+    {
+      validation,
+      message: getErrorMessage(error),
+      input
+    }
+  ]);
+}
+
+// src/utils/getRestAndDefaultArgs/getRestAndDefaultArgs.ts
+function getRestAndDefaultArgs(arg1, arg2, arg3) {
+  if (!arg1 || typeof arg1 === "object" && !Array.isArray(arg1)) {
+    const [error2, pipe2] = getDefaultArgs(arg2, arg3);
+    return [arg1, error2, pipe2];
+  }
+  const [error, pipe] = getDefaultArgs(
+    arg1,
+    arg2
+  );
+  return [void 0, error, pipe];
+}
+
+// src/utils/getSchemaIssues/getSchemaIssues.ts
+function getSchemaIssues(info, reason, validation, error, input, issues) {
+  return {
+    issues: [
+      {
+        reason,
+        validation,
+        origin: info?.origin || "value",
+        message: getErrorMessage(error),
+        input,
+        issues,
+        abortEarly: info?.abortEarly,
+        abortPipeEarly: info?.abortPipeEarly,
+        skipPipe: info?.skipPipe
+      }
+    ]
+  };
+}
+
+// src/utils/isLuhnAlgo/isLuhnAlgo.ts
+var NON_DIGIT_REGEX = /\D/gu;
+function isLuhnAlgo(input) {
+  const number2 = input.replaceAll(NON_DIGIT_REGEX, "");
+  let length2 = number2.length;
+  let bit = 1;
+  let sum = 0;
+  while (length2) {
+    const value2 = +number2[--length2];
+    bit ^= 1;
+    sum += bit ? [0, 2, 4, 6, 8, 1, 3, 5, 7, 9][value2] : value2;
+  }
+  return sum % 10 === 0;
+}
+
+// src/methods/fallback/fallback.ts
+function fallback(schema, fallback2) {
+  return {
+    ...schema,
+    /**
+     * Returns the fallback value.
+     */
+    getFallback(info) {
+      return typeof fallback2 === "function" ? fallback2(info) : fallback2;
+    },
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    _parse(input, info) {
+      const result = schema._parse(input, info);
+      return getOutput(
+        result.issues ? this.getFallback({ input, issues: result.issues }) : result.output
+      );
+    }
+  };
+}
+
+// src/methods/fallback/fallbackAsync.ts
+function fallbackAsync(schema, fallback2) {
+  return {
+    ...schema,
+    /**
+     * Returns the default value.
+     */
+    async getFallback(info) {
+      return typeof fallback2 === "function" ? await fallback2(info) : fallback2;
+    },
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    async _parse(input, info) {
+      const result = await schema._parse(input, info);
+      return getOutput(
+        result.issues ? await this.getFallback({ input, issues: result.issues }) : result.output
+      );
+    }
+  };
+}
+
+// src/methods/getDefault/getDefault.ts
+function getDefault(schema) {
+  return schema.getDefault?.();
+}
+
+// src/methods/getDefault/getDefaultAsync.ts
+async function getDefaultAsync(schema) {
+  return schema.getDefault?.();
+}
+
+// src/methods/getDefaults/getDefaults.ts
+function getDefaults(schema) {
+  let defaults;
+  if (schema.getDefault) {
+    defaults = schema.getDefault();
+  } else if ("type" in schema) {
+    if (schema.type === "object") {
+      defaults = {};
+      for (const key in schema.entries) {
+        defaults[key] = getDefaults(schema.entries[key]);
+      }
+    } else if (schema.type === "tuple") {
+      defaults = [];
+      for (let key = 0; key < schema.items.length; key++) {
+        defaults.push(getDefaults(schema.items[key]));
+      }
+    }
+  }
+  return defaults;
+}
+
+// src/methods/getDefaults/getDefaultsAsync.ts
+async function getDefaultsAsync(schema) {
+  let defaults;
+  if (schema.getDefault) {
+    defaults = await schema.getDefault();
+  } else if ("type" in schema) {
+    if (schema.type === "object") {
+      defaults = {};
+      for (const key in schema.entries) {
+        defaults[key] = await getDefaultsAsync(schema.entries[key]);
+      }
+    } else if (schema.type === "tuple") {
+      defaults = [];
+      for (let key = 0; key < schema.items.length; key++) {
+        defaults.push(await getDefaultsAsync(schema.items[key]));
+      }
+    }
+  }
+  return defaults;
+}
+
+// src/methods/getFallback/getFallback.ts
+function getFallback(schema, info) {
+  return schema.getFallback?.(info);
+}
+
+// src/methods/getFallback/getFallbackAsync.ts
+async function getFallbackAsync(schema, info) {
+  return schema.getFallback?.(info);
+}
+
+// src/methods/getFallbacks/getFallbacks.ts
+function getFallbacks(schema) {
+  let fallbacks;
+  if (schema.getFallback) {
+    fallbacks = schema.getFallback();
+  } else if ("type" in schema) {
+    if (schema.type === "object") {
+      fallbacks = {};
+      for (const key in schema.entries) {
+        fallbacks[key] = getFallbacks(schema.entries[key]);
+      }
+    } else if (schema.type === "tuple") {
+      fallbacks = [];
+      for (let key = 0; key < schema.items.length; key++) {
+        fallbacks.push(getFallbacks(schema.items[key]));
+      }
+    }
+  }
+  return fallbacks;
+}
+
+// src/methods/getFallbacks/getFallbacksAsync.ts
+async function getFallbacksAsync(schema) {
+  let fallbacks;
+  if (schema.getFallback) {
+    fallbacks = await schema.getFallback();
+  } else if ("type" in schema) {
+    if (schema.type === "object") {
+      fallbacks = {};
+      await Promise.all(
+        Object.entries(schema.entries).map(async ([key, schema2]) => {
+          fallbacks[key] = await getFallbacksAsync(schema2);
+        })
+      );
+    } else if (schema.type === "tuple") {
+      fallbacks = await Promise.all(
+        schema.items.map((schema2) => getFallbacksAsync(schema2))
+      );
+    }
+  }
+  return fallbacks;
+}
+
+// src/methods/is/is.ts
+function is(schema, input) {
+  return !schema._parse(input, { abortEarly: true }).issues;
+}
+
+// src/schemas/any/any.ts
+function any(pipe = []) {
+  return {
+    /**
+     * The schema type.
+     */
+    type: "any",
+    /**
+     * Whether it's async.
+     */
+    async: false,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    _parse(input, info) {
+      return executePipe(input, pipe, info, "any");
+    }
+  };
+}
+
+// src/schemas/any/anyAsync.ts
+function anyAsync(pipe = []) {
+  return {
+    /**
+     * The schema type.
+     */
+    type: "any",
+    /**
+     * Whether it's async.
+     */
+    async: true,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    async _parse(input, info) {
+      return executePipeAsync(input, pipe, info, "any");
+    }
+  };
+}
+
+// src/schemas/array/array.ts
+function array(item, arg2, arg3) {
+  const [error, pipe] = getDefaultArgs(arg2, arg3);
+  return {
+    /**
+     * The schema type.
+     */
+    type: "array",
+    /**
+     * The item schema.
+     */
+    item,
+    /**
+     * Whether it's async.
+     */
+    async: false,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    _parse(input, info) {
+      if (!Array.isArray(input)) {
+        return getSchemaIssues(
+          info,
+          "type",
+          "array",
+          error || "Invalid type",
+          input
+        );
+      }
+      let issues;
+      const output = [];
+      for (let key = 0; key < input.length; key++) {
+        const value2 = input[key];
+        const result = item._parse(value2, info);
+        if (result.issues) {
+          const pathItem = {
+            type: "array",
+            input,
+            key,
+            value: value2
+          };
+          for (const issue of result.issues) {
+            if (issue.path) {
+              issue.path.unshift(pathItem);
+            } else {
+              issue.path = [pathItem];
+            }
+            issues?.push(issue);
+          }
+          if (!issues) {
+            issues = result.issues;
+          }
+          if (info?.abortEarly) {
+            break;
+          }
+        } else {
+          output.push(result.output);
+        }
+      }
+      return issues ? getIssues(issues) : executePipe(output, pipe, info, "array");
+    }
+  };
+}
+
+// src/schemas/array/arrayAsync.ts
+function arrayAsync(item, arg2, arg3) {
+  const [error, pipe] = getDefaultArgs(arg2, arg3);
+  return {
+    /**
+     * The schema type.
+     */
+    type: "array",
+    /**
+     * The item schema.
+     */
+    item,
+    /**
+     * Whether it's async.
+     */
+    async: true,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    async _parse(input, info) {
+      if (!Array.isArray(input)) {
+        return getSchemaIssues(
+          info,
+          "type",
+          "array",
+          error || "Invalid type",
+          input
+        );
+      }
+      let issues;
+      const output = [];
+      await Promise.all(
+        input.map(async (value2, key) => {
+          if (!(info?.abortEarly && issues)) {
+            const result = await item._parse(value2, info);
+            if (!(info?.abortEarly && issues)) {
+              if (result.issues) {
+                const pathItem = {
+                  type: "array",
+                  input,
+                  key,
+                  value: value2
+                };
+                for (const issue of result.issues) {
+                  if (issue.path) {
+                    issue.path.unshift(pathItem);
+                  } else {
+                    issue.path = [pathItem];
+                  }
+                  issues?.push(issue);
+                }
+                if (!issues) {
+                  issues = result.issues;
+                }
+                if (info?.abortEarly) {
+                  throw null;
+                }
+              } else {
+                output[key] = result.output;
+              }
+            }
+          }
+        })
+      ).catch(() => null);
+      return issues ? getIssues(issues) : executePipeAsync(output, pipe, info, "array");
+    }
+  };
+}
+
+// src/schemas/bigint/bigint.ts
+function bigint(arg1, arg2) {
+  const [error, pipe] = getDefaultArgs(arg1, arg2);
+  return {
+    /**
+     * The schema type.
+     */
+    type: "bigint",
+    /**
+     * Whether it's async.
+     */
+    async: false,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    _parse(input, info) {
+      if (typeof input !== "bigint") {
+        return getSchemaIssues(
+          info,
+          "type",
+          "bigint",
+          error || "Invalid type",
+          input
+        );
+      }
+      return executePipe(input, pipe, info, "bigint");
+    }
+  };
+}
+
+// src/schemas/bigint/bigintAsync.ts
+function bigintAsync(arg1, arg2) {
+  const [error, pipe] = getDefaultArgs(arg1, arg2);
+  return {
+    /**
+     * The schema type.
+     */
+    type: "bigint",
+    /**
+     * Whether it's async.
+     */
+    async: true,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    async _parse(input, info) {
+      if (typeof input !== "bigint") {
+        return getSchemaIssues(
+          info,
+          "type",
+          "bigint",
+          error || "Invalid type",
+          input
+        );
+      }
+      return executePipeAsync(input, pipe, info, "bigint");
+    }
+  };
+}
+
+// src/schemas/blob/blob.ts
+function blob(arg1, arg2) {
+  const [error, pipe] = getDefaultArgs(arg1, arg2);
+  return {
+    /**
+     * The schema type.
+     */
+    type: "blob",
+    /**
+     * Whether it's async.
+     */
+    async: false,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    _parse(input, info) {
+      if (!(input instanceof Blob)) {
+        return getSchemaIssues(
+          info,
+          "type",
+          "blob",
+          error || "Invalid type",
+          input
+        );
+      }
+      return executePipe(input, pipe, info, "blob");
+    }
+  };
+}
+
+// src/schemas/blob/blobAsync.ts
+function blobAsync(arg1, arg2) {
+  const [error, pipe] = getDefaultArgs(arg1, arg2);
+  return {
+    /**
+     * The schema type.
+     */
+    type: "blob",
+    /**
+     * Whether it's async.
+     */
+    async: true,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    async _parse(input, info) {
+      if (!(input instanceof Blob)) {
+        return getSchemaIssues(
+          info,
+          "type",
+          "blob",
+          error || "Invalid type",
+          input
+        );
+      }
+      return executePipeAsync(input, pipe, info, "blob");
+    }
+  };
+}
+
+// src/schemas/boolean/boolean.ts
+function boolean(arg1, arg2) {
+  const [error, pipe] = getDefaultArgs(arg1, arg2);
+  return {
+    /**
+     * The schema type.
+     */
+    type: "boolean",
+    /**
+     * Whether it's async.
+     */
+    async: false,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    _parse(input, info) {
+      if (typeof input !== "boolean") {
+        return getSchemaIssues(
+          info,
+          "type",
+          "boolean",
+          error || "Invalid type",
+          input
+        );
+      }
+      return executePipe(input, pipe, info, "boolean");
+    }
+  };
+}
+
+// src/schemas/boolean/booleanAsync.ts
+function booleanAsync(arg1, arg2) {
+  const [error, pipe] = getDefaultArgs(arg1, arg2);
+  return {
+    /**
+     * The schema type.
+     */
+    type: "boolean",
+    /**
+     * Whether it's async.
+     */
+    async: true,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    async _parse(input, info) {
+      if (typeof input !== "boolean") {
+        return getSchemaIssues(
+          info,
+          "type",
+          "boolean",
+          error || "Invalid type",
+          input
+        );
+      }
+      return executePipeAsync(input, pipe, info, "boolean");
+    }
+  };
+}
+
+// src/schemas/date/date.ts
+function date(arg1, arg2) {
+  const [error, pipe] = getDefaultArgs(arg1, arg2);
+  return {
+    /**
+     * The schema type.
+     */
+    type: "date",
+    /**
+     * Whether it's async.
+     */
+    async: false,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    _parse(input, info) {
+      if (!(input instanceof Date) || isNaN(input.getTime())) {
+        return getSchemaIssues(
+          info,
+          "type",
+          "date",
+          error || "Invalid type",
+          input
+        );
+      }
+      return executePipe(input, pipe, info, "date");
+    }
+  };
+}
+
+// src/schemas/date/dateAsync.ts
+function dateAsync(arg1, arg2) {
+  const [error, pipe] = getDefaultArgs(arg1, arg2);
+  return {
+    /**
+     * The schema type.
+     */
+    type: "date",
+    /**
+     * Whether it's async.
+     */
+    async: true,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    async _parse(input, info) {
+      if (!(input instanceof Date) || isNaN(input.getTime())) {
+        return getSchemaIssues(
+          info,
+          "type",
+          "date",
+          error || "Invalid type",
+          input
+        );
+      }
+      return executePipeAsync(input, pipe, info, "date");
+    }
+  };
+}
+
+// src/schemas/enum/enum.ts
+function enum_(enum_2, error) {
+  return {
+    /**
+     * The schema type.
+     */
+    type: "enum",
+    /**
+     * The enum value.
+     */
+    enum: enum_2,
+    /**
+     * Whether it's async.
+     */
+    async: false,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    _parse(input, info) {
+      if (!Object.values(enum_2).includes(input)) {
+        return getSchemaIssues(
+          info,
+          "type",
+          "enum",
+          error || "Invalid type",
+          input
+        );
+      }
+      return getOutput(input);
+    }
+  };
+}
+var nativeEnum = enum_;
+
+// src/schemas/enum/enumAsync.ts
+function enumAsync(enum_2, error) {
+  return {
+    /**
+     * The schema type.
+     */
+    type: "enum",
+    /**
+     * The enum value.
+     */
+    enum: enum_2,
+    /**
+     * Whether it's async.
+     */
+    async: true,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    async _parse(input, info) {
+      if (!Object.values(enum_2).includes(input)) {
+        return getSchemaIssues(
+          info,
+          "type",
+          "enum",
+          error || "Invalid type",
+          input
+        );
+      }
+      return getOutput(input);
+    }
+  };
+}
+var nativeEnumAsync = enumAsync;
+
+// src/schemas/instance/instance.ts
+function instance(of, arg2, arg3) {
+  const [error, pipe] = getDefaultArgs(arg2, arg3);
+  return {
+    /**
+     * The schema type.
+     */
+    type: "instance",
+    /**
+     * The class of the instance.
+     */
+    class: of,
+    /**
+     * Whether it's async.
+     */
+    async: false,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    _parse(input, info) {
+      if (!(input instanceof of)) {
+        return getSchemaIssues(
+          info,
+          "type",
+          "instance",
+          error || "Invalid type",
+          input
+        );
+      }
+      return executePipe(input, pipe, info, "instance");
+    }
+  };
+}
+
+// src/schemas/instance/instanceAsync.ts
+function instanceAsync(of, arg2, arg3) {
+  const [error, pipe] = getDefaultArgs(arg2, arg3);
+  return {
+    /**
+     * The schema type.
+     */
+    type: "instance",
+    /**
+     * The class of the instance.
+     */
+    class: of,
+    /**
+     * Whether it's async.
+     */
+    async: true,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    async _parse(input, info) {
+      if (!(input instanceof of)) {
+        return getSchemaIssues(
+          info,
+          "type",
+          "instance",
+          error || "Invalid type",
+          input
+        );
+      }
+      return executePipeAsync(input, pipe, info, "instance");
+    }
+  };
+}
+
+// src/schemas/intersect/utils/mergeOutputs/mergeOutputs.ts
+function mergeOutputs(output1, output2) {
+  if (typeof output1 === typeof output2) {
+    if (output1 === output2 || output1 instanceof Date && output2 instanceof Date && +output1 === +output2) {
+      return getOutput(output1);
+    }
+    if (Array.isArray(output1) && Array.isArray(output2)) {
+      if (output1.length === output2.length) {
+        const array2 = [];
+        for (let index = 0; index < output1.length; index++) {
+          const result = mergeOutputs(output1[index], output2[index]);
+          if (result.invalid) {
+            return result;
+          }
+          array2.push(result.output);
+        }
+        return getOutput(array2);
+      }
+      return { invalid: true };
+    }
+    if (output1 && output2 && output1.constructor === Object && output2.constructor === Object) {
+      const object2 = { ...output1, ...output2 };
+      for (const key in output1) {
+        if (key in output2) {
+          const result = mergeOutputs(output1[key], output2[key]);
+          if (result.invalid) {
+            return result;
+          }
+          object2[key] = result.output;
+        }
+      }
+      return getOutput(object2);
+    }
+  }
+  return { invalid: true };
+}
+
+// src/schemas/intersect/intersect.ts
+function intersect(options, error) {
+  return {
+    /**
+     * The schema type.
+     */
+    type: "intersect",
+    /**
+     * The intersect options.
+     */
+    options,
+    /**
+     * Whether it's async.
+     */
+    async: false,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    _parse(input, info) {
+      let issues;
+      let outputs;
+      for (const schema of options) {
+        const result = schema._parse(input, info);
+        if (result.issues) {
+          if (issues) {
+            for (const issue of result.issues) {
+              issues.push(issue);
+            }
+          } else {
+            issues = result.issues;
+          }
+          if (info?.abortEarly) {
+            break;
+          }
+        } else {
+          if (outputs) {
+            outputs.push(result.output);
+          } else {
+            outputs = [result.output];
+          }
+        }
+      }
+      if (issues) {
+        return getIssues(issues);
+      }
+      let output = outputs[0];
+      for (let index = 1; index < outputs.length; index++) {
+        const result = mergeOutputs(output, outputs[index]);
+        if (result.invalid) {
+          return getSchemaIssues(
+            info,
+            "type",
+            "intersect",
+            error || "Invalid type",
+            input
+          );
+        }
+        output = result.output;
+      }
+      return getOutput(output);
+    }
+  };
+}
+var intersection = intersect;
+
+// src/schemas/literal/literal.ts
+function literal(literal2, error) {
+  return {
+    /**
+     * The schema type.
+     */
+    type: "literal",
+    /**
+     * The literal value.
+     */
+    literal: literal2,
+    /**
+     * Whether it's async.
+     */
+    async: false,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    _parse(input, info) {
+      if (input !== literal2) {
+        return getSchemaIssues(
+          info,
+          "type",
+          "literal",
+          error || "Invalid type",
+          input
+        );
+      }
+      return getOutput(input);
+    }
+  };
+}
+
+// src/schemas/literal/literalAsync.ts
+function literalAsync(literal2, error) {
+  return {
+    /**
+     * The schema type.
+     */
+    type: "literal",
+    /**
+     * The literal value.
+     */
+    literal: literal2,
+    /**
+     * Whether it's async.
+     */
+    async: true,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    async _parse(input, info) {
+      if (input !== literal2) {
+        return getSchemaIssues(
+          info,
+          "type",
+          "literal",
+          error || "Invalid type",
+          input
+        );
+      }
+      return getOutput(input);
+    }
+  };
+}
+
+// src/schemas/map/map.ts
+function map(key, value2, arg3, arg4) {
+  const [error, pipe] = getDefaultArgs(arg3, arg4);
+  return {
+    /**
+     * The schema type.
+     */
+    type: "map",
+    /**
+     * The key schema.
+     */
+    key,
+    /**
+     * The value schema.
+     */
+    value: value2,
+    /**
+     * Whether it's async.
+     */
+    async: false,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    _parse(input, info) {
+      if (!(input instanceof Map)) {
+        return getSchemaIssues(
+          info,
+          "type",
+          "map",
+          error || "Invalid type",
+          input
+        );
+      }
+      let issues;
+      const output = /* @__PURE__ */ new Map();
+      for (const [inputKey, inputValue] of input.entries()) {
+        let pathItem;
+        const keyResult = key._parse(inputKey, {
+          origin: "key",
+          abortEarly: info?.abortEarly,
+          abortPipeEarly: info?.abortPipeEarly,
+          skipPipe: info?.skipPipe
+        });
+        if (keyResult.issues) {
+          pathItem = {
+            type: "map",
+            input,
+            key: inputKey,
+            value: inputValue
+          };
+          for (const issue of keyResult.issues) {
+            if (issue.path) {
+              issue.path.unshift(pathItem);
+            } else {
+              issue.path = [pathItem];
+            }
+            issues?.push(issue);
+          }
+          if (!issues) {
+            issues = keyResult.issues;
+          }
+          if (info?.abortEarly) {
+            break;
+          }
+        }
+        const valueResult = value2._parse(inputValue, info);
+        if (valueResult.issues) {
+          pathItem = pathItem || {
+            type: "map",
+            input,
+            key: inputKey,
+            value: inputValue
+          };
+          for (const issue of valueResult.issues) {
+            if (issue.path) {
+              issue.path.unshift(pathItem);
+            } else {
+              issue.path = [pathItem];
+            }
+            issues?.push(issue);
+          }
+          if (!issues) {
+            issues = valueResult.issues;
+          }
+          if (info?.abortEarly) {
+            break;
+          }
+        }
+        if (!keyResult.issues && !valueResult.issues) {
+          output.set(keyResult.output, valueResult.output);
+        }
+      }
+      return issues ? getIssues(issues) : executePipe(output, pipe, info, "map");
+    }
+  };
+}
+
+// src/schemas/map/mapAsync.ts
+function mapAsync(key, value2, arg3, arg4) {
+  const [error, pipe] = getDefaultArgs(arg3, arg4);
+  return {
+    /**
+     * The schema type.
+     */
+    type: "map",
+    /**
+     * The key schema.
+     */
+    key,
+    /**
+     * The  value schema.
+     */
+    value: value2,
+    /**
+     * Whether it's async.
+     */
+    async: true,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    async _parse(input, info) {
+      if (!(input instanceof Map)) {
+        return getSchemaIssues(
+          info,
+          "type",
+          "map",
+          error || "Invalid type",
+          input
+        );
+      }
+      const output = /* @__PURE__ */ new Map();
+      let issues;
+      await Promise.all(
+        Array.from(input.entries()).map(async ([inputKey, inputValue]) => {
+          let pathItem;
+          const [keyResult, valueResult] = await Promise.all(
+            [
+              { schema: key, value: inputKey, origin: "key" },
+              { schema: value2, value: inputValue, origin: "value" }
+            ].map(async ({ schema, value: value3, origin }) => {
+              if (!(info?.abortEarly && issues)) {
+                const result = await schema._parse(value3, {
+                  origin,
+                  abortEarly: info?.abortEarly,
+                  abortPipeEarly: info?.abortPipeEarly,
+                  skipPipe: info?.skipPipe
+                });
+                if (!(info?.abortEarly && issues)) {
+                  if (result.issues) {
+                    pathItem = pathItem || {
+                      type: "map",
+                      input,
+                      key: inputKey,
+                      value: inputValue
+                    };
+                    for (const issue of result.issues) {
+                      if (issue.path) {
+                        issue.path.unshift(pathItem);
+                      } else {
+                        issue.path = [pathItem];
+                      }
+                      issues?.push(issue);
+                    }
+                    if (!issues) {
+                      issues = result.issues;
+                    }
+                    if (info?.abortEarly) {
+                      throw null;
+                    }
+                  } else {
+                    return result;
+                  }
+                }
+              }
+            })
+          ).catch(() => []);
+          if (keyResult && valueResult) {
+            output.set(keyResult.output, valueResult.output);
+          }
+        })
+      );
+      return issues ? getIssues(issues) : executePipeAsync(input, pipe, info, "map");
+    }
+  };
+}
+
+// src/schemas/nan/nan.ts
+function nan(error) {
+  return {
+    /**
+     * The schema type.
+     */
+    type: "nan",
+    /**
+     * Whether it's async.
+     */
+    async: false,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    _parse(input, info) {
+      if (!Number.isNaN(input)) {
+        return getSchemaIssues(
+          info,
+          "type",
+          "nan",
+          error || "Invalid type",
+          input
+        );
+      }
+      return getOutput(input);
+    }
+  };
+}
+
+// src/schemas/nan/nanAsync.ts
+function nanAsync(error) {
+  return {
+    /**
+     * The schema type.
+     */
+    type: "nan",
+    /**
+     * Whether it's async.
+     */
+    async: true,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    async _parse(input, info) {
+      if (!Number.isNaN(input)) {
+        return getSchemaIssues(
+          info,
+          "type",
+          "nan",
+          error || "Invalid type",
+          input
+        );
+      }
+      return getOutput(input);
+    }
+  };
+}
+
+// src/schemas/never/never.ts
+function never(error) {
+  return {
+    /**
+     * The schema type.
+     */
+    type: "never",
+    /**
+     * Whether it's async.
+     */
+    async: false,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    _parse(input, info) {
+      return getSchemaIssues(
+        info,
+        "type",
+        "never",
+        error || "Invalid type",
+        input
+      );
+    }
+  };
+}
+
+// src/schemas/never/neverAsync.ts
+function neverAsync(error) {
+  return {
+    /**
+     * The schema type.
+     */
+    type: "never",
+    /**
+     * Whether it's async.
+     */
+    async: true,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    async _parse(input, info) {
+      return getSchemaIssues(
+        info,
+        "type",
+        "never",
+        error || "Invalid type",
+        input
+      );
+    }
+  };
+}
+
+// src/schemas/nonNullable/nonNullable.ts
+function nonNullable(wrapped, error) {
+  return {
+    /**
+     * The schema type.
+     */
+    type: "non_nullable",
+    /**
+     * The wrapped schema.
+     */
+    wrapped,
+    /**
+     * Whether it's async.
+     */
+    async: false,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    _parse(input, info) {
+      if (input === null) {
+        return getSchemaIssues(
+          info,
+          "type",
+          "non_nullable",
+          error || "Invalid type",
+          input
+        );
+      }
+      return wrapped._parse(input, info);
+    }
+  };
+}
+
+// src/schemas/nonNullable/nonNullableAsync.ts
+function nonNullableAsync(wrapped, error) {
+  return {
+    /**
+     * The schema type.
+     */
+    type: "non_nullable",
+    /**
+     * The wrapped schema.
+     */
+    wrapped,
+    /**
+     * Whether it's async.
+     */
+    async: true,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    async _parse(input, info) {
+      if (input === null) {
+        return getSchemaIssues(
+          info,
+          "type",
+          "non_nullable",
+          error || "Invalid type",
+          input
+        );
+      }
+      return wrapped._parse(input, info);
+    }
+  };
+}
+
+// src/schemas/nonNullish/nonNullish.ts
+function nonNullish(wrapped, error) {
+  return {
+    /**
+     * The schema type.
+     */
+    type: "non_nullish",
+    /**
+     * The wrapped schema.
+     */
+    wrapped,
+    /**
+     * Whether it's async.
+     */
+    async: false,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    _parse(input, info) {
+      if (input === null || input === void 0) {
+        return getSchemaIssues(
+          info,
+          "type",
+          "non_nullish",
+          error || "Invalid type",
+          input
+        );
+      }
+      return wrapped._parse(input, info);
+    }
+  };
+}
+
+// src/schemas/nonNullish/nonNullishAsync.ts
+function nonNullishAsync(wrapped, error) {
+  return {
+    /**
+     * The schema type.
+     */
+    type: "non_nullish",
+    /**
+     * The wrapped schema.
+     */
+    wrapped,
+    /**
+     * Whether it's async.
+     */
+    async: true,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    async _parse(input, info) {
+      if (input === null || input === void 0) {
+        return getSchemaIssues(
+          info,
+          "type",
+          "non_nullish",
+          error || "Invalid type",
+          input
+        );
+      }
+      return wrapped._parse(input, info);
+    }
+  };
+}
+
+// src/schemas/nonOptional/nonOptional.ts
+function nonOptional(wrapped, error) {
+  return {
+    /**
+     * The schema type.
+     */
+    type: "non_optional",
+    /**
+     * The wrapped schema.
+     */
+    wrapped,
+    /**
+     * Whether it's async.
+     */
+    async: false,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    _parse(input, info) {
+      if (input === void 0) {
+        return getSchemaIssues(
+          info,
+          "type",
+          "non_optional",
+          error || "Invalid type",
+          input
+        );
+      }
+      return wrapped._parse(input, info);
+    }
+  };
+}
+
+// src/schemas/nonOptional/nonOptionalAsync.ts
+function nonOptionalAsync(wrapped, error) {
+  return {
+    /**
+     * The schema type.
+     */
+    type: "non_optional",
+    /**
+     * The wrapped schema.
+     */
+    wrapped,
+    /**
+     * Whether it's async.
+     */
+    async: true,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    async _parse(input, info) {
+      if (input === void 0) {
+        return getSchemaIssues(
+          info,
+          "type",
+          "non_optional",
+          error || "Invalid type",
+          input
+        );
+      }
+      return wrapped._parse(input, info);
+    }
+  };
+}
+
+// src/schemas/nullable/nullable.ts
+function nullable(wrapped, default_) {
+  return {
+    /**
+     * The schema type.
+     */
+    type: "nullable",
+    /**
+     * The wrapped schema.
+     */
+    wrapped,
+    /**
+     * Returns the default value.
+     */
+    getDefault() {
+      return typeof default_ === "function" ? default_() : default_;
+    },
+    /**
+     * Whether it's async.
+     */
+    async: false,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    _parse(input, info) {
+      if (input === null) {
+        const override = this.getDefault();
+        if (override === void 0) {
+          return getOutput(input);
+        }
+        input = override;
+      }
+      return wrapped._parse(input, info);
+    }
+  };
+}
+
+// src/schemas/nullable/nullableAsync.ts
+function nullableAsync(wrapped, default_) {
+  return {
+    /**
+     * The schema type.
+     */
+    type: "nullable",
+    /**
+     * The wrapped schema.
+     */
+    wrapped,
+    /**
+     * Returns the default value.
+     */
+    async getDefault() {
+      return typeof default_ === "function" ? default_() : default_;
+    },
+    /**
+     * Whether it's async.
+     */
+    async: true,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    async _parse(input, info) {
+      if (input === null) {
+        const override = await this.getDefault();
+        if (override === void 0) {
+          return getOutput(input);
+        }
+        input = override;
+      }
+      return wrapped._parse(input, info);
+    }
+  };
+}
+
+// src/schemas/nullish/nullish.ts
+function nullish(wrapped, default_) {
+  return {
+    /**
+     * The schema type.
+     */
+    type: "nullish",
+    /**
+     * The wrapped schema.
+     */
+    wrapped,
+    /**
+     * Returns the default value.
+     */
+    getDefault() {
+      return typeof default_ === "function" ? default_() : default_;
+    },
+    /**
+     * Whether it's async.
+     */
+    async: false,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    _parse(input, info) {
+      if (input === null || input === void 0) {
+        const override = this.getDefault();
+        if (override === void 0) {
+          return getOutput(input);
+        }
+        input = override;
+      }
+      return wrapped._parse(input, info);
+    }
+  };
+}
+
+// src/schemas/nullish/nullishAsync.ts
+function nullishAsync(wrapped, default_) {
+  return {
+    /**
+     * The schema type.
+     */
+    type: "nullish",
+    /**
+     * The wrapped schema.
+     */
+    wrapped,
+    /**
+     * Retutns the default value.
+     */
+    async getDefault() {
+      return typeof default_ === "function" ? default_() : default_;
+    },
+    /**
+     * Whether it's async.
+     */
+    async: true,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    async _parse(input, info) {
+      if (input === null || input === void 0) {
+        const override = await this.getDefault();
+        if (override === void 0) {
+          return getOutput(input);
+        }
+        input = override;
+      }
+      return wrapped._parse(input, info);
+    }
+  };
+}
+
+// src/schemas/null/null.ts
+function null_(error) {
+  return {
+    /**
+     * The schema type.
+     */
+    type: "null",
+    /**
+     * Whether it's async.
+     */
+    async: false,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    _parse(input, info) {
+      if (input !== null) {
+        return getSchemaIssues(
+          info,
+          "type",
+          "null",
+          error || "Invalid type",
+          input
+        );
+      }
+      return getOutput(input);
+    }
+  };
+}
+var nullType = null_;
+
+// src/schemas/null/nullAsync.ts
+function nullAsync(error) {
+  return {
+    /**
+     * The schema type.
+     */
+    type: "null",
+    /**
+     * Whether it's async.
+     */
+    async: true,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    async _parse(input, info) {
+      if (input !== null) {
+        return getSchemaIssues(
+          info,
+          "type",
+          "null",
+          error || "Invalid type",
+          input
+        );
+      }
+      return getOutput(input);
+    }
+  };
+}
+var nullTypeAsync = nullAsync;
+
+// src/schemas/number/number.ts
+function number(arg1, arg2) {
+  const [error, pipe] = getDefaultArgs(arg1, arg2);
+  return {
+    /**
+     * The schema type.
+     */
+    type: "number",
+    /**
+     * Whether it's async.
+     */
+    async: false,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    _parse(input, info) {
+      if (typeof input !== "number" || isNaN(input)) {
+        return getSchemaIssues(
+          info,
+          "type",
+          "number",
+          error || "Invalid type",
+          input
+        );
+      }
+      return executePipe(input, pipe, info, "number");
+    }
+  };
+}
+
+// src/schemas/number/numberAsync.ts
+function numberAsync(arg1, arg2) {
+  const [error, pipe] = getDefaultArgs(arg1, arg2);
+  return {
+    /**
+     * The schema type.
+     */
+    type: "number",
+    /**
+     * Whether it's async.
+     */
+    async: true,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    async _parse(input, info) {
+      if (typeof input !== "number" || isNaN(input)) {
+        return getSchemaIssues(
+          info,
+          "type",
+          "number",
+          error || "Invalid type",
+          input
+        );
+      }
+      return executePipeAsync(input, pipe, info, "number");
+    }
+  };
+}
+
+// src/schemas/object/object.ts
+function object(entries, arg2, arg3, arg4) {
+  const [rest, error, pipe] = getRestAndDefaultArgs(arg2, arg3, arg4);
+  let cachedEntries;
+  return {
+    /**
+     * The schema type.
+     */
+    type: "object",
+    /**
+     * The entries schema.
+     */
+    entries,
+    /**
+     * The rest schema.
+     */
+    rest,
+    /**
+     * Whether it's async.
+     */
+    async: false,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    _parse(input, info) {
+      if (!input || typeof input !== "object") {
+        return getSchemaIssues(
+          info,
+          "type",
+          "object",
+          error || "Invalid type",
+          input
+        );
+      }
+      cachedEntries = cachedEntries || Object.entries(entries);
+      let issues;
+      const output = {};
+      for (const [key, schema] of cachedEntries) {
+        const value2 = input[key];
+        const result = schema._parse(value2, info);
+        if (result.issues) {
+          const pathItem = {
+            type: "object",
+            input,
+            key,
+            value: value2
+          };
+          for (const issue of result.issues) {
+            if (issue.path) {
+              issue.path.unshift(pathItem);
+            } else {
+              issue.path = [pathItem];
+            }
+            issues?.push(issue);
+          }
+          if (!issues) {
+            issues = result.issues;
+          }
+          if (info?.abortEarly) {
+            break;
+          }
+        } else if (result.output !== void 0 || key in input) {
+          output[key] = result.output;
+        }
+      }
+      if (rest && !(info?.abortEarly && issues)) {
+        for (const key in input) {
+          if (!(key in entries)) {
+            const value2 = input[key];
+            const result = rest._parse(value2, info);
+            if (result.issues) {
+              const pathItem = {
+                type: "object",
+                input,
+                key,
+                value: value2
+              };
+              for (const issue of result.issues) {
+                if (issue.path) {
+                  issue.path.unshift(pathItem);
+                } else {
+                  issue.path = [pathItem];
+                }
+                issues?.push(issue);
+              }
+              if (!issues) {
+                issues = result.issues;
+              }
+              if (info?.abortEarly) {
+                break;
+              }
+            } else {
+              output[key] = result.output;
+            }
+          }
+        }
+      }
+      return issues ? getIssues(issues) : executePipe(
+        output,
+        pipe,
+        info,
+        "object"
+      );
+    }
+  };
+}
+
+// src/schemas/object/objectAsync.ts
+function objectAsync(entries, arg2, arg3, arg4) {
+  const [rest, error, pipe] = getRestAndDefaultArgs(arg2, arg3, arg4);
+  let cachedEntries;
+  return {
+    /**
+     * The schema type.
+     */
+    type: "object",
+    /**
+     * The entries schema.
+     */
+    entries,
+    /**
+     * The rest schema.
+     */
+    rest,
+    /**
+     * Whether it's async.
+     */
+    async: true,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    async _parse(input, info) {
+      if (!input || typeof input !== "object") {
+        return getSchemaIssues(
+          info,
+          "type",
+          "object",
+          error || "Invalid type",
+          input
+        );
+      }
+      cachedEntries = cachedEntries || Object.entries(entries);
+      let issues;
+      const output = {};
+      await Promise.all([
+        Promise.all(
+          cachedEntries.map(async ([key, schema]) => {
+            if (!(info?.abortEarly && issues)) {
+              const value2 = input[key];
+              const result = await schema._parse(value2, info);
+              if (!(info?.abortEarly && issues)) {
+                if (result.issues) {
+                  const pathItem = {
+                    type: "object",
+                    input,
+                    key,
+                    value: value2
+                  };
+                  for (const issue of result.issues) {
+                    if (issue.path) {
+                      issue.path.unshift(pathItem);
+                    } else {
+                      issue.path = [pathItem];
+                    }
+                    issues?.push(issue);
+                  }
+                  if (!issues) {
+                    issues = result.issues;
+                  }
+                  if (info?.abortEarly) {
+                    throw null;
+                  }
+                } else if (result.output !== void 0 || key in input) {
+                  output[key] = result.output;
+                }
+              }
+            }
+          })
+        ),
+        rest && Promise.all(
+          Object.entries(input).map(async ([key, value2]) => {
+            if (!(info?.abortEarly && issues)) {
+              if (!(key in entries)) {
+                const result = await rest._parse(value2, info);
+                if (!(info?.abortEarly && issues)) {
+                  if (result.issues) {
+                    const pathItem = {
+                      type: "object",
+                      input,
+                      key,
+                      value: value2
+                    };
+                    for (const issue of result.issues) {
+                      if (issue.path) {
+                        issue.path.unshift(pathItem);
+                      } else {
+                        issue.path = [pathItem];
+                      }
+                      issues?.push(issue);
+                    }
+                    if (!issues) {
+                      issues = result.issues;
+                    }
+                    if (info?.abortEarly) {
+                      throw null;
+                    }
+                  } else {
+                    output[key] = result.output;
+                  }
+                }
+              }
+            }
+          })
+        )
+      ]).catch(() => null);
+      return issues ? getIssues(issues) : executePipeAsync(
+        output,
+        pipe,
+        info,
+        "object"
+      );
+    }
+  };
+}
+
+// src/schemas/optional/optional.ts
+function optional(wrapped, default_) {
+  return {
+    /**
+     * The schema type.
+     */
+    type: "optional",
+    /**
+     * The wrapped schema.
+     */
+    wrapped,
+    /**
+     * Returns the default value.
+     */
+    getDefault() {
+      return typeof default_ === "function" ? default_() : default_;
+    },
+    /**
+     * Whether it's async.
+     */
+    async: false,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    _parse(input, info) {
+      if (input === void 0) {
+        const override = this.getDefault();
+        if (override === void 0) {
+          return getOutput(input);
+        }
+        input = override;
+      }
+      return wrapped._parse(input, info);
+    }
+  };
+}
+
+// src/schemas/optional/optionalAsync.ts
+function optionalAsync(wrapped, default_) {
+  return {
+    /**
+     * The schema type.
+     */
+    type: "optional",
+    /**
+     * The wrapped schema.
+     */
+    wrapped,
+    /**
+     * Returns the default value.
+     */
+    async getDefault() {
+      return typeof default_ === "function" ? default_() : default_;
+    },
+    /**
+     * Whether it's async.
+     */
+    async: true,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    async _parse(input, info) {
+      if (input === void 0) {
+        const override = await this.getDefault();
+        if (override === void 0) {
+          return getOutput(input);
+        }
+        input = override;
+      }
+      return wrapped._parse(input, info);
+    }
+  };
+}
+
+// src/schemas/picklist/picklist.ts
+function picklist(options, error) {
+  return {
+    /**
+     * The schema type.
+     */
+    type: "picklist",
+    /**
+     * The picklist options.
+     */
+    options,
+    /**
+     * Whether it's async.
+     */
+    async: false,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    _parse(input, info) {
+      if (!options.includes(input)) {
+        return getSchemaIssues(
+          info,
+          "type",
+          "picklist",
+          error || "Invalid type",
+          input
+        );
+      }
+      return getOutput(input);
+    }
+  };
+}
+var enumType = picklist;
+
+// src/schemas/picklist/picklistAsync.ts
+function picklistAsync(options, error) {
+  return {
+    /**
+     * The schema type.
+     */
+    type: "picklist",
+    /**
+     * The picklist value.
+     */
+    options,
+    /**
+     * Whether it's async.
+     */
+    async: true,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    async _parse(input, info) {
+      if (!options.includes(input)) {
+        return getSchemaIssues(
+          info,
+          "type",
+          "picklist",
+          error || "Invalid type",
+          input
+        );
+      }
+      return getOutput(input);
+    }
+  };
+}
+var enumTypeAsync = picklistAsync;
+
+// src/schemas/string/string.ts
+function string(arg1, arg2) {
+  const [error, pipe] = getDefaultArgs(arg1, arg2);
+  return {
+    /**
+     * The schema type.
+     */
+    type: "string",
+    /**
+     * Whether it's async.
+     */
+    async: false,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    _parse(input, info) {
+      if (typeof input !== "string") {
+        return getSchemaIssues(
+          info,
+          "type",
+          "string",
+          error || "Invalid type",
+          input
+        );
+      }
+      return executePipe(input, pipe, info, "string");
+    }
+  };
+}
+
+// src/schemas/string/stringAsync.ts
+function stringAsync(arg1, arg2) {
+  const [error, pipe] = getDefaultArgs(arg1, arg2);
+  return {
+    /**
+     * The schema type.
+     */
+    type: "string",
+    /**
+     * Whether it's async.
+     */
+    async: true,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    async _parse(input, info) {
+      if (typeof input !== "string") {
+        return getSchemaIssues(
+          info,
+          "type",
+          "string",
+          error || "Invalid type",
+          input
+        );
+      }
+      return executePipeAsync(input, pipe, info, "string");
+    }
+  };
+}
+
+// src/schemas/record/utils/getRecordArgs/getRecordArgs.ts
+function getRecordArgs(arg1, arg2, arg3, arg4) {
+  if (typeof arg2 === "object" && !Array.isArray(arg2)) {
+    const [error2, pipe2] = getDefaultArgs(arg3, arg4);
+    return [arg1, arg2, error2, pipe2];
+  }
+  const [error, pipe] = getDefaultArgs(
+    arg2,
+    arg3
+  );
+  return [string(), arg1, error, pipe];
+}
+
+// src/schemas/record/values.ts
+var BLOCKED_KEYS = ["__proto__", "prototype", "constructor"];
+
+// src/schemas/record/record.ts
+function record(arg1, arg2, arg3, arg4) {
+  const [key, value2, error, pipe] = getRecordArgs(arg1, arg2, arg3, arg4);
+  return {
+    /**
+     * The schema type.
+     */
+    type: "record",
+    /**
+     * The key schema.
+     */
+    key,
+    /**
+     * The value schema.
+     */
+    value: value2,
+    /**
+     * Whether it's async.
+     */
+    async: false,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    _parse(input, info) {
+      if (!input || typeof input !== "object") {
+        return getSchemaIssues(
+          info,
+          "type",
+          "record",
+          error || "Invalid type",
+          input
+        );
+      }
+      let issues;
+      const output = {};
+      for (const [inputKey, inputValue] of Object.entries(input)) {
+        if (!BLOCKED_KEYS.includes(inputKey)) {
+          let pathItem;
+          const keyResult = key._parse(inputKey, {
+            origin: "key",
+            abortEarly: info?.abortEarly,
+            abortPipeEarly: info?.abortPipeEarly,
+            skipPipe: info?.skipPipe
+          });
+          if (keyResult.issues) {
+            pathItem = {
+              type: "record",
+              input,
+              key: inputKey,
+              value: inputValue
+            };
+            for (const issue of keyResult.issues) {
+              issue.path = [pathItem];
+              issues?.push(issue);
+            }
+            if (!issues) {
+              issues = keyResult.issues;
+            }
+            if (info?.abortEarly) {
+              break;
+            }
+          }
+          const valueResult = value2._parse(inputValue, info);
+          if (valueResult.issues) {
+            pathItem = pathItem || {
+              type: "record",
+              input,
+              key: inputKey,
+              value: inputValue
+            };
+            for (const issue of valueResult.issues) {
+              if (issue.path) {
+                issue.path.unshift(pathItem);
+              } else {
+                issue.path = [pathItem];
+              }
+              issues?.push(issue);
+            }
+            if (!issues) {
+              issues = valueResult.issues;
+            }
+            if (info?.abortEarly) {
+              break;
+            }
+          }
+          if (!keyResult.issues && !valueResult.issues) {
+            output[keyResult.output] = valueResult.output;
+          }
+        }
+      }
+      return issues ? getIssues(issues) : executePipe(
+        output,
+        pipe,
+        info,
+        "record"
+      );
+    }
+  };
+}
+
+// src/schemas/record/recordAsync.ts
+function recordAsync(arg1, arg2, arg3, arg4) {
+  const [key, value2, error, pipe] = getRecordArgs(arg1, arg2, arg3, arg4);
+  return {
+    /**
+     * The schema type.
+     */
+    type: "record",
+    /**
+     * The key schema.
+     */
+    key,
+    /**
+     * The value schema.
+     */
+    value: value2,
+    /**
+     * Whether it's async.
+     */
+    async: true,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    async _parse(input, info) {
+      if (!input || typeof input !== "object") {
+        return getSchemaIssues(
+          info,
+          "type",
+          "record",
+          error || "Invalid type",
+          input
+        );
+      }
+      let issues;
+      const output = {};
+      await Promise.all(
+        // Note: `Object.entries(...)` converts each key to a string
+        Object.entries(input).map(async ([inputKey, inputValue]) => {
+          if (!BLOCKED_KEYS.includes(inputKey)) {
+            let pathItem;
+            const [keyResult, valueResult] = await Promise.all(
+              [
+                { schema: key, value: inputKey, origin: "key" },
+                { schema: value2, value: inputValue, origin: "value" }
+              ].map(async ({ schema, value: value3, origin }) => {
+                if (!(info?.abortEarly && issues)) {
+                  const result = await schema._parse(value3, {
+                    origin,
+                    abortEarly: info?.abortEarly,
+                    abortPipeEarly: info?.abortPipeEarly,
+                    skipPipe: info?.skipPipe
+                  });
+                  if (!(info?.abortEarly && issues)) {
+                    if (result.issues) {
+                      pathItem = pathItem || {
+                        type: "record",
+                        input,
+                        key: inputKey,
+                        value: inputValue
+                      };
+                      for (const issue of result.issues) {
+                        if (issue.path) {
+                          issue.path.unshift(pathItem);
+                        } else {
+                          issue.path = [pathItem];
+                        }
+                        issues?.push(issue);
+                      }
+                      if (!issues) {
+                        issues = result.issues;
+                      }
+                      if (info?.abortEarly) {
+                        throw null;
+                      }
+                    } else {
+                      return result;
+                    }
+                  }
+                }
+              })
+            ).catch(() => []);
+            if (keyResult && valueResult) {
+              output[keyResult.output] = valueResult.output;
+            }
+          }
+        })
+      );
+      return issues ? getIssues(issues) : executePipeAsync(
+        output,
+        pipe,
+        info,
+        "record"
+      );
+    }
+  };
+}
+
+// src/schemas/recursive/recursive.ts
+function recursive(getter) {
+  return {
+    /**
+     * The schema type.
+     */
+    type: "recursive",
+    /**
+     * The schema getter.
+     */
+    getter,
+    /**
+     * Whether it's async.
+     */
+    async: false,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    _parse(input, info) {
+      return getter()._parse(input, info);
+    }
+  };
+}
+
+// src/schemas/recursive/recursiveAsync.ts
+function recursiveAsync(getter) {
+  return {
+    /**
+     * The schema type.
+     */
+    type: "recursive",
+    /**
+     * The schema getter.
+     */
+    getter,
+    /**
+     * Whether it's async.
+     */
+    async: true,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    async _parse(input, info) {
+      return getter()._parse(input, info);
+    }
+  };
+}
+
+// src/schemas/set/set.ts
+function set(value2, arg2, arg3) {
+  const [error, pipe] = getDefaultArgs(arg2, arg3);
+  return {
+    /**
+     * The schema type.
+     */
+    type: "set",
+    /**
+     * The value schema.
+     */
+    value: value2,
+    /**
+     * Whether it's async.
+     */
+    async: false,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    _parse(input, info) {
+      if (!(input instanceof Set)) {
+        return getSchemaIssues(
+          info,
+          "type",
+          "set",
+          error || "Invalid type",
+          input
+        );
+      }
+      let key = 0;
+      let issues;
+      const output = /* @__PURE__ */ new Set();
+      for (const inputValue of input) {
+        const result = value2._parse(inputValue, info);
+        if (result.issues) {
+          const pathItem = {
+            type: "set",
+            input,
+            key,
+            value: inputValue
+          };
+          for (const issue of result.issues) {
+            if (issue.path) {
+              issue.path.unshift(pathItem);
+            } else {
+              issue.path = [pathItem];
+            }
+            issues?.push(issue);
+          }
+          if (!issues) {
+            issues = result.issues;
+          }
+          if (info?.abortEarly) {
+            break;
+          }
+        } else {
+          output.add(result.output);
+        }
+        key++;
+      }
+      return issues ? getIssues(issues) : executePipe(output, pipe, info, "set");
+    }
+  };
+}
+
+// src/schemas/set/setAsync.ts
+function setAsync(value2, arg2, arg3) {
+  const [error, pipe] = getDefaultArgs(arg2, arg3);
+  return {
+    /**
+     * The schema type.
+     */
+    type: "set",
+    /**
+     * The value schema.
+     */
+    value: value2,
+    /**
+     * Whether it's async.
+     */
+    async: true,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    async _parse(input, info) {
+      if (!(input instanceof Set)) {
+        return getSchemaIssues(
+          info,
+          "type",
+          "set",
+          error || "Invalid type",
+          input
+        );
+      }
+      let issues;
+      const output = /* @__PURE__ */ new Set();
+      await Promise.all(
+        Array.from(input.values()).map(async (inputValue, key) => {
+          if (!(info?.abortEarly && issues)) {
+            const result = await value2._parse(inputValue, info);
+            if (!(info?.abortEarly && issues)) {
+              if (result.issues) {
+                const pathItem = {
+                  type: "set",
+                  input,
+                  key,
+                  value: inputValue
+                };
+                for (const issue of result.issues) {
+                  if (issue.path) {
+                    issue.path.unshift(pathItem);
+                  } else {
+                    issue.path = [pathItem];
+                  }
+                  issues?.push(issue);
+                }
+                if (!issues) {
+                  issues = result.issues;
+                }
+                if (info?.abortEarly) {
+                  throw null;
+                }
+              } else {
+                output.add(result.output);
+              }
+            }
+          }
+        })
+      ).catch(() => null);
+      return issues ? getIssues(issues) : executePipeAsync(input, pipe, info, "set");
+    }
+  };
+}
+
+// src/schemas/special/special.ts
+function special(check, arg2, arg3) {
+  const [error, pipe] = getDefaultArgs(arg2, arg3);
+  return {
+    /**
+     * The schema type.
+     */
+    type: "special",
+    /**
+     * Whether it's async.
+     */
+    async: false,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    _parse(input, info) {
+      if (!check(input)) {
+        return getSchemaIssues(
+          info,
+          "type",
+          "special",
+          error || "Invalid type",
+          input
+        );
+      }
+      return executePipe(input, pipe, info, "special");
+    }
+  };
+}
+
+// src/schemas/special/specialAsync.ts
+function specialAsync(check, arg2, arg3) {
+  const [error, pipe] = getDefaultArgs(arg2, arg3);
+  return {
+    /**
+     * The schema type.
+     */
+    type: "special",
+    /**
+     * Whether it's async.
+     */
+    async: true,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    async _parse(input, info) {
+      if (!await check(input)) {
+        return getSchemaIssues(
+          info,
+          "type",
+          "special",
+          error || "Invalid type",
+          input
+        );
+      }
+      return executePipeAsync(input, pipe, info, "special");
+    }
+  };
+}
+
+// src/schemas/symbol/symbol.ts
+function symbol(error) {
+  return {
+    /**
+     * The schema type.
+     */
+    type: "symbol",
+    /**
+     * Whether it's async.
+     */
+    async: false,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    _parse(input, info) {
+      if (typeof input !== "symbol") {
+        return getSchemaIssues(
+          info,
+          "type",
+          "symbol",
+          error || "Invalid type",
+          input
+        );
+      }
+      return getOutput(input);
+    }
+  };
+}
+
+// src/schemas/symbol/symbolAsync.ts
+function symbolAsync(error) {
+  return {
+    /**
+     * The schema type.
+     */
+    type: "symbol",
+    /**
+     * Whether it's async.
+     */
+    async: true,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    async _parse(input, info) {
+      if (typeof input !== "symbol") {
+        return getSchemaIssues(
+          info,
+          "type",
+          "symbol",
+          error || "Invalid type",
+          input
+        );
+      }
+      return getOutput(input);
+    }
+  };
+}
+
+// src/schemas/tuple/tuple.ts
+function tuple(items, arg2, arg3, arg4) {
+  const [rest, error, pipe] = getRestAndDefaultArgs(arg2, arg3, arg4);
+  return {
+    /**
+     * The schema type.
+     */
+    type: "tuple",
+    /**
+     * The items schema.
+     */
+    items,
+    /**
+     * The rest schema.
+     */
+    rest,
+    /**
+     * Whether it's async.
+     */
+    async: false,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    _parse(input, info) {
+      if (!Array.isArray(input) || items.length > input.length) {
+        return getSchemaIssues(
+          info,
+          "type",
+          "tuple",
+          error || "Invalid type",
+          input
+        );
+      }
+      let issues;
+      const output = [];
+      for (let key = 0; key < items.length; key++) {
+        const value2 = input[key];
+        const result = items[key]._parse(value2, info);
+        if (result.issues) {
+          const pathItem = {
+            type: "tuple",
+            input,
+            key,
+            value: value2
+          };
+          for (const issue of result.issues) {
+            if (issue.path) {
+              issue.path.unshift(pathItem);
+            } else {
+              issue.path = [pathItem];
+            }
+            issues?.push(issue);
+          }
+          if (!issues) {
+            issues = result.issues;
+          }
+          if (info?.abortEarly) {
+            break;
+          }
+        } else {
+          output[key] = result.output;
+        }
+      }
+      if (rest && !(info?.abortEarly && issues)) {
+        for (let key = items.length; key < input.length; key++) {
+          const value2 = input[key];
+          const result = rest._parse(value2, info);
+          if (result.issues) {
+            const pathItem = {
+              type: "tuple",
+              input,
+              key,
+              value: value2
+            };
+            for (const issue of result.issues) {
+              if (issue.path) {
+                issue.path.unshift(pathItem);
+              } else {
+                issue.path = [pathItem];
+              }
+              issues?.push(issue);
+            }
+            if (!issues) {
+              issues = result.issues;
+            }
+            if (info?.abortEarly) {
+              break;
+            }
+          } else {
+            output[key] = result.output;
+          }
+        }
+      }
+      return issues ? getIssues(issues) : executePipe(
+        output,
+        pipe,
+        info,
+        "tuple"
+      );
+    }
+  };
+}
+
+// src/schemas/tuple/tupleAsync.ts
+function tupleAsync(items, arg2, arg3, arg4) {
+  const [rest, error, pipe] = getRestAndDefaultArgs(arg2, arg3, arg4);
+  return {
+    /**
+     * The schema type.
+     */
+    type: "tuple",
+    /**
+     * The items schema.
+     */
+    items,
+    /**
+     * The rest schema.
+     */
+    rest,
+    /**
+     * Whether it's async.
+     */
+    async: true,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    async _parse(input, info) {
+      if (!Array.isArray(input) || items.length > input.length) {
+        return getSchemaIssues(
+          info,
+          "type",
+          "tuple",
+          error || "Invalid type",
+          input
+        );
+      }
+      let issues;
+      const output = [];
+      await Promise.all([
+        // Parse schema of each tuple item
+        Promise.all(
+          items.map(async (schema, key) => {
+            if (!(info?.abortEarly && issues)) {
+              const value2 = input[key];
+              const result = await schema._parse(value2, info);
+              if (!(info?.abortEarly && issues)) {
+                if (result.issues) {
+                  const pathItem = {
+                    type: "tuple",
+                    input,
+                    key,
+                    value: value2
+                  };
+                  for (const issue of result.issues) {
+                    if (issue.path) {
+                      issue.path.unshift(pathItem);
+                    } else {
+                      issue.path = [pathItem];
+                    }
+                    issues?.push(issue);
+                  }
+                  if (!issues) {
+                    issues = result.issues;
+                  }
+                  if (info?.abortEarly) {
+                    throw null;
+                  }
+                } else {
+                  output[key] = result.output;
+                }
+              }
+            }
+          })
+        ),
+        // If necessary parse schema of each rest item
+        rest && Promise.all(
+          input.slice(items.length).map(async (value2, index) => {
+            if (!(info?.abortEarly && issues)) {
+              const key = items.length + index;
+              const result = await rest._parse(value2, info);
+              if (!(info?.abortEarly && issues)) {
+                if (result.issues) {
+                  const pathItem = {
+                    type: "tuple",
+                    input,
+                    key,
+                    value: value2
+                  };
+                  for (const issue of result.issues) {
+                    if (issue.path) {
+                      issue.path.unshift(pathItem);
+                    } else {
+                      issue.path = [pathItem];
+                    }
+                    issues?.push(issue);
+                  }
+                  if (!issues) {
+                    issues = result.issues;
+                  }
+                  if (info?.abortEarly) {
+                    throw null;
+                  }
+                } else {
+                  output[key] = result.output;
+                }
+              }
+            }
+          })
+        )
+      ]).catch(() => null);
+      return issues ? getIssues(issues) : executePipeAsync(
+        output,
+        pipe,
+        info,
+        "tuple"
+      );
+    }
+  };
+}
+
+// src/schemas/undefined/undefined.ts
+function undefined_(error) {
+  return {
+    /**
+     * The schema type.
+     */
+    type: "undefined",
+    /**
+     * Whether it's async.
+     */
+    async: false,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    _parse(input, info) {
+      if (typeof input !== "undefined") {
+        return getSchemaIssues(
+          info,
+          "type",
+          "undefined",
+          error || "Invalid type",
+          input
+        );
+      }
+      return getOutput(input);
+    }
+  };
+}
+var undefinedType = undefined_;
+
+// src/schemas/undefined/undefinedAsync.ts
+function undefinedAsync(error) {
+  return {
+    /**
+     * The schema type.
+     */
+    type: "undefined",
+    /**
+     * Whether it's async.
+     */
+    async: true,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    async _parse(input, info) {
+      if (typeof input !== "undefined") {
+        return getSchemaIssues(
+          info,
+          "type",
+          "undefined",
+          error || "Invalid type",
+          input
+        );
+      }
+      return getOutput(input);
+    }
+  };
+}
+var undefinedTypeAsync = undefinedAsync;
+
+// src/schemas/union/union.ts
+function union(options, error) {
+  return {
+    /**
+     * The schema type.
+     */
+    type: "union",
+    /**
+     * The union options.
+     */
+    options,
+    /**
+     * Whether it's async.
+     */
+    async: false,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    _parse(input, info) {
+      let issues;
+      let output;
+      for (const schema of options) {
+        const result = schema._parse(input, info);
+        if (result.issues) {
+          if (issues) {
+            for (const issue of result.issues) {
+              issues.push(issue);
+            }
+          } else {
+            issues = result.issues;
+          }
+        } else {
+          output = [result.output];
+          break;
+        }
+      }
+      return output ? getOutput(output[0]) : getSchemaIssues(
+        info,
+        "type",
+        "union",
+        error || "Invalid type",
+        input,
+        issues
+      );
+    }
+  };
+}
+
+// src/schemas/union/unionAsync.ts
+function unionAsync(options, error) {
+  return {
+    /**
+     * The schema type.
+     */
+    type: "union",
+    /**
+     * The union options.
+     */
+    options,
+    /**
+     * Whether it's async.
+     */
+    async: true,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    async _parse(input, info) {
+      let issues;
+      let output;
+      for (const schema of options) {
+        const result = await schema._parse(input, info);
+        if (result.issues) {
+          if (issues) {
+            for (const issue of result.issues) {
+              issues.push(issue);
+            }
+          } else {
+            issues = result.issues;
+          }
+        } else {
+          output = [result.output];
+          break;
+        }
+      }
+      return output ? getOutput(output[0]) : getSchemaIssues(
+        info,
+        "type",
+        "union",
+        error || "Invalid type",
+        input,
+        issues
+      );
+    }
+  };
+}
+
+// src/schemas/unknown/unknown.ts
+function unknown(pipe = []) {
+  return {
+    /**
+     * The schema type.
+     */
+    type: "unknown",
+    /**
+     * Whether it's async.
+     */
+    async: false,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    _parse(input, info) {
+      return executePipe(input, pipe, info, "unknown");
+    }
+  };
+}
+
+// src/schemas/unknown/unknownAsync.ts
+function unknownAsync(pipe = []) {
+  return {
+    /**
+     * The schema type.
+     */
+    type: "unknown",
+    /**
+     * Whether it's async.
+     */
+    async: true,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    async _parse(input, info) {
+      return executePipeAsync(input, pipe, info, "unknown");
+    }
+  };
+}
+
+// src/schemas/variant/variant.ts
+function variant(key, options, error) {
+  return {
+    /**
+     * The schema type.
+     */
+    type: "variant",
+    /**
+     * The variant options.
+     */
+    options,
+    /**
+     * Whether it's async.
+     */
+    async: false,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    _parse(input, info) {
+      if (!input || typeof input !== "object" || !(key in input)) {
+        return getSchemaIssues(
+          info,
+          "type",
+          "variant",
+          error || "Invalid type",
+          input
+        );
+      }
+      let issues;
+      let output;
+      const parseOptions = (options2) => {
+        for (const schema of options2) {
+          if (schema.type === "object") {
+            const result = schema.entries[key]._parse(
+              input[key],
+              info
+            );
+            if (!result.issues) {
+              const result2 = schema._parse(input, info);
+              if (result2.issues) {
+                issues = result2.issues;
+              } else {
+                output = [result2.output];
+              }
+              break;
+            }
+          } else if (schema.type === "variant") {
+            parseOptions(schema.options);
+            if (issues || output) {
+              break;
+            }
+          }
+        }
+      };
+      parseOptions(options);
+      return output ? getOutput(output[0]) : issues ? getIssues(issues) : getSchemaIssues(
+        info,
+        "type",
+        "variant",
+        error || "Invalid type",
+        input
+      );
+    }
+  };
+}
+var discriminatedUnion = variant;
+
+// src/schemas/variant/variantAsync.ts
+function variantAsync(key, options, error) {
+  return {
+    /**
+     * The schema type.
+     */
+    type: "variant",
+    /**
+     * The variant options.
+     */
+    options,
+    /**
+     * Whether it's async.
+     */
+    async: true,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    async _parse(input, info) {
+      if (!input || typeof input !== "object" || !(key in input)) {
+        return getSchemaIssues(
+          info,
+          "type",
+          "variant",
+          error || "Invalid type",
+          input
+        );
+      }
+      let issues;
+      let output;
+      const parseOptions = async (options2) => {
+        for (const schema of options2) {
+          if (schema.type === "object") {
+            const result = await schema.entries[key]._parse(
+              input[key],
+              info
+            );
+            if (!result.issues) {
+              const result2 = await schema._parse(input, info);
+              if (result2.issues) {
+                issues = result2.issues;
+              } else {
+                output = [result2.output];
+              }
+              break;
+            }
+          } else if (schema.type === "variant") {
+            await parseOptions(schema.options);
+            if (issues || output) {
+              break;
+            }
+          }
+        }
+      };
+      await parseOptions(options);
+      return output ? getOutput(output[0]) : issues ? getIssues(issues) : getSchemaIssues(
+        info,
+        "type",
+        "variant",
+        error || "Invalid type",
+        input
+      );
+    }
+  };
+}
+var discriminatedUnionAsync = variantAsync;
+
+// src/schemas/void/void.ts
+function void_(error) {
+  return {
+    /**
+     * The schema type.
+     */
+    type: "void",
+    /**
+     * Whether it's async.
+     */
+    async: false,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    _parse(input, info) {
+      if (typeof input !== "undefined") {
+        return getSchemaIssues(
+          info,
+          "type",
+          "void",
+          error || "Invalid type",
+          input
+        );
+      }
+      return getOutput(input);
+    }
+  };
+}
+var voidType = void_;
+
+// src/schemas/void/voidAsync.ts
+function voidAsync(error) {
+  return {
+    /**
+     * The schema type.
+     */
+    type: "void",
+    /**
+     * Whether it's async.
+     */
+    async: true,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    async _parse(input, info) {
+      if (typeof input !== "undefined") {
+        return getSchemaIssues(
+          info,
+          "type",
+          "void",
+          error || "Invalid type",
+          input
+        );
+      }
+      return getOutput(input);
+    }
+  };
+}
+var voidTypeAsync = voidAsync;
+
+// src/methods/keyof/keyof.ts
+function keyof(schema) {
+  return picklist(
+    Object.keys(schema.entries)
+  );
+}
+
+// src/methods/merge/merge.ts
+function merge(schemas, arg2, arg3, arg4) {
+  const [rest, error, pipe] = getRestAndDefaultArgs(arg2, arg3, arg4);
+  return object(
+    schemas.reduce(
+      (entries, schema) => ({ ...entries, ...schema.entries }),
+      {}
+    ),
+    rest,
+    error,
+    pipe
+  );
+}
+
+// src/methods/merge/mergeAsync.ts
+function mergeAsync(schemas, arg2, arg3, arg4) {
+  const [rest, error, pipe] = getRestAndDefaultArgs(arg2, arg3, arg4);
+  return objectAsync(
+    schemas.reduce(
+      (entries, schema) => ({ ...entries, ...schema.entries }),
+      {}
+    ),
+    rest,
+    error,
+    pipe
+  );
+}
+
+// src/methods/omit/omit.ts
+function omit(schema, keys, arg3, arg4, arg5) {
+  const [rest, error, pipe] = getRestAndDefaultArgs(arg3, arg4, arg5);
+  return object(
+    Object.entries(schema.entries).reduce(
+      (entries, [key, schema2]) => keys.includes(key) ? entries : { ...entries, [key]: schema2 },
+      {}
+    ),
+    rest,
+    error,
+    pipe
+  );
+}
+
+// src/methods/omit/omitAsync.ts
+function omitAsync(schema, keys, arg3, arg4, arg5) {
+  const [rest, error, pipe] = getRestAndDefaultArgs(arg3, arg4, arg5);
+  return objectAsync(
+    Object.entries(schema.entries).reduce(
+      (entries, [key, schema2]) => keys.includes(key) ? entries : { ...entries, [key]: schema2 },
+      {}
+    ),
+    rest,
+    error,
+    pipe
+  );
+}
+
+// src/methods/parse/parse.ts
+function parse(schema, input, info) {
+  const result = schema._parse(input, info);
+  if (result.issues) {
+    throw new ValiError(result.issues);
+  }
+  return result.output;
+}
+
+// src/methods/parse/parseAsync.ts
+async function parseAsync(schema, input, info) {
+  const result = await schema._parse(input, info);
+  if (result.issues) {
+    throw new ValiError(result.issues);
+  }
+  return result.output;
+}
+
+// src/methods/partial/partial.ts
+function partial(schema, arg2, arg3, arg4) {
+  const [rest, error, pipe] = getRestAndDefaultArgs(arg2, arg3, arg4);
+  return object(
+    Object.entries(schema.entries).reduce(
+      (entries, [key, schema2]) => ({
+        ...entries,
+        [key]: optional(schema2)
+      }),
+      {}
+    ),
+    rest,
+    error,
+    pipe
+  );
+}
+
+// src/methods/partial/partialAsync.ts
+function partialAsync(schema, arg2, arg3, arg4) {
+  const [rest, error, pipe] = getRestAndDefaultArgs(arg2, arg3, arg4);
+  return objectAsync(
+    Object.entries(schema.entries).reduce(
+      (entries, [key, schema2]) => ({
+        ...entries,
+        [key]: optionalAsync(schema2)
+      }),
+      {}
+    ),
+    rest,
+    error,
+    pipe
+  );
+}
+
+// src/methods/passthrough/passthrough.ts
+function passthrough(schema) {
+  return {
+    ...schema,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    _parse(input, info) {
+      const result = schema._parse(input, info);
+      return !result.issues ? getOutput({ ...input, ...result.output }) : result;
+    }
+  };
+}
+
+// src/methods/passthrough/passthroughAsync.ts
+function passthroughAsync(schema) {
+  return {
+    ...schema,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    async _parse(input, info) {
+      const result = await schema._parse(input, info);
+      return !result.issues ? getOutput({ ...input, ...result.output }) : result;
+    }
+  };
+}
+
+// src/methods/pick/pick.ts
+function pick(schema, keys, arg3, arg4, arg5) {
+  const [rest, error, pipe] = getRestAndDefaultArgs(arg3, arg4, arg5);
+  return object(
+    Object.entries(schema.entries).reduce(
+      (entries, [key, schema2]) => keys.includes(key) ? { ...entries, [key]: schema2 } : entries,
+      {}
+    ),
+    rest,
+    error,
+    pipe
+  );
+}
+
+// src/methods/pick/pickAsync.ts
+function pickAsync(schema, keys, arg3, arg4, arg5) {
+  const [rest, error, pipe] = getRestAndDefaultArgs(arg3, arg4, arg5);
+  return objectAsync(
+    Object.entries(schema.entries).reduce(
+      (entries, [key, schema2]) => keys.includes(key) ? { ...entries, [key]: schema2 } : entries,
+      {}
+    ),
+    rest,
+    error,
+    pipe
+  );
+}
+
+// src/methods/required/required.ts
+function required(schema, arg2, arg3, arg4) {
+  const [rest, error, pipe] = getRestAndDefaultArgs(arg2, arg3, arg4);
+  return object(
+    Object.entries(schema.entries).reduce(
+      (entries, [key, schema2]) => ({
+        ...entries,
+        [key]: nonOptional(schema2)
+      }),
+      {}
+    ),
+    rest,
+    error,
+    pipe
+  );
+}
+
+// src/methods/required/requiredAsync.ts
+function requiredAsync(schema, arg2, arg3, arg4) {
+  const [rest, error, pipe] = getRestAndDefaultArgs(arg2, arg3, arg4);
+  return objectAsync(
+    Object.entries(schema.entries).reduce(
+      (entries, [key, schema2]) => ({
+        ...entries,
+        [key]: nonOptionalAsync(schema2)
+      }),
+      {}
+    ),
+    rest,
+    error,
+    pipe
+  );
+}
+
+// src/methods/safeParse/safeParse.ts
+function safeParse(schema, input, info) {
+  const result = schema._parse(input, info);
+  return result.issues ? {
+    success: false,
+    error: new ValiError(result.issues),
+    issues: result.issues
+  } : {
+    success: true,
+    data: result.output,
+    output: result.output
+  };
+}
+
+// src/methods/safeParse/safeParseAsync.ts
+async function safeParseAsync(schema, input, info) {
+  const result = await schema._parse(input, info);
+  return result.issues ? {
+    success: false,
+    error: new ValiError(result.issues),
+    issues: result.issues
+  } : {
+    success: true,
+    data: result.output,
+    output: result.output
+  };
+}
+
+// src/methods/strict/strict.ts
+function strict(schema, error) {
+  return {
+    ...schema,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    _parse(input, info) {
+      const result = schema._parse(input, info);
+      return !result.issues && Object.keys(input).some((key) => !(key in schema.entries)) ? getSchemaIssues(
+        info,
+        "object",
+        "strict",
+        error || "Invalid keys",
+        input
+      ) : result;
+    }
+  };
+}
+
+// src/methods/strict/strictAsync.ts
+function strictAsync(schema, error) {
+  return {
+    ...schema,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    async _parse(input, info) {
+      const result = await schema._parse(input, info);
+      return !result.issues && Object.keys(input).some((key) => !(key in schema.entries)) ? getSchemaIssues(
+        info,
+        "object",
+        "strict",
+        error || "Invalid keys",
+        input
+      ) : result;
+    }
+  };
+}
+
+// src/methods/strip/strip.ts
+function strip(schema) {
+  let cachedKeys;
+  return {
+    ...schema,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    _parse(input, info) {
+      const result = schema._parse(input, info);
+      if (result.issues) {
+        return result;
+      }
+      cachedKeys = cachedKeys || Object.keys(schema.entries);
+      const output = {};
+      for (const key of cachedKeys) {
+        output[key] = result.output[key];
+      }
+      return getOutput(output);
+    }
+  };
+}
+
+// src/methods/strip/stripAsync.ts
+function stripAsync(schema) {
+  let cachedKeys;
+  return {
+    ...schema,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    async _parse(input, info) {
+      const result = await schema._parse(input, info);
+      if (result.issues) {
+        return result;
+      }
+      cachedKeys = cachedKeys || Object.keys(schema.entries);
+      const output = {};
+      for (const key of cachedKeys) {
+        output[key] = result.output[key];
+      }
+      return getOutput(output);
+    }
+  };
+}
+
+// src/methods/transform/transform.ts
+function transform(schema, action, arg1) {
+  return {
+    ...schema,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    _parse(input, info) {
+      const result = schema._parse(input, info);
+      if (result.issues) {
+        return result;
+      }
+      const output = action(result.output);
+      if (arg1 && !Array.isArray(arg1)) {
+        return arg1._parse(output, info);
+      }
+      return executePipe(output, arg1, info, typeof output);
+    }
+  };
+}
+
+// src/methods/transform/transformAsync.ts
+function transformAsync(schema, action, arg1) {
+  return {
+    ...schema,
+    /**
+     * Whether it's async.
+     */
+    async: true,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    async _parse(input, info) {
+      const result = await schema._parse(input, info);
+      if (result.issues) {
+        return result;
+      }
+      const output = await action(result.output);
+      if (arg1 && !Array.isArray(arg1)) {
+        return arg1._parse(output, info);
+      }
+      return executePipeAsync(output, arg1, info, typeof output);
+    }
+  };
+}
+
+// src/methods/unwrap/unwrap.ts
+function unwrap(schema) {
+  return schema.wrapped;
+}
+
+// src/methods/withDefault/withDefault.ts
+function withDefault(schema, value2) {
+  return {
+    ...schema,
+    /**
+     * Parses unknown input based on its schema.
+     *
+     * @param input The input to be parsed.
+     * @param info The parse info.
+     *
+     * @returns The parsed output.
+     */
+    _parse(input, info) {
+      return schema._parse(
+        input === void 0 ? typeof value2 === "function" ? value2() : value2 : input,
+        info
+      );
+    }
+  };
+}
+var useDefault = withDefault;
+
+// src/regex.ts
+var CUID2_REGEX = /^[a-z][\da-z]*$/u;
+var EMAIL_REGEX = /^[\w+-]+(?:\.[\w+-]+)*@[\da-z]+(?:[.-][\da-z]+)*\.[a-z]{2,}$/iu;
+var EMOJI_REGEX = /^[\p{Extended_Pictographic}\p{Emoji_Component}]+$/u;
+var IMEI_REGEX = /^\d{2}(?:[ /|-]?\d{6}){2}[ /|-]?\d$/u;
+var IPV4_REGEX = (
+  // eslint-disable-next-line redos-detector/no-unsafe-regex -- false positive
+  /^(?:(?:[1-9]|1\d|2[0-4])?\d|25[0-5])(?:\.(?:(?:[1-9]|1\d|2[0-4])?\d|25[0-5])){3}$/u
+);
+var IPV6_REGEX = /^(?:(?:[\da-f]{1,4}:){7}[\da-f]{1,4}|(?:[\da-f]{1,4}:){1,7}:|(?:[\da-f]{1,4}:){1,6}:[\da-f]{1,4}|(?:[\da-f]{1,4}:){1,5}(?::[\da-f]{1,4}){1,2}|(?:[\da-f]{1,4}:){1,4}(?::[\da-f]{1,4}){1,3}|(?:[\da-f]{1,4}:){1,3}(?::[\da-f]{1,4}){1,4}|(?:[\da-f]{1,4}:){1,2}(?::[\da-f]{1,4}){1,5}|[\da-f]{1,4}:(?::[\da-f]{1,4}){1,6}|:(?:(?::[\da-f]{1,4}){1,7}|:)|fe80:(?::[\da-f]{0,4}){0,4}%[\da-z]+|::(?:f{4}(?::0{1,4})?:)?(?:(?:25[0-5]|(?:2[0-4]|1?\d)?\d)\.){3}(?:25[0-5]|(?:2[0-4]|1?\d)?\d)|(?:[\da-f]{1,4}:){1,4}:(?:(?:25[0-5]|(?:2[0-4]|1?\d)?\d)\.){3}(?:25[0-5]|(?:2[0-4]|1?\d)?\d))$/iu;
+var ISO_DATE_REGEX = /^\d{4}-(?:0[1-9]|1[0-2])-(?:[12]\d|0[1-9]|3[01])$/u;
+var ISO_DATE_TIME_REGEX = /^\d{4}-(?:0[1-9]|1[0-2])-(?:[12]\d|0[1-9]|3[01])T(?:0\d|1\d|2[0-3]):[0-5]\d$/u;
+var ISO_TIME_REGEX = /^(?:0\d|1\d|2[0-3]):[0-5]\d$/u;
+var ISO_TIME_SECOND_REGEX = /^(?:0\d|1\d|2[0-3])(?::[0-5]\d){2}$/u;
+var ISO_TIMESTAMP_REGEX = /^\d{4}-(?:0[1-9]|1[0-2])-(?:[12]\d|0[1-9]|3[01])T(?:0\d|1\d|2[0-3])(?::[0-5]\d){2}\.\d{3}Z$/u;
+var ISO_WEEK_REGEX = /^\d{4}-W(?:0[1-9]|[1-4]\d|5[0-3])$/u;
+var ULID_REGEX = /^[\da-hjkmnp-tv-z]{26}$/iu;
+var UUID_REGEX = /^[\da-f]{8}(?:-[\da-f]{4}){3}-[\da-f]{12}$/iu;
+
+// src/transformations/toCustom/toCustom.ts
+function toCustom(action) {
+  return (input) => getOutput(action(input));
+}
+
+// src/transformations/toCustom/toCustomAsync.ts
+function toCustomAsync(action) {
+  return async (input) => getOutput(await action(input));
+}
+
+// src/transformations/toLowerCase/toLowerCase.ts
+function toLowerCase() {
+  return (input) => getOutput(input.toLocaleLowerCase());
+}
+
+// src/transformations/toMaxValue/toMaxValue.ts
+function toMaxValue(requirement) {
+  return (input) => getOutput(input > requirement ? requirement : input);
+}
+
+// src/transformations/toMinValue/toMinValue.ts
+function toMinValue(requirement) {
+  return (input) => getOutput(input < requirement ? requirement : input);
+}
+
+// src/transformations/toTrimmed/toTrimmed.ts
+function toTrimmed() {
+  return (input) => getOutput(input.trim());
+}
+
+// src/transformations/toTrimmedEnd/toTrimmedEnd.ts
+function toTrimmedEnd() {
+  return (input) => getOutput(input.trimEnd());
+}
+
+// src/transformations/toTrimmedStart/toTrimmedStart.ts
+function toTrimmedStart() {
+  return (input) => getOutput(input.trimStart());
+}
+
+// src/transformations/toUpperCase/toUpperCase.ts
+function toUpperCase() {
+  return (input) => getOutput(input.toUpperCase());
+}
+
+// src/validations/bytes/bytes.ts
+function bytes(requirement, error) {
+  return (input) => new TextEncoder().encode(input).length !== requirement ? getPipeIssues("bytes", error || "Invalid byte length", input) : getOutput(input);
+}
+
+// src/validations/cuid2/cuid2.ts
+function cuid2(error) {
+  return (input) => !CUID2_REGEX.test(input) ? getPipeIssues("cuid2", error || "Invalid cuid2", input) : getOutput(input);
+}
+
+// src/validations/custom/custom.ts
+function custom(requirement, error) {
+  return (input) => !requirement(input) ? getPipeIssues("custom", error || "Invalid input", input) : getOutput(input);
+}
+
+// src/validations/custom/customAsync.ts
+function customAsync(requirement, error) {
+  return async (input) => !await requirement(input) ? getPipeIssues("custom", error || "Invalid input", input) : getOutput(input);
+}
+
+// src/validations/email/email.ts
+function email(error) {
+  return (input) => !EMAIL_REGEX.test(input) ? getPipeIssues("email", error || "Invalid email", input) : getOutput(input);
+}
+
+// src/validations/emoji/emoji.ts
+function emoji(error) {
+  return (input) => !EMOJI_REGEX.test(input) ? getPipeIssues("emoji", error || "Invalid emoji", input) : getOutput(input);
+}
+
+// src/validations/endsWith/endsWith.ts
+function endsWith(requirement, error) {
+  return (input) => !input.endsWith(requirement) ? getPipeIssues("ends_with", error || "Invalid end", input) : getOutput(input);
+}
+
+// src/validations/equal/equal.ts
+function equal(requirement, error) {
+  return (input) => input !== requirement ? getPipeIssues("equal", error || "Invalid input", input) : getOutput(input);
+}
+
+// src/validations/excludes/excludes.ts
+function excludes(requirement, error) {
+  return (input) => input.includes(requirement) ? getPipeIssues("excludes", error || "Invalid content", input) : getOutput(input);
+}
+
+// src/validations/finite/finite.ts
+function finite(error) {
+  return (input) => !Number.isFinite(input) ? getPipeIssues("finite", error || "Invalid finite number", input) : getOutput(input);
+}
+
+// src/validations/imei/imei.ts
+function imei(error) {
+  return (input) => !IMEI_REGEX.test(input) || !isLuhnAlgo(input) ? getPipeIssues("imei", error || "Invalid IMEI", input) : getOutput(input);
+}
+
+// src/validations/includes/includes.ts
+function includes(requirement, error) {
+  return (input) => !input.includes(requirement) ? getPipeIssues("includes", error || "Invalid content", input) : getOutput(input);
+}
+
+// src/validations/integer/integer.ts
+function integer(error) {
+  return (input) => !Number.isInteger(input) ? getPipeIssues("integer", error || "Invalid integer", input) : getOutput(input);
+}
+
+// src/validations/ip/ip.ts
+function ip(error) {
+  return (input) => !IPV4_REGEX.test(input) && !IPV6_REGEX.test(input) ? getPipeIssues("ip", error || "Invalid IP", input) : getOutput(input);
+}
+
+// src/validations/ipv4/ipv4.ts
+function ipv4(error) {
+  return (input) => !IPV4_REGEX.test(input) ? getPipeIssues("ipv4", error || "Invalid IP v4", input) : getOutput(input);
+}
+
+// src/validations/ipv6/ipv6.ts
+function ipv6(error) {
+  return (input) => !IPV6_REGEX.test(input) ? getPipeIssues("ipv6", error || "Invalid IP v6", input) : getOutput(input);
+}
+
+// src/validations/isoDate/isoDate.ts
+function isoDate(error) {
+  return (input) => !ISO_DATE_REGEX.test(input) ? getPipeIssues("iso_date", error || "Invalid date", input) : getOutput(input);
+}
+
+// src/validations/isoDateTime/isoDateTime.ts
+function isoDateTime(error) {
+  return (input) => !ISO_DATE_TIME_REGEX.test(input) ? getPipeIssues("iso_date_time", error || "Invalid datetime", input) : getOutput(input);
+}
+
+// src/validations/isoTime/isoTime.ts
+function isoTime(error) {
+  return (input) => !ISO_TIME_REGEX.test(input) ? getPipeIssues("iso_time", error || "Invalid time", input) : getOutput(input);
+}
+
+// src/validations/isoTimeSecond/isoTimeSecond.ts
+function isoTimeSecond(error) {
+  return (input) => !ISO_TIME_SECOND_REGEX.test(input) ? getPipeIssues("iso_time_second", error || "Invalid time", input) : getOutput(input);
+}
+
+// src/validations/isoTimestamp/isoTimestamp.ts
+function isoTimestamp(error) {
+  return (input) => !ISO_TIMESTAMP_REGEX.test(input) ? getPipeIssues("iso_timestamp", error || "Invalid timestamp", input) : getOutput(input);
+}
+
+// src/validations/isoWeek/isoWeek.ts
+function isoWeek(error) {
+  return (input) => !ISO_WEEK_REGEX.test(input) ? getPipeIssues("iso_week", error || "Invalid week", input) : getOutput(input);
+}
+
+// src/validations/length/length.ts
+function length(requirement, error) {
+  return (input) => input.length !== requirement ? getPipeIssues("length", error || "Invalid length", input) : getOutput(input);
+}
+
+// src/validations/maxBytes/maxBytes.ts
+function maxBytes(requirement, error) {
+  return (input) => new TextEncoder().encode(input).length > requirement ? getPipeIssues("max_bytes", error || "Invalid byte length", input) : getOutput(input);
+}
+
+// src/validations/maxLength/maxLength.ts
+function maxLength(requirement, error) {
+  return (input) => input.length > requirement ? getPipeIssues("max_length", error || "Invalid length", input) : getOutput(input);
+}
+
+// src/validations/maxSize/maxSize.ts
+function maxSize(requirement, error) {
+  return (input) => input.size > requirement ? getPipeIssues("max_size", error || "Invalid size", input) : getOutput(input);
+}
+
+// src/validations/maxValue/maxValue.ts
+function maxValue(requirement, error) {
+  return (input) => input > requirement ? getPipeIssues("max_value", error || "Invalid value", input) : getOutput(input);
+}
+var maxRange = maxValue;
+
+// src/validations/minBytes/minBytes.ts
+function minBytes(requirement, error) {
+  return (input) => new TextEncoder().encode(input).length < requirement ? getPipeIssues("min_bytes", error || "Invalid byte length", input) : getOutput(input);
+}
+
+// src/validations/mimeType/mimeType.ts
+function mimeType(requirement, error) {
+  return (input) => !requirement.includes(input.type) ? getPipeIssues("mime_type", error || "Invalid MIME type", input) : getOutput(input);
+}
+
+// src/validations/minLength/minLength.ts
+function minLength(requirement, error) {
+  return (input) => input.length < requirement ? getPipeIssues("min_length", error || "Invalid length", input) : getOutput(input);
+}
+
+// src/validations/minSize/minSize.ts
+function minSize(requirement, error) {
+  return (input) => input.size < requirement ? getPipeIssues("min_size", error || "Invalid size", input) : getOutput(input);
+}
+
+// src/validations/minValue/minValue.ts
+function minValue(requirement, error) {
+  return (input) => input < requirement ? getPipeIssues("min_value", error || "Invalid value", input) : getOutput(input);
+}
+var minRange = minValue;
+
+// src/validations/multipleOf/multipleOf.ts
+function multipleOf(requirement, error) {
+  return (input) => input % requirement !== 0 ? getPipeIssues("multiple_of", error || "Invalid multiple", input) : getOutput(input);
+}
+
+// src/validations/notBytes/notBytes.ts
+function notBytes(requirement, error) {
+  return (input) => new TextEncoder().encode(input).length === requirement ? getPipeIssues("not_bytes", error || "Invalid byte length", input) : getOutput(input);
+}
+
+// src/validations/notLength/notLength.ts
+function notLength(requirement, error) {
+  return (input) => input.length === requirement ? getPipeIssues("not_length", error || "Invalid length", input) : getOutput(input);
+}
+
+// src/validations/notSize/notSize.ts
+function notSize(requirement, error) {
+  return (input) => input.size === requirement ? getPipeIssues("not_size", error || "Invalid size", input) : getOutput(input);
+}
+
+// src/validations/notValue/notValue.ts
+function notValue(requirement, error) {
+  return (input) => input === requirement ? getPipeIssues("not_value", error || "Invalid value", input) : getOutput(input);
+}
+
+// src/validations/regex/regex.ts
+function regex(requirement, error) {
+  return (input) => !requirement.test(input) ? getPipeIssues("regex", error || "Invalid regex", input) : getOutput(input);
+}
+
+// src/validations/safeInteger/safeInteger.ts
+function safeInteger(error) {
+  return (input) => !Number.isSafeInteger(input) ? getPipeIssues("safe_integer", error || "Invalid safe integer", input) : getOutput(input);
+}
+
+// src/validations/size/size.ts
+function size(requirement, error) {
+  return (input) => input.size !== requirement ? getPipeIssues("size", error || "Invalid size", input) : getOutput(input);
+}
+
+// src/validations/startsWith/startsWith.ts
+function startsWith(requirement, error) {
+  return (input) => !input.startsWith(requirement) ? getPipeIssues("starts_with", error || "Invalid start", input) : getOutput(input);
+}
+
+// src/validations/ulid/ulid.ts
+function ulid(error) {
+  return (input) => !ULID_REGEX.test(input) ? getPipeIssues("ulid", error || "Invalid ULID", input) : getOutput(input);
+}
+
+// src/validations/url/url.ts
+function url(error) {
+  return (input) => {
+    try {
+      new URL(input);
+      return getOutput(input);
+    } catch (_) {
+      return getPipeIssues("url", error || "Invalid URL", input);
+    }
+  };
+}
+
+// src/validations/uuid/uuid.ts
+function uuid(error) {
+  return (input) => !UUID_REGEX.test(input) ? getPipeIssues("uuid", error || "Invalid UUID", input) : getOutput(input);
+}
+
+// src/validations/value/value.ts
+function value(requirement, error) {
+  return (input) => input !== requirement ? getPipeIssues("value", error || "Invalid value", input) : getOutput(input);
+}
+export {
+  BrandSymbol,
+  CUID2_REGEX,
+  EMAIL_REGEX,
+  EMOJI_REGEX,
+  IMEI_REGEX,
+  IPV4_REGEX,
+  IPV6_REGEX,
+  ISO_DATE_REGEX,
+  ISO_DATE_TIME_REGEX,
+  ISO_TIMESTAMP_REGEX,
+  ISO_TIME_REGEX,
+  ISO_TIME_SECOND_REGEX,
+  ISO_WEEK_REGEX,
+  ULID_REGEX,
+  UUID_REGEX,
+  ValiError,
+  any,
+  anyAsync,
+  array,
+  arrayAsync,
+  bigint,
+  bigintAsync,
+  blob,
+  blobAsync,
+  boolean,
+  booleanAsync,
+  brand,
+  bytes,
+  coerce,
+  coerceAsync,
+  cuid2,
+  custom,
+  customAsync,
+  date,
+  dateAsync,
+  discriminatedUnion,
+  discriminatedUnionAsync,
+  email,
+  emoji,
+  endsWith,
+  enumAsync,
+  enumType,
+  enumTypeAsync,
+  enum_,
+  equal,
+  excludes,
+  executePipe,
+  executePipeAsync,
+  fallback,
+  fallbackAsync,
+  finite,
+  flatten,
+  getDefault,
+  getDefaultArgs,
+  getDefaultAsync,
+  getDefaults,
+  getDefaultsAsync,
+  getFallback,
+  getFallbackAsync,
+  getFallbacks,
+  getFallbacksAsync,
+  getIssues,
+  getOutput,
+  getPipeIssues,
+  getRestAndDefaultArgs,
+  getSchemaIssues,
+  imei,
+  includes,
+  instance,
+  instanceAsync,
+  integer,
+  intersect,
+  intersection,
+  ip,
+  ipv4,
+  ipv6,
+  is,
+  isLuhnAlgo,
+  isoDate,
+  isoDateTime,
+  isoTime,
+  isoTimeSecond,
+  isoTimestamp,
+  isoWeek,
+  keyof,
+  length,
+  literal,
+  literalAsync,
+  map,
+  mapAsync,
+  maxBytes,
+  maxLength,
+  maxRange,
+  maxSize,
+  maxValue,
+  merge,
+  mergeAsync,
+  mimeType,
+  minBytes,
+  minLength,
+  minRange,
+  minSize,
+  minValue,
+  multipleOf,
+  nan,
+  nanAsync,
+  nativeEnum,
+  nativeEnumAsync,
+  never,
+  neverAsync,
+  nonNullable,
+  nonNullableAsync,
+  nonNullish,
+  nonNullishAsync,
+  nonOptional,
+  nonOptionalAsync,
+  notBytes,
+  notLength,
+  notSize,
+  notValue,
+  nullAsync,
+  nullType,
+  nullTypeAsync,
+  null_,
+  nullable,
+  nullableAsync,
+  nullish,
+  nullishAsync,
+  number,
+  numberAsync,
+  object,
+  objectAsync,
+  omit,
+  omitAsync,
+  optional,
+  optionalAsync,
+  parse,
+  parseAsync,
+  partial,
+  partialAsync,
+  passthrough,
+  passthroughAsync,
+  pick,
+  pickAsync,
+  picklist,
+  picklistAsync,
+  record,
+  recordAsync,
+  recursive,
+  recursiveAsync,
+  regex,
+  required,
+  requiredAsync,
+  safeInteger,
+  safeParse,
+  safeParseAsync,
+  set,
+  setAsync,
+  size,
+  special,
+  specialAsync,
+  startsWith,
+  strict,
+  strictAsync,
+  string,
+  stringAsync,
+  strip,
+  stripAsync,
+  symbol,
+  symbolAsync,
+  toCustom,
+  toCustomAsync,
+  toLowerCase,
+  toMaxValue,
+  toMinValue,
+  toTrimmed,
+  toTrimmedEnd,
+  toTrimmedStart,
+  toUpperCase,
+  transform,
+  transformAsync,
+  tuple,
+  tupleAsync,
+  ulid,
+  undefinedAsync,
+  undefinedType,
+  undefinedTypeAsync,
+  undefined_,
+  union,
+  unionAsync,
+  unknown,
+  unknownAsync,
+  unwrap,
+  url,
+  useDefault,
+  uuid,
+  value,
+  variant,
+  variantAsync,
+  voidAsync,
+  voidType,
+  voidTypeAsync,
+  void_,
+  withDefault
+};

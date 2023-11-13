@@ -1,0 +1,87 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const utils_1 = require("@typescript-eslint/utils");
+const utils_2 = require("../utils");
+const createRule = utils_1.ESLintUtils.RuleCreator.withoutDocs;
+const knownNamespaces = ["on", "oncapture", "use", "prop", "attr"];
+const styleNamespaces = ["style", "class"];
+const otherNamespaces = ["xmlns", "xlink"];
+exports.default = createRule({
+    meta: {
+        type: "problem",
+        docs: {
+            description: "Enforce using only Solid-specific namespaced attribute names (i.e. `'on:'` in `<div on:click={...} />`).",
+            url: "https://github.com/solidjs-community/eslint-plugin-solid/blob/main/docs/no-unknown-namespaces.md",
+        },
+        hasSuggestions: true,
+        schema: [
+            {
+                type: "object",
+                properties: {
+                    allowedNamespaces: {
+                        description: "an array of additional namespace names to allow",
+                        type: "array",
+                        items: {
+                            type: "string",
+                        },
+                        default: [],
+                        minItems: 1,
+                        uniqueItems: true,
+                    },
+                },
+                additionalProperties: false,
+            },
+        ],
+        messages: {
+            unknown: `'{{namespace}}:' is not one of Solid's special prefixes for JSX attributes (${knownNamespaces
+                .map((n) => `'${n}:'`)
+                .join(", ")}).`,
+            style: "Using the '{{namespace}}:' special prefix is potentially confusing, prefer the '{{namespace}}' prop instead.",
+            component: "Namespaced props have no effect on components.",
+            "component-suggest": "Replace {{namespace}}:{{name}} with {{name}}.",
+        },
+    },
+    defaultOptions: [],
+    create(context) {
+        const explicitlyAllowedNamespaces = context.options?.[0]?.allowedNamespaces;
+        return {
+            "JSXAttribute > JSXNamespacedName": (node) => {
+                const openingElement = node.parent.parent;
+                if (openingElement.name.type === "JSXIdentifier" &&
+                    !(0, utils_2.isDOMElementName)(openingElement.name.name)) {
+                    context.report({
+                        node,
+                        messageId: "component",
+                        suggest: [
+                            {
+                                messageId: "component-suggest",
+                                data: { namespace: node.namespace.name, name: node.name.name },
+                                fix: (fixer) => fixer.replaceText(node, node.name.name),
+                            },
+                        ],
+                    });
+                    return;
+                }
+                const namespace = node.namespace?.name;
+                if (!(knownNamespaces.includes(namespace) ||
+                    otherNamespaces.includes(namespace) ||
+                    explicitlyAllowedNamespaces?.includes(namespace))) {
+                    if (styleNamespaces.includes(namespace)) {
+                        context.report({
+                            node,
+                            messageId: "style",
+                            data: { namespace },
+                        });
+                    }
+                    else {
+                        context.report({
+                            node,
+                            messageId: "unknown",
+                            data: { namespace },
+                        });
+                    }
+                }
+            },
+        };
+    },
+});

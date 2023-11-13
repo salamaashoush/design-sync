@@ -1,0 +1,9 @@
+import type { FieldValues, FormOptions, FormStore, ResponseData } from '../types';
+/**
+ * Creates and returns the store of the form.
+ *
+ * @param options The form options.
+ *
+ * @returns The reactive store.
+ */
+export declare function useFormStore<TFieldValues extends FieldValues, TResponseData extends ResponseData = undefined>({ initialValues, validateOn, revalidateOn, validate, }?: FormOptions<TFieldValues>): FormStore<TFieldValues, TResponseData>;

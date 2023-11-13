@@ -1,0 +1,18 @@
+'use strict';
+
+Object.defineProperty(exports, '__esModule', { value: true });
+
+var react = require('react');
+
+function styledRuntime(el, className) {
+  const Component = function Component(props) {
+    return /*#__PURE__*/react.createElement(el, {
+      ...props,
+      className: [props.className, className].filter(Boolean).join(' ')
+    });
+  };
+  Component.displayName = `DBStyled(${el})`;
+  return Component;
+}
+
+exports.styledRuntime = styledRuntime;

@@ -1,0 +1,33 @@
+import { batch } from '@preact/signals';
+import { getFieldArrayStore, getFieldStore, updateFormInvalid } from '../utils';
+import { focus } from './focus';
+/**
+ * Sets the error of the specified field or field array.
+ *
+ * @param form The form of the field.
+ * @param name The name of the field.
+ * @param error The error message.
+ * @param options The error options.
+ */
+export function setError(form, name, error, { shouldActive = true, shouldTouched = false, shouldDirty = false, shouldFocus = !!error, } = {}) {
+    batch(() => {
+        for (const fieldOrFieldArray of [
+            getFieldStore(form, name),
+            getFieldArrayStore(form, name),
+        ]) {
+            if (fieldOrFieldArray &&
+                (!shouldActive || fieldOrFieldArray.active.peek()) &&
+                (!shouldTouched || fieldOrFieldArray.touched.peek()) &&
+                (!shouldDirty || fieldOrFieldArray.dirty.peek())) {
+                // Set error to field or field array
+                fieldOrFieldArray.error.value = error;
+                // Focus element if set to "true"
+                if (error && 'value' in fieldOrFieldArray && shouldFocus) {
+                    focus(form, name);
+                }
+            }
+        }
+        // Update invalid state of form
+        updateFormInvalid(form, !!error);
+    });
+}

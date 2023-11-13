@@ -1,0 +1,18 @@
+import { convertHexColorToRgbColor, MIXED_STRING } from '@create-figma-plugin/utilities';
+export function createRgbaColor(hexColor, opacity) {
+    if (hexColor === '' ||
+        hexColor === MIXED_STRING ||
+        opacity === '' ||
+        opacity === MIXED_STRING) {
+        return null;
+    }
+    const rgb = convertHexColorToRgbColor(hexColor);
+    if (rgb === null) {
+        return null;
+    }
+    return {
+        ...rgb,
+        a: parseInt(opacity, 10) / 100
+    };
+}
+//# sourceMappingURL=create-rgba-color.js.map

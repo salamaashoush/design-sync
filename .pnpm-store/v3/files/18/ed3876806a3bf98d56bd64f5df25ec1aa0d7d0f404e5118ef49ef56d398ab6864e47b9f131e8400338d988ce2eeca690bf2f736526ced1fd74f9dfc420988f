@@ -1,0 +1,1 @@
+{"version":3,"file":"read-tsconfig.d.ts","sourceRoot":"","sources":["../../../src/utilities/type-check/read-tsconfig.ts"],"names":[],"mappings":"AAGA,OAAO,EAAE,MAAM,YAAY,CAAA;AAW3B,wBAAgB,YAAY,IAAI;IAC9B,eAAe,EAAE,EAAE,CAAC,eAAe,CAAA;IACnC,SAAS,EAAE,KAAK,CAAC,MAAM,CAAC,CAAA;IACxB,gBAAgB,EAAE,MAAM,CAAA;CACzB,CA4BA"}

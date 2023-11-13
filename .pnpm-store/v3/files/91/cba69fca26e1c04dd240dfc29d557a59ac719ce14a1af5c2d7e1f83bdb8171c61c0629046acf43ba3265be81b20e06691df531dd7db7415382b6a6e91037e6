@@ -1,0 +1,13 @@
+/**
+ * Creates a validation functions that parses the Valibot schema of a field.
+ *
+ * @param schema A Valibot schema.
+ *
+ * @returns A validation function.
+ */
+export function valiField(schema) {
+    return async (value) => {
+        const result = await schema._parse(value, { abortPipeEarly: true });
+        return result.issues?.[0]?.message || '';
+    };
+}

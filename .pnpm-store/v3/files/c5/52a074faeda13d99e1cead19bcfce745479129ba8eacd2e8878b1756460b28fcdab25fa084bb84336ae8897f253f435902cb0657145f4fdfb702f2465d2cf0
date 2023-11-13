@@ -1,0 +1,12 @@
+import type { MaybeValue } from '../types';
+type Value = MaybeValue<File | File[]>;
+/**
+ * Creates a validation functions that validates the file type.
+ *
+ * @param requirement The MIME types.
+ * @param error The error message.
+ *
+ * @returns A validation function.
+ */
+export declare function mimeType(requirement: string | string[], error: string): (value: Value) => string;
+export {};

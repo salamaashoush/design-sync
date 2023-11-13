@@ -1,0 +1,24 @@
+import { initializeFieldStore } from '../utils';
+/**
+ * Returns the value of the specified field.
+ *
+ * @param form The form of the field.
+ * @param name The name of the field.
+ * @param options The value options.
+ *
+ * @returns The value of the field.
+ */
+export function getValue(form, name, { shouldActive = true, shouldTouched = false, shouldDirty = false, shouldValid = false, } = {}) {
+    // Get store of specified field
+    const field = initializeFieldStore(form, name);
+    // Continue if field corresponds to filter options
+    if ((!shouldActive || field.active.value) &&
+        (!shouldTouched || field.touched.value) &&
+        (!shouldDirty || field.dirty.value) &&
+        (!shouldValid || !field.error.value)) {
+        // Return value of field
+        return field.value.value;
+    }
+    // Otherwise return undefined
+    return undefined;
+}

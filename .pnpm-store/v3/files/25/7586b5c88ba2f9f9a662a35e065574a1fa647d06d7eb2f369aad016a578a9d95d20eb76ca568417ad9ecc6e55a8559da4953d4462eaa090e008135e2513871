@@ -1,0 +1,37 @@
+import { batch } from '@preact/signals';
+import { getFieldArrayStore, getUniqueId, setFieldArrayValue } from '../utils';
+/**
+ * Replaces a item of the field array.
+ *
+ * @param form The form of the field array.
+ * @param name The name of the field array.
+ * @param options The replace options.
+ */
+export function replace(form, name, options) {
+    // Get store of specified field array
+    const fieldArray = getFieldArrayStore(form, name);
+    // Continue if specified field array exists
+    if (fieldArray) {
+        // Destructure options
+        const { at: index } = options;
+        // Get last index of field array
+        const lastIndex = fieldArray.items.peek().length - 1;
+        // Continue if specified index is valid
+        if (index >= 0 && index <= lastIndex) {
+            batch(() => {
+                // Replace value of field array
+                setFieldArrayValue(form, name, options);
+                // Replace item at field array
+                const nextItems = [...fieldArray.items.peek()];
+                nextItems[index] = getUniqueId();
+                fieldArray.items.value = nextItems;
+                // Set touched at field array and form to true
+                fieldArray.touched.value = true;
+                form.touched.value = true;
+                // Set dirty at field array and form to true
+                fieldArray.dirty.value = true;
+                form.dirty.value = true;
+            });
+        }
+    }
+}

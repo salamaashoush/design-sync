@@ -1,0 +1,12 @@
+/**
+ * Creates a validation function that checks the existence of an input.
+ *
+ * @param error The error message.
+ *
+ * @returns A validation function.
+ */
+export function required(error) {
+    return (value) => (!value && value !== 0) || (Array.isArray(value) && !value.length)
+        ? error
+        : '';
+}

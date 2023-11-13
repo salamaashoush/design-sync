@@ -1,0 +1,8 @@
+/**
+ * Clears the response of the form.
+ *
+ * @param form The form of the response.
+ */
+export function clearResponse(form) {
+    form.response.value = {};
+}

@@ -1,0 +1,28 @@
+import { computed } from '@preact/signals';
+import { getFieldArrayStore } from '../utils';
+/**
+ * Checks if the specified field array is included in the form.
+ *
+ * @param form The form of the field array.
+ * @param name The name of the field array.
+ * @param options The field array options.
+ *
+ * @returns Whether the field array is included.
+ */
+export function hasFieldArray(form, name, { shouldActive = true, shouldTouched = false, shouldDirty = false, shouldValid = false, } = {}) {
+    return computed(() => {
+        // Get store of specified field array
+        const fieldArray = getFieldArrayStore(form, name);
+        // If field array is not present, set listener to be notified when a new
+        // field array is added
+        if (!fieldArray) {
+            form.internal.fieldArrayNames.value;
+        }
+        // Return whether field array is present and matches filter options
+        return (!!fieldArray &&
+            (!shouldActive || fieldArray.active.value) &&
+            (!shouldTouched || fieldArray.touched.value) &&
+            (!shouldDirty || fieldArray.dirty.value) &&
+            (!shouldValid || !fieldArray.error.value));
+    }).value;
+}

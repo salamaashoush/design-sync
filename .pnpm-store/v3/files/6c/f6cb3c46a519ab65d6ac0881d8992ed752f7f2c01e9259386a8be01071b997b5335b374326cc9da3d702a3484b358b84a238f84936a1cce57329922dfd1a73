@@ -1,0 +1,11 @@
+import type { FieldElement, FieldPath, FieldPathValue, FieldType, FieldValues, InternalFieldStore, Maybe } from '../types';
+/**
+ * Returns the current input of the element.
+ *
+ * @param element The field element.
+ * @param field The store of the field.
+ * @param type The data type to capture.
+ *
+ * @returns The element input.
+ */
+export declare function getElementInput<TFieldValues extends FieldValues, TFieldName extends FieldPath<TFieldValues>>(element: FieldElement, field: InternalFieldStore<TFieldValues, TFieldName>, type: Maybe<FieldType<any>>): FieldPathValue<TFieldValues, TFieldName>;

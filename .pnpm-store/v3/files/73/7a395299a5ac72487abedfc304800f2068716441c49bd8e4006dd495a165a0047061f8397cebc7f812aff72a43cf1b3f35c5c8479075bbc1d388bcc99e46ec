@@ -1,0 +1,14 @@
+import { createElement } from 'react';
+
+function styledRuntime(el, className) {
+  const Component = function Component(props) {
+    return /*#__PURE__*/createElement(el, {
+      ...props,
+      className: [props.className, className].filter(Boolean).join(' ')
+    });
+  };
+  Component.displayName = `DBStyled(${el})`;
+  return Component;
+}
+
+export { styledRuntime };

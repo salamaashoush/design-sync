@@ -1,0 +1,10 @@
+import type { FieldPath, FieldValues, FormStore, InternalFieldStore, ResponseData } from '../types';
+/**
+ * Initializes and returns the store of a field.
+ *
+ * @param form The form of the field.
+ * @param name The name of the field.
+ *
+ * @returns The reactive store.
+ */
+export declare function initializeFieldStore<TFieldValues extends FieldValues, TResponseData extends ResponseData, TFieldName extends FieldPath<TFieldValues>>(form: FormStore<TFieldValues, TResponseData>, name: TFieldName): InternalFieldStore<TFieldValues, TFieldName>;

@@ -1,0 +1,44 @@
+import type { FieldValues, FieldPath, FieldPathValue, ResponseData, FormStore, Maybe, FieldArrayPath, PartialValues } from '../types';
+/**
+ * Value type of the reset options.
+ */
+export type ResetOptions<TFieldValues extends FieldValues, TFieldName extends FieldPath<TFieldValues>> = Partial<{
+    initialValue: FieldPathValue<TFieldValues, TFieldName>;
+    initialValues: PartialValues<TFieldValues>;
+    keepResponse: boolean;
+    keepSubmitCount: boolean;
+    keepSubmitted: boolean;
+    keepValues: boolean;
+    keepDirtyValues: boolean;
+    keepItems: boolean;
+    keepDirtyItems: boolean;
+    keepErrors: boolean;
+    keepTouched: boolean;
+    keepDirty: boolean;
+}>;
+/**
+ * Resets the entire form, several fields and field arrays or a singel field or
+ * field array.
+ *
+ * @param form The form to be reset.
+ * @param options The reset options.
+ */
+export declare function reset<TFieldValues extends FieldValues, TResponseData extends ResponseData>(form: FormStore<TFieldValues, TResponseData>, options?: Maybe<ResetOptions<TFieldValues, FieldPath<TFieldValues>>>): void;
+/**
+ * Resets the entire form, several fields and field arrays or a singel field or
+ * field array.
+ *
+ * @param form The form to be reset.
+ * @param name The field or field array to be reset.
+ * @param options The reset options.
+ */
+export declare function reset<TFieldValues extends FieldValues, TResponseData extends ResponseData, TFieldName extends FieldPath<TFieldValues>>(form: FormStore<TFieldValues, TResponseData>, name: TFieldName | FieldArrayPath<TFieldValues>, options?: Maybe<ResetOptions<TFieldValues, TFieldName>>): void;
+/**
+ * Resets the entire form, several fields and field arrays or a singel field or
+ * field array.
+ *
+ * @param form The form to be reset.
+ * @param names The fields and field arrays to be reset.
+ * @param options The reset options.
+ */
+export declare function reset<TFieldValues extends FieldValues, TResponseData extends ResponseData>(form: FormStore<TFieldValues, TResponseData>, names: (FieldPath<TFieldValues> | FieldArrayPath<TFieldValues>)[], options?: Maybe<ResetOptions<TFieldValues, FieldPath<TFieldValues>>>): void;

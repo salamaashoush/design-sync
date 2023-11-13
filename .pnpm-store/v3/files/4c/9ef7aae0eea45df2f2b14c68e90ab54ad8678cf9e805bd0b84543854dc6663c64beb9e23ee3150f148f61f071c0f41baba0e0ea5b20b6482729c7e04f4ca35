@@ -1,0 +1,1 @@
+{"version":3,"file":"get-absolute-position.js","sourceRoot":"","sources":["../../../src/node/absolute-position/get-absolute-position.ts"],"names":[],"mappings":"AAMA,MAAM,UAAU,mBAAmB,CAAC,IAAe;IACjD,OAAO;QACL,CAAC,EAAE,IAAI,CAAC,iBAAiB,CAAC,CAAC,CAAC,CAAC,CAAC,CAAC;QAC/B,CAAC,EAAE,IAAI,CAAC,iBAAiB,CAAC,CAAC,CAAC,CAAC,CAAC,CAAC;KAChC,CAAA;AACH,CAAC"}

@@ -1,0 +1,70 @@
+import { batch } from '@preact/signals';
+import { getUniqueId, initializeFieldArrayStore } from '../utils';
+import { setValue } from './setValue';
+import { validate } from './validate';
+export function setValues(form, arg2, arg3, arg4) {
+    // Check if values of a field array should be set
+    const isFieldArray = typeof arg2 === 'string';
+    // Get values from arguments
+    const values = (isFieldArray ? arg3 : arg2);
+    // Get options from arguments
+    const options = ((isFieldArray ? arg4 : arg3) || {});
+    // Destructure options and set default values
+    const { shouldTouched = true, shouldDirty = true, shouldValidate = true, shouldFocus = true, } = options;
+    // Create list of field and field array names
+    const names = isFieldArray ? [arg2] : [];
+    batch(() => {
+        // Create function to set items of field array
+        const setFieldArrayItems = (name, value) => {
+            // Initialize store of specified field array
+            const fieldArray = initializeFieldArrayStore(form, name);
+            // Set array items
+            fieldArray.items.value = value.map(() => getUniqueId());
+            // Update touched if set to "true"
+            if (shouldTouched) {
+                fieldArray.touched.value = true;
+                form.touched.value = true;
+            }
+            // Update dirty if set to "true"
+            if (shouldDirty) {
+                fieldArray.dirty.value = true;
+                form.dirty.value = true;
+            }
+        };
+        // Create recursive function to set nested values
+        const setNestedValues = (data, prevPath) => Object.entries(data).forEach(([path, value]) => {
+            // Create new compound path
+            const compoundPath = prevPath ? `${prevPath}.${path}` : path;
+            // Set value of fields
+            if (!value || typeof value !== 'object' || Array.isArray(value)) {
+                setValue(form, compoundPath, value, {
+                    ...options,
+                    shouldValidate: false,
+                });
+                // Add name of field or field array to list
+                names.push(compoundPath);
+            }
+            // Set items of field arrays
+            if (Array.isArray(value)) {
+                setFieldArrayItems(compoundPath, value);
+            }
+            // Set values of nested fields and field arrays
+            if (value && typeof value === 'object') {
+                setNestedValues(value, compoundPath);
+            }
+        });
+        // Set field array items if necessary
+        if (isFieldArray) {
+            setFieldArrayItems(arg2, arg3);
+        }
+        // Set nested values of specified values
+        setNestedValues(values, isFieldArray ? arg2 : undefined);
+        // Validate if set to "true" and necessary
+        if (shouldValidate &&
+            ['touched', 'input'].includes(form.internal.validateOn === 'submit' && form.submitted
+                ? form.internal.revalidateOn
+                : form.internal.validateOn)) {
+            validate(form, names, { shouldFocus });
+        }
+    });
+}

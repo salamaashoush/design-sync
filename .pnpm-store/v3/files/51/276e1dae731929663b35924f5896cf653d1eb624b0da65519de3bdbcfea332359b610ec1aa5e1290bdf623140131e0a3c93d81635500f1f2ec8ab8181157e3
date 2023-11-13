@@ -1,0 +1,70 @@
+{
+  "name": "@solid-primitives/utils",
+  "version": "6.2.1",
+  "description": "A bunch of reactive utility types and functions, for building primitives with Solid.js",
+  "author": "Damian Tarnawski @thetarnav <gthetarnav@gmail.com>",
+  "contributors": [
+    "Tom Pichaud <dev.tompichaud@icloud.com>"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/solidjs-community/solid-primitives/tree/main/packages/utils#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/solidjs-community/solid-primitives.git"
+  },
+  "bugs": {
+    "url": "https://github.com/solidjs-community/solid-primitives/issues"
+  },
+  "private": false,
+  "sideEffects": false,
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "main": "./dist/index/index.cjs",
+  "module": "./dist/index/index.js",
+  "types": "./dist/index/index.d.ts",
+  "browser": {},
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index/index.d.ts",
+        "default": "./dist/index/index.js"
+      },
+      "require": "./dist/index/index.cjs"
+    },
+    "./immutable": {
+      "import": {
+        "types": "./dist/immutable/index.d.ts",
+        "default": "./dist/immutable/index.js"
+      },
+      "require": "./dist/immutable/index.cjs"
+    }
+  },
+  "typesVersions": {
+    "*": {
+      "immutable": [
+        "./dist/immutable/index.d.ts"
+      ]
+    }
+  },
+  "keywords": [
+    "utilities",
+    "reactivity",
+    "solid",
+    "primitives"
+  ],
+  "peerDependencies": {
+    "solid-js": "^1.6.12"
+  },
+  "devDependencies": {
+    "solid-js": "1.7.6"
+  },
+  "scripts": {
+    "dev": "jiti ../../scripts/dev.ts",
+    "build": "jiti ../../scripts/build.ts",
+    "vitest": "vitest -c ../../configs/vitest.config.ts",
+    "test": "pnpm run vitest",
+    "test:ssr": "pnpm run vitest --mode ssr"
+  }
+}

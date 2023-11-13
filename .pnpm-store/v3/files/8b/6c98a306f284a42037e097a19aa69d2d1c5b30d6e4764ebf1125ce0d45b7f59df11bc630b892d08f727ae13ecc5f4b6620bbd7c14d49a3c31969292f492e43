@@ -1,0 +1,91 @@
+{
+  "name": "@create-figma-plugin/utilities",
+  "version": "3.0.2",
+  "publishConfig": {
+    "access": "public"
+  },
+  "description": "An extensive library of utility functions for common Figma/FigJam plugin/widget operations",
+  "keywords": [
+    "create-figma-plugin",
+    "figjam",
+    "figma",
+    "figma-plugin",
+    "figma-plugins"
+  ],
+  "license": "MIT",
+  "author": "Yuan Qing Lim",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/yuanqing/create-figma-plugin.git",
+    "directory": "packages/utilities"
+  },
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
+  "files": [
+    "lib"
+  ],
+  "exports": "./lib/index.js",
+  "main": "./lib/index.js",
+  "scripts": {
+    "prebuild": "npm run clean",
+    "build": "npm run build:interpolate-gumroad-script && npm run build:generate-index && npm run build:js && npm run build:generate-docs",
+    "build:interpolate-gumroad-script": "tsx scripts/interpolate-gumroad-script.ts",
+    "build:generate-index": "rimraf src/index.ts && tsx ../../scripts/generate-index.ts -- 'src/**/*.ts' '!src/**/private/**/*' && eslint --fix src/index.ts",
+    "build:js": "tsc --build",
+    "build:generate-docs": "tsx scripts/generate-docs.ts '../website/docs/utilities.md'",
+    "clean": "rimraf --glob '*.log' lib tsconfig.tsbuildinfo",
+    "fix": "concurrently npm:fix:js npm:fix:json",
+    "fix:js": "eslint --fix '{scripts,src,test}/**/*.{js,ts}' --ignore-pattern src/index.ts",
+    "fix:json": "prettier --loglevel error --write '*.json'",
+    "lint": "eslint '{scripts,src,test}/**/*.{js,ts}' --ignore-pattern src/index.ts",
+    "test": "ava --serial 'test/**/*.ts'"
+  },
+  "dependencies": {
+    "hex-rgb": "^5.0.0",
+    "natural-compare-lite": "1.4.0",
+    "rgb-hex": "^4.1.0"
+  },
+  "devDependencies": {
+    "@figma/plugin-typings": "1.79.0",
+    "@types/natural-compare-lite": "^1.4.0",
+    "@types/node": "^20.8.6",
+    "@typescript-eslint/eslint-plugin": "5.59.7",
+    "ava": "^5.3.1",
+    "concurrently": "^8.2.1",
+    "esbuild": "^0.19.5",
+    "eslint": "^8.51.0",
+    "eslint-config-yuanqing": "0.0.8",
+    "eslint-plugin-import": "2.27.5",
+    "eslint-plugin-prettier": "4.2.1",
+    "eslint-plugin-react": "7.32.2",
+    "eslint-plugin-react-hooks": "4.6.0",
+    "eslint-plugin-simple-import-sort": "10.0.0",
+    "eslint-plugin-sort-keys-fix": "1.1.2",
+    "generate-ts-docs": "^0.0.14",
+    "prettier": "2.8.8",
+    "rimraf": "^5.0.5",
+    "tsx": "^3.13.0",
+    "typescript": "^5.2.2"
+  },
+  "ava": {
+    "extensions": {
+      "ts": "module"
+    },
+    "failFast": true,
+    "nodeArguments": [
+      "--loader",
+      "tsx"
+    ],
+    "timeout": "2m",
+    "workerThreads": false
+  },
+  "eslintConfig": {
+    "extends": "eslint-config-yuanqing",
+    "root": true
+  },
+  "prettier": "eslint-config-yuanqing/prettier",
+  "sideEffects": false,
+  "gitHead": "00749bd49f2a20ce8609a5bbc7b09e35d6061089"
+}

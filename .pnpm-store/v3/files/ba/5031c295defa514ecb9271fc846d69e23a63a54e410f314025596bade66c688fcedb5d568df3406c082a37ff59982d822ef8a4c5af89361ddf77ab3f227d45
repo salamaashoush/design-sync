@@ -1,0 +1,8 @@
+import type { InternalFieldArrayStore, FieldValues, FormStore, ResponseData } from '../types';
+/**
+ * Updates the dirty state of a field array.
+ *
+ * @param form The form of the field array.
+ * @param fieldArray The store of the field array.
+ */
+export declare function updateFieldArrayDirty<TFieldValues extends FieldValues, TResponseData extends ResponseData>(form: FormStore<TFieldValues, TResponseData>, fieldArray: InternalFieldArrayStore): void;

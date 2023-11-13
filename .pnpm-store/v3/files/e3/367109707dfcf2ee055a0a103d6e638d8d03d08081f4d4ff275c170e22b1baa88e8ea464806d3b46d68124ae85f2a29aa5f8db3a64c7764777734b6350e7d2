@@ -1,0 +1,46 @@
+import { log } from '@create-figma-plugin/common';
+import { temporaryFile } from 'tempy';
+import ts from 'typescript';
+import { trackElapsedTime } from '../track-elapsed-time.js';
+import { filterTypeScriptDiagnostics } from './filter-typescript-diagnostics.js';
+import { formatTypeScriptErrorMessage } from './format-typescript-error-message.js';
+import { readTsConfig } from './read-tsconfig.js';
+export function typeCheckWatch() {
+    const tsConfig = readTsConfig();
+    const compilerOptions = {
+        ...tsConfig.compilerOptions,
+        configFilePath: tsConfig.tsConfigFilePath,
+        noEmit: true
+    };
+    let getElapsedTime;
+    const host = ts.createWatchCompilerHost(tsConfig.tsConfigFilePath, {
+        ...compilerOptions,
+        incremental: true,
+        tsBuildInfoFile: temporaryFile()
+    }, ts.sys, ts.createSemanticDiagnosticsBuilderProgram, function reportDiagnostic(diagnostic) {
+        const diagnostics = filterTypeScriptDiagnostics([diagnostic]);
+        if (diagnostics.length === 0) {
+            return;
+        }
+        log.error(formatTypeScriptErrorMessage(diagnostics));
+    }, function reportWatchStatus(diagnostic) {
+        if (diagnostic.code === 6031 ||
+            diagnostic.code === 6032) {
+            getElapsedTime = trackElapsedTime();
+            log.info('Typechecking...');
+            return;
+        }
+        if (diagnostic.code === 6194) {
+            log.success(`Typechecked in ${getElapsedTime()}`, {
+                clearPreviousLine: true
+            });
+            log.info('Watching...');
+            return;
+        }
+    });
+    const watchProgram = ts.createWatchProgram(host);
+    return function () {
+        watchProgram.close();
+    };
+}
+//# sourceMappingURL=type-check-watch.js.map

@@ -1,0 +1,10 @@
+import type { FieldArrayPath, FieldValues, FormStore, InternalFieldArrayStore, ResponseData } from '../types';
+/**
+ * Initializes and returns the store of a field array.
+ *
+ * @param form The form of the field array.
+ * @param name The name of the field array.
+ *
+ * @returns The reactive store.
+ */
+export declare function initializeFieldArrayStore<TFieldValues extends FieldValues, TResponseData extends ResponseData, TFieldArrayName extends FieldArrayPath<TFieldValues>>(form: FormStore<TFieldValues, TResponseData>, name: TFieldArrayName): InternalFieldArrayStore;

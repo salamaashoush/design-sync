@@ -1,0 +1,19 @@
+import { AtomsFnBase } from '@dessert-box/core';
+import React, { ReactElement } from 'react';
+import type { CreateBoxParams } from './types';
+export { styled } from './styled';
+declare type AsProp<TType extends React.ElementType = React.ElementType> = {
+    as?: TType;
+};
+declare type BaseBoxProps<TType extends React.ElementType> = AsProp<TType> & Omit<React.ComponentProps<TType>, keyof AsProp>;
+declare type PolymorphicComponentProps<TType extends React.ElementType, Props> = Props & BaseBoxProps<TType>;
+declare type OverrideTokens<T> = {
+    [K in keyof T as K extends string ? `__${K}` : number]: Extract<T[K], string | number> | {};
+};
+declare type Tokens<AtomsFn extends AtomsFnBase> = Parameters<AtomsFn>[0];
+declare type BoxProps<AtomsFn extends AtomsFnBase, TType extends React.ElementType> = PolymorphicComponentProps<TType, Tokens<AtomsFn> & OverrideTokens<Tokens<AtomsFn>>>;
+export declare function createBox<AtomsFn extends AtomsFnBase>({ atoms: atomsFn, defaultClassName, }: CreateBoxParams<AtomsFn>): <TType extends React.ElementType<any> = "div">(props: BoxProps<AtomsFn, TType>) => React.ReactElement<BoxProps<AtomsFn, TType>, string | React.JSXElementConstructor<any>> | null;
+declare type BoxWithAtomsProps<AtomsFn extends AtomsFnBase, TType extends React.ElementType> = PolymorphicComponentProps<TType, {
+    atoms?: Tokens<AtomsFn> & OverrideTokens<Tokens<AtomsFn>>;
+}>;
+export declare function createBoxWithAtomsProp<AtomsFn extends AtomsFnBase>({ atoms: atomsFn, defaultClassName, }: CreateBoxParams<AtomsFn>): <TType extends React.ElementType<any> = "div">(props: BoxWithAtomsProps<AtomsFn, TType>) => null | ReactElement;

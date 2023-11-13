@@ -1,0 +1,2 @@
+export declare function extractAttributes<PlainObject, Key extends keyof PlainObject>(array: Array<PlainObject>, attributes: Key[]): Array<Pick<PlainObject, Key>>;
+//# sourceMappingURL=extract-attributes.d.ts.map

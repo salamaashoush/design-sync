@@ -1,0 +1,18 @@
+import { validate } from '../methods';
+/**
+ * Validates a field or field array only if required.
+ *
+ * @param form The form of the field or field array.
+ * @param fieldOrFieldArray The store of the field or field array.
+ * @param name The name of the field or field array.
+ * @param options The validate options.
+ */
+export function validateIfRequired(form, fieldOrFieldArray, name, { on: modes, shouldFocus = false }) {
+    if (modes.includes((form.internal.validateOn === 'submit'
+        ? form.submitted.peek()
+        : fieldOrFieldArray.error.peek())
+        ? form.internal.revalidateOn
+        : form.internal.validateOn)) {
+        validate(form, name, { shouldFocus });
+    }
+}

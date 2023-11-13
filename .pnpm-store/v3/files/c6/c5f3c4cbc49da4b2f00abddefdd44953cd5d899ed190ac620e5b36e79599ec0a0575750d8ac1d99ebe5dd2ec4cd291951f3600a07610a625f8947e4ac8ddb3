@@ -1,0 +1,75 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const utils_1 = require("@typescript-eslint/utils");
+const jsx_ast_utils_1 = require("jsx-ast-utils");
+const createRule = utils_1.ESLintUtils.RuleCreator.withoutDocs;
+exports.default = createRule({
+    meta: {
+        type: "problem",
+        docs: {
+            description: "Enforce using the classlist prop over importing a classnames helper. The classlist prop accepts an object `{ [class: string]: boolean }` just like classnames.",
+            url: "https://github.com/solidjs-community/eslint-plugin-solid/blob/main/docs/prefer-classlist.md",
+        },
+        fixable: "code",
+        schema: [
+            {
+                type: "object",
+                properties: {
+                    classnames: {
+                        type: "array",
+                        description: "An array of names to treat as `classnames` functions",
+                        default: ["cn", "clsx", "classnames"],
+                        items: {
+                            type: "string",
+                        },
+                        minItems: 1,
+                        uniqueItems: true,
+                    },
+                },
+                additionalProperties: false,
+            },
+        ],
+        messages: {
+            preferClasslist: "The classlist prop should be used instead of {{ classnames }} to efficiently set classes based on an object.",
+        },
+        deprecated: true,
+    },
+    defaultOptions: [],
+    create(context) {
+        const classnames = context.options[0]?.classnames ?? ["cn", "clsx", "classnames"];
+        return {
+            JSXAttribute(node) {
+                if (["class", "className"].indexOf((0, jsx_ast_utils_1.propName)(node)) === -1 ||
+                    (0, jsx_ast_utils_1.hasProp)(node.parent?.attributes, "classlist", {
+                        ignoreCase: false,
+                    })) {
+                    return;
+                }
+                if (node.value?.type === "JSXExpressionContainer") {
+                    const expr = node.value.expression;
+                    if (expr.type === "CallExpression" &&
+                        expr.callee.type === "Identifier" &&
+                        classnames.indexOf(expr.callee.name) !== -1 &&
+                        expr.arguments.length === 1 &&
+                        expr.arguments[0].type === "ObjectExpression") {
+                        context.report({
+                            node,
+                            messageId: "preferClasslist",
+                            data: {
+                                classnames: expr.callee.name,
+                            },
+                            fix: (fixer) => {
+                                const attrRange = node.range;
+                                const objectRange = expr.arguments[0].range;
+                                return [
+                                    fixer.replaceTextRange([attrRange[0], objectRange[0]], "classlist={"),
+                                    fixer.replaceTextRange([objectRange[1], attrRange[1]], "}"),
+                                ];
+                            },
+                        });
+                    }
+                }
+            },
+        };
+    },
+});

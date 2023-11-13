@@ -1,0 +1,1 @@
+{"version":3,"file":"watch-ignore-regex.js","sourceRoot":"","sources":["../../src/watch-async/watch-ignore-regex.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,SAAS,EAAE,MAAM,6BAA6B,CAAA;AAEvD,MAAM,CAAC,MAAM,gBAAgB,GAAG,IAAI,MAAM,CACxC;IACE,eAAe;IACf,iBAAiB;IACjB,qBAAqB;IACrB,YAAY;IACZ,IAAI,SAAS,CAAC,KAAK,CAAC,kBAAkB,GAAG;CAC1C,CAAC,IAAI,CAAC,GAAG,CAAC,CACZ,CAAA"}

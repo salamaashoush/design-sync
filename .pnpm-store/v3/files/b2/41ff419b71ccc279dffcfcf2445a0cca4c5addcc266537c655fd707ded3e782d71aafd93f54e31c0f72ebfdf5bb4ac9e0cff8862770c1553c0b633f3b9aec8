@@ -1,0 +1,32 @@
+import { Fragment as _Fragment, jsx as _jsx } from "preact/jsx-runtime";
+import { useMemo } from 'preact/hooks';
+import { useLifecycle, useLiveSignal } from '../hooks';
+import { initializeFieldArrayStore } from '../utils';
+/**
+ * Headless field array that provides reactive properties and state.
+ */
+export function FieldArray({ children, ...props }) {
+    // Destructure props
+    const { of: form, name } = props;
+    // Get store of specified field array
+    const fieldArray = useMemo(() => initializeFieldArrayStore(form, name), [form, name]);
+    // Use lifecycle of field array
+    useLifecycle({ ...props, store: fieldArray });
+    // Create readonly live signals
+    // https://github.com/preactjs/signals/issues/361
+    const items = useLiveSignal(fieldArray.items);
+    const error = useLiveSignal(fieldArray.error);
+    const active = useLiveSignal(fieldArray.active);
+    const touched = useLiveSignal(fieldArray.touched);
+    const dirty = useLiveSignal(fieldArray.dirty);
+    return (_jsx(_Fragment, { children: children(useMemo(() => ({
+            name,
+            items,
+            error,
+            active,
+            touched,
+            dirty,
+        }), 
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [name])) }));
+}

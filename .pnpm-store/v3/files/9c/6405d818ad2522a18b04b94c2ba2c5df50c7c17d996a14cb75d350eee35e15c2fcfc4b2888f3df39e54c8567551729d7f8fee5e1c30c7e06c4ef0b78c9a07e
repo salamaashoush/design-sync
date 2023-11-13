@@ -1,0 +1,10 @@
+import type { BaseSchema, BaseSchemaAsync } from 'valibot';
+import type { FieldValues, ValidateForm } from '../types';
+/**
+ * Creates a validation functions that parses the Valibot schema of a form.
+ *
+ * @param schema A Valibot schema.
+ *
+ * @returns A validation function.
+ */
+export declare function valiForm<TFieldValues extends FieldValues>(schema: BaseSchema<TFieldValues, any> | BaseSchemaAsync<TFieldValues, any>): ValidateForm<TFieldValues>;

@@ -1,0 +1,26 @@
+/*!
+ * Portions of this file are based on code from react-spectrum.
+ * Apache License Version 2.0, Copyright 2020 Adobe.
+ *
+ * Credits to the React Spectrum team:
+ * https://github.com/adobe/react-spectrum/blob/c183944ce6a8ca1cf280a1c7b88d2ba393dd0252/packages/@react-aria/accordion/src/useAccordion.ts
+ */
+import { OverrideComponentProps } from "@kobalte/utils";
+import { AsChildProp } from "../polymorphic";
+export interface AccordionItemOptions extends AsChildProp {
+    /** A unique value for the item. */
+    value: string;
+    /** Whether the item is disabled. */
+    disabled?: boolean;
+    /**
+     * Used to force mounting the item content when more control is needed.
+     * Useful when controlling animation with SolidJS animation libraries.
+     */
+    forceMount?: boolean;
+}
+export interface AccordionItemProps extends OverrideComponentProps<"div", AccordionItemOptions> {
+}
+/**
+ * An item of the accordion, contains all the parts of a collapsible section.
+ */
+export declare function AccordionItem(props: AccordionItemProps): import("solid-js").JSX.Element;

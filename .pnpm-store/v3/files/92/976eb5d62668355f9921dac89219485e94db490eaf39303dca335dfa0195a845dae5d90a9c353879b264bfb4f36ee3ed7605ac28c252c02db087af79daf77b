@@ -1,0 +1,7 @@
+import { ComplexStyleRule } from '@vanilla-extract/css';
+export declare function styled<T extends keyof JSX.IntrinsicElements>(el: T, rules: ComplexStyleRule): {
+    (props: import("react").ComponentProps<T>): import("react").ReactElement<import("react").ComponentProps<T> & {
+        className: string;
+    }, string | import("react").JSXElementConstructor<any>>;
+    displayName: string;
+};

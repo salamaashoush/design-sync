@@ -1,0 +1,24 @@
+import { useMemo } from 'preact/hooks';
+import { Form, Field, FieldArray } from '../components';
+import { useFormStore } from './useFormStore';
+/**
+ * Creates and returns the store of the form as well as a linked Form, Field
+ * and FieldArray component.
+ *
+ * @param options The form options.
+ *
+ * @returns The store and linked components.
+ */
+export function useForm(options) {
+    // Create form store
+    const form = useFormStore(options);
+    // Return form store and linked components
+    return useMemo(() => [
+        form,
+        {
+            Form: (props) => Form({ ...props, of: form }),
+            Field: (props) => Field({ ...props, of: form }),
+            FieldArray: (props) => FieldArray({ ...props, of: form }),
+        },
+    ], [form]);
+}

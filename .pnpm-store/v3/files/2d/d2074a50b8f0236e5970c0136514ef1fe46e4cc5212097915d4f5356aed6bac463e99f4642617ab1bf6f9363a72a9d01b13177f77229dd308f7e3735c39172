@@ -1,0 +1,40 @@
+import { signal } from '@preact/signals';
+import { useMemo } from 'preact/hooks';
+/**
+ * Creates and returns the store of the form.
+ *
+ * @param options The form options.
+ *
+ * @returns The reactive store.
+ */
+export function useFormStore({ initialValues = {}, validateOn = 'submit', revalidateOn = 'input', validate, } = {}) {
+    return useMemo(() => ({
+        internal: {
+            // Props
+            initialValues,
+            validate,
+            validateOn,
+            revalidateOn,
+            // Signals
+            fieldNames: signal([]),
+            fieldArrayNames: signal([]),
+            // Stores
+            fields: {},
+            fieldArrays: {},
+            // Other
+            validators: new Set(),
+        },
+        // Signals
+        element: signal(null),
+        submitCount: signal(0),
+        submitting: signal(false),
+        submitted: signal(false),
+        validating: signal(false),
+        touched: signal(false),
+        dirty: signal(false),
+        invalid: signal(false),
+        response: signal({}),
+    }), 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []);
+}

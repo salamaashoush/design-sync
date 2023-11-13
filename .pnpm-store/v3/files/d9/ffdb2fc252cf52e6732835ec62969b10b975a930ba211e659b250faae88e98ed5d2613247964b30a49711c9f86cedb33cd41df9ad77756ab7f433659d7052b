@@ -1,0 +1,8 @@
+import type { FieldPath, FieldValues, FormStore, InternalFieldStore, ResponseData } from '../types';
+/**
+ * Updates the dirty state of a field.
+ *
+ * @param form The form of the field.
+ * @param field The store of the field.
+ */
+export declare function updateFieldDirty<TFieldValues extends FieldValues, TResponseData extends ResponseData, TFielName extends FieldPath<TFieldValues>>(form: FormStore<TFieldValues, TResponseData>, field: InternalFieldStore<TFieldValues, TFielName>): void;

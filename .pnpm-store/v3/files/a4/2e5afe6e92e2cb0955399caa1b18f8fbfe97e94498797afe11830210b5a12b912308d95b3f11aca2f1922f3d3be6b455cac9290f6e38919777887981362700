@@ -1,0 +1,20 @@
+import { ComponentChildren } from 'preact';
+import { EventHandler } from '../../../types/event-handler.js';
+import { FocusableComponentProps } from '../../../types/focusable-component-props.js';
+export interface FileUploadButtonProps extends FocusableComponentProps<HTMLInputElement> {
+    acceptedFileTypes?: Array<string>;
+    children: ComponentChildren;
+    disabled?: boolean;
+    fullWidth?: boolean;
+    loading?: boolean;
+    multiple?: boolean;
+    onChange?: EventHandler.onChange<HTMLInputElement>;
+    onClick?: EventHandler.onClick<HTMLInputElement>;
+    onMouseDown?: EventHandler.onMouseDown<HTMLInputElement>;
+    onSelectedFiles?: EventHandler.onSelectedFiles;
+    secondary?: boolean;
+}
+export declare const FileUploadButton: import("preact").FunctionalComponent<Omit<import("../../../utilities/create-component.js").MixinHTMLElementAttributes<HTMLInputElement, FileUploadButtonProps>, "ref"> & {
+    ref?: import("preact").Ref<HTMLInputElement> | undefined;
+}>;
+//# sourceMappingURL=file-upload-button.d.ts.map

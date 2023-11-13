@@ -1,0 +1,11 @@
+export interface AtomsFnBase {
+    (...args: any): string;
+    properties: Set<string>;
+}
+export declare function composeClassNames(...classNames: Array<string | undefined>): string | undefined;
+export declare function extractAtomsFromProps<AtomsFn extends AtomsFnBase>(props: any, atomsFn: AtomsFn): {
+    hasAtomProps: boolean;
+    atomProps: Record<string, unknown>;
+    otherProps: Record<string, unknown>;
+    customProps: Record<string, unknown>;
+};

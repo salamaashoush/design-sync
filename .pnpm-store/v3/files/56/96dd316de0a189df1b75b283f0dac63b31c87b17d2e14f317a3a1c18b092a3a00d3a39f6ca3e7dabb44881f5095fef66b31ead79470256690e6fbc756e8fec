@@ -1,0 +1,69 @@
+{
+  "name": "eslint-config-preact",
+  "version": "1.3.0",
+  "description": "Unopinionated base ESLint configuration for Preact and Preact CLI projects.",
+  "keywords": [
+    "eslint",
+    "eslint-config"
+  ],
+  "repository": "preactjs/eslint-config-preact",
+  "license": "MIT",
+  "author": "The Preact Authors (https://preactjs.com)",
+  "main": "dist/eslint-config-preact.js",
+  "module": "dist/eslint-config-preact.module.js",
+  "exports": {
+    ".": {
+      "import": "./dist/eslint-config-preact.module.js",
+      "require": "./dist/eslint-config-preact.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "test": "eslint index.js && npm run -s build && jest",
+    "build": "microbundle -f es,cjs --target node --no-sourcemap index.js",
+    "prepare": "npm run -s build && npm test",
+    "release": "git commit -am $npm_package_version && git tag $npm_package_version && git push && git push --tags && npm publish"
+  },
+  "eslintConfig": {
+    "extends": "eslint:recommended",
+    "parserOptions": {
+      "ecmaVersion": 2020,
+      "sourceType": "module"
+    },
+    "env": {
+      "node": true,
+      "jest": true
+    },
+    "rules": {
+      "no-empty": 0
+    },
+    "ignorePatterns": [
+      "test/fixtures/**",
+      "test/__snapshots__/**"
+    ]
+  },
+  "dependencies": {
+    "@babel/core": "^7.13.16",
+    "@babel/eslint-parser": "^7.13.14",
+    "@babel/plugin-syntax-class-properties": "^7.12.13",
+    "@babel/plugin-syntax-decorators": "^7.12.13",
+    "@babel/plugin-syntax-jsx": "^7.12.13",
+    "eslint-plugin-compat": "^4.0.0",
+    "eslint-plugin-jest": "^25.2.4",
+    "eslint-plugin-react": "^7.27.0",
+    "eslint-plugin-react-hooks": "^4.3.0"
+  },
+  "devDependencies": {
+    "@types/eslint": "^8.2.0",
+    "@types/jest": "^27.0.2",
+    "@types/node": "^12.20.37",
+    "eslint": "^8.2.0",
+    "jest": "^27.3.1",
+    "microbundle": "^0.14.1"
+  },
+  "peerDependencies": {
+    "eslint": "6.x || 7.x || 8.x"
+  }
+}

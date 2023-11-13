@@ -1,0 +1,12 @@
+import type { FieldEvent, FieldPath, FieldPathValue, FieldValues, FormStore, InternalFieldStore, ResponseData, ValidationMode } from '../types';
+/**
+ * Handles the input, change and blur event of a field.
+ *
+ * @param form The form of the field.
+ * @param field The store of the field.
+ * @param name The name of the field.
+ * @param event The event of the field.
+ * @param validationModes The modes of the validation.
+ * @param inputValue The value of the input.
+ */
+export declare function handleFieldEvent<TFieldValues extends FieldValues, TResponseData extends ResponseData, TFieldName extends FieldPath<TFieldValues>>(form: FormStore<TFieldValues, TResponseData>, field: InternalFieldStore<TFieldValues, TFieldName>, name: TFieldName, event: FieldEvent, validationModes: Exclude<ValidationMode, 'submit'>[], inputValue?: FieldPathValue<TFieldValues, TFieldName>): void;

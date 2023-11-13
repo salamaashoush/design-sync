@@ -1,0 +1,32 @@
+import { getFieldStore, getFieldArrayStore } from '../utils';
+/**
+ * Returns the error of the specified field or field array.
+ *
+ * @param form The form of the field or field array.
+ * @param name The name of the field or field array.
+ *
+ * @returns The error of the field or field array.
+ */
+export function getError(form, name, { shouldActive = true, shouldTouched = false, shouldDirty = false, } = {}) {
+    // Get store of specified field or field array
+    const field = getFieldStore(form, name);
+    const fieldArray = getFieldArrayStore(form, name);
+    // Return error if field or field array is present and corresponds to filter
+    // options
+    for (const fieldOrFieldArray of [field, fieldArray]) {
+        if (fieldOrFieldArray &&
+            (!shouldActive || fieldOrFieldArray.active.value) &&
+            (!shouldTouched || fieldOrFieldArray.touched.value) &&
+            (!shouldDirty || fieldOrFieldArray.dirty.value)) {
+            return fieldOrFieldArray.error.value;
+        }
+    }
+    // If field and field array is not present, set listeners to be notified when
+    // a new field or field array is added
+    if (!field && !fieldArray) {
+        form.internal.fieldNames.value;
+        form.internal.fieldArrayNames.value;
+    }
+    // Otherwise return undefined
+    return undefined;
+}

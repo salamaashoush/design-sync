@@ -1,0 +1,74 @@
+import { extractAtomsFromProps, composeClassNames } from '@dessert-box/core';
+import { forwardRef, createElement } from 'react';
+import { addFunctionSerializer } from '@vanilla-extract/css/functionSerializer';
+import { style } from '@vanilla-extract/css';
+import { styledRuntime } from '../styledRuntime/dist/dessert-box-react-styledRuntime.esm.js';
+
+function styled(el, rules) {
+  const className = style(rules);
+  const args = [el, className];
+  const Component = styledRuntime(el, className);
+  addFunctionSerializer(Component, {
+    importPath: '@dessert-box/react/styledRuntime',
+    importName: 'styledRuntime',
+    // TODO: Fix this type, was complaining about string not being assignable to Serializable from VE lib
+    args: args
+  });
+  return Component;
+}
+
+// adapted from https://github.com/kripod/react-polymorphic-box
+
+const defaultElement = 'div';
+function createBox({
+  atoms: atomsFn,
+  defaultClassName
+}) {
+  const Box = /*#__PURE__*/forwardRef(({
+    className,
+    style,
+    as,
+    ...props
+  }, ref) => {
+    const Element = as || defaultElement;
+    const {
+      atomProps,
+      customProps,
+      otherProps
+    } = extractAtomsFromProps(props, atomsFn);
+    return /*#__PURE__*/createElement(Element, {
+      ref,
+      style: {
+        ...style,
+        ...customProps
+      },
+      ...otherProps,
+      className: composeClassNames(className, atomsFn(atomProps), defaultClassName)
+    });
+  });
+  Box.displayName = 'DessertBox';
+  return Box;
+}
+function createBoxWithAtomsProp({
+  atoms: atomsFn,
+  defaultClassName
+}) {
+  const Box = /*#__PURE__*/forwardRef(({
+    className,
+    style,
+    atoms,
+    as,
+    ...props
+  }, ref) => {
+    const Element = as || defaultElement;
+    return /*#__PURE__*/createElement(Element, {
+      ref,
+      ...props,
+      className: composeClassNames(className, atomsFn(atoms), defaultClassName)
+    });
+  });
+  Box.displayName = 'DessertBox';
+  return Box;
+}
+
+export { createBox, createBoxWithAtomsProp, styled };

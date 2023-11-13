@@ -1,0 +1,62 @@
+{
+  "name": "@solid-primitives/props",
+  "version": "3.1.8",
+  "description": "Library of primitives focused around component props.",
+  "author": "Damian Tarnawski <gthetarnav@gmail.com>",
+  "contributors": [],
+  "license": "MIT",
+  "homepage": "https://github.com/solidjs-community/solid-primitives/tree/main/packages/props",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/solidjs-community/solid-primitives.git"
+  },
+  "primitive": {
+    "name": "props",
+    "stage": 3,
+    "list": [
+      "combineProps",
+      "filterProps"
+    ],
+    "category": "Utilities"
+  },
+  "keywords": [
+    "props",
+    "solid",
+    "primitives"
+  ],
+  "files": [
+    "dist"
+  ],
+  "private": false,
+  "sideEffects": false,
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "browser": {},
+  "exports": {
+    "import": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "require": "./dist/index.cjs"
+  },
+  "dependencies": {
+    "@solid-primitives/utils": "^6.2.1"
+  },
+  "devDependencies": {
+    "nanospy": "^1.0.0",
+    "solid-js": "1.7.9"
+  },
+  "peerDependencies": {
+    "solid-js": "^1.6.12"
+  },
+  "typesVersions": {},
+  "scripts": {
+    "dev": "jiti ../../scripts/dev.ts",
+    "build": "jiti ../../scripts/build.ts",
+    "vitest": "vitest -c ../../configs/vitest.config.ts",
+    "test": "pnpm run vitest",
+    "test:ssr": "pnpm run vitest --mode ssr"
+  }
+}

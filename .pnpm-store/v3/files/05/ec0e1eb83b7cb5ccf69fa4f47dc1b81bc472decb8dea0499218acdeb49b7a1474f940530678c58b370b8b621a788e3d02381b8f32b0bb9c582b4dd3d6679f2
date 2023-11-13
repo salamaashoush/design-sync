@@ -1,0 +1,12 @@
+import { toCustom } from './toCustom';
+/**
+ * Creates a transformation functions that converts all the alphabetic
+ * characters in a string to lowercase.
+ *
+ * @param options The transform options.
+ *
+ * @returns A transformation functions.
+ */
+export function toLowerCase(options) {
+    return toCustom((value) => value && value.toLowerCase(), options);
+}

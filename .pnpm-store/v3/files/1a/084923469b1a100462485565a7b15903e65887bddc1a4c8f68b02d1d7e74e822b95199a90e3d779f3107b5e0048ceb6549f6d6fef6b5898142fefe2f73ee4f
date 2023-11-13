@@ -1,0 +1,1 @@
+{"version":3,"file":"cross-parser.d.ts","sourceRoot":"","sources":["../../../../src/core/cross/cross-parser.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,wBAAwB,EAAE,MAAM,mBAAmB,CAAC;AAElE,MAAM,WAAW,yBAA0B,SAAQ,wBAAwB;IACzE,IAAI,CAAC,EAAE,GAAG,CAAC,OAAO,EAAE,MAAM,CAAC,CAAC;CAC7B;AAED,MAAM,WAAW,mBAAmB;IAClC,OAAO,CAAC,EAAE,MAAM,CAAC;CAClB"}

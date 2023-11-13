@@ -1,0 +1,71 @@
+/*!
+ * Portions of this file are based on code from react-spectrum.
+ * Apache License Version 2.0, Copyright 2020 Adobe.
+ *
+ * Credits to the React Spectrum team:
+ * https://github.com/adobe/react-spectrum/blob/70e7caf1946c423bc9aa9cb0e50dbdbe953d239b/packages/@react-aria/radio/src/useRadio.ts
+ */
+import { callHandler, mergeDefaultProps, mergeRefs, visuallyHiddenStyles, } from "@kobalte/utils";
+import { createEffect, onCleanup, splitProps } from "solid-js";
+import { useFormControlContext } from "../form-control";
+import { useRadioGroupContext } from "./radio-group-context";
+import { useRadioGroupItemContext } from "./radio-group-item-context";
+/**
+ * The native html input that is visually hidden in the radio button.
+ */
+export function RadioGroupItemInput(props) {
+    const formControlContext = useFormControlContext();
+    const radioGroupContext = useRadioGroupContext();
+    const radioContext = useRadioGroupItemContext();
+    props = mergeDefaultProps({
+        id: radioContext.generateId("input"),
+    }, props);
+    const [local, others] = splitProps(props, [
+        "ref",
+        "style",
+        "aria-labelledby",
+        "aria-describedby",
+        "onChange",
+        "onFocus",
+        "onBlur",
+    ]);
+    const ariaLabelledBy = () => {
+        return ([
+            local["aria-labelledby"],
+            radioContext.labelId(),
+            // If there is both an aria-label and aria-labelledby, add the input itself has an aria-labelledby
+            local["aria-labelledby"] != null && others["aria-label"] != null ? others.id : undefined,
+        ]
+            .filter(Boolean)
+            .join(" ") || undefined);
+    };
+    const ariaDescribedBy = () => {
+        return ([local["aria-describedby"], radioContext.descriptionId(), radioGroupContext.ariaDescribedBy()]
+            .filter(Boolean)
+            .join(" ") || undefined);
+    };
+    const onChange = e => {
+        callHandler(e, local.onChange);
+        e.stopPropagation();
+        radioGroupContext.setSelectedValue(radioContext.value());
+        const target = e.target;
+        // Unlike in React, inputs `checked` state can be out of sync with our state.
+        // for example a readonly `<input type="radio" />` is always "checkable".
+        //
+        // Also, even if an input is controlled (ex: `<input type="radio" checked={isChecked} />`,
+        // clicking on the input will change its internal `checked` state.
+        //
+        // To prevent this, we need to force the input `checked` state to be in sync with our state.
+        target.checked = radioContext.isSelected();
+    };
+    const onFocus = e => {
+        callHandler(e, local.onFocus);
+        radioContext.setIsFocused(true);
+    };
+    const onBlur = e => {
+        callHandler(e, local.onBlur);
+        radioContext.setIsFocused(false);
+    };
+    createEffect(() => onCleanup(radioContext.registerInput(others.id)));
+    return (<input ref={mergeRefs(radioContext.setInputRef, local.ref)} type="radio" name={formControlContext.name()} value={radioContext.value()} checked={radioContext.isSelected()} required={formControlContext.isRequired()} disabled={radioContext.isDisabled()} readonly={formControlContext.isReadOnly()} style={{ ...visuallyHiddenStyles, ...local.style }} aria-labelledby={ariaLabelledBy()} aria-describedby={ariaDescribedBy()} onChange={onChange} onFocus={onFocus} onBlur={onBlur} {...radioContext.dataset()} {...others}/>);
+}

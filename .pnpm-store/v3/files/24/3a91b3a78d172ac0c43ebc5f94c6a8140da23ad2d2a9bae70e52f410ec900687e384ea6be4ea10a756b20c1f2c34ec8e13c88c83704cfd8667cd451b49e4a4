@@ -1,0 +1,2 @@
+import{options as _}from"preact";export{Fragment}from"preact";var r=0;function o(o,e,n,t,f,l){var s,i,u={};for(i in e)"ref"==i?s=e[i]:u[i]=e[i];var a={type:o,props:u,key:n,ref:s,__k:null,__:null,__b:0,__e:null,__d:void 0,__c:null,__h:null,constructor:void 0,__v:--r,__i:-1,__source:f,__self:l};if("function"==typeof o&&(s=o.defaultProps))for(i in s)void 0===u[i]&&(u[i]=s[i]);return _.vnode&&_.vnode(a),a}export{o as jsx,o as jsxDEV,o as jsxs};
+//# sourceMappingURL=jsxRuntime.module.js.map

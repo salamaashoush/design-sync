@@ -1,0 +1,63 @@
+import { jsx as _jsx } from "preact/jsx-runtime";
+import { batch } from '@preact/signals';
+import { FormError } from '../exceptions';
+import { getValues, setError, setResponse, validate } from '../methods';
+/**
+ * HTML form element that simplifies form submission and disables the browser's
+ * default form validation.
+ */
+export function Form({ of: form, onSubmit, responseDuration: duration, keepResponse, shouldActive, shouldTouched, shouldDirty, shouldFocus, ...props }) {
+    return (_jsx("form", { noValidate: true, ...props, ref: (element) => (form.element.value = element), onSubmit: async (event) => {
+            // Prevent default behavior of browser
+            event.preventDefault();
+            batch(() => {
+                // Reset response if it is not to be kept
+                if (!keepResponse) {
+                    form.response.value = {};
+                }
+                // Increase submit count and set submitted and submitting to "true"
+                form.submitCount.value++;
+                form.submitted.value = true;
+                form.submitting.value = true;
+            });
+            // Create options object
+            const options = {
+                duration,
+                shouldActive,
+                shouldTouched,
+                shouldDirty,
+                shouldFocus,
+            };
+            // Try to run submit actions if form is valid
+            try {
+                if (await validate(form, options)) {
+                    await onSubmit(getValues(form, options), event);
+                }
+                // If an error occurred, set error to fields and response
+            }
+            catch (error) {
+                batch(() => {
+                    if (error instanceof FormError) {
+                        Object.entries(error.errors).forEach(([name, error]) => {
+                            if (error) {
+                                setError(form, name, error, {
+                                    ...options,
+                                    shouldFocus: false,
+                                });
+                            }
+                        });
+                    }
+                    if (!(error instanceof FormError) || error.message) {
+                        setResponse(form, {
+                            status: 'error',
+                            message: error?.message || 'An unknown error has occurred.',
+                        }, options);
+                    }
+                });
+                // Finally set submitting back to "false"
+            }
+            finally {
+                form.submitting.value = false;
+            }
+        } }));
+}

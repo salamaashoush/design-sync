@@ -1,0 +1,20 @@
+/**
+ * Sets the response of the form.
+ *
+ * @param form The form of the response.
+ * @param response The response object.
+ * @param options The response options.
+ */
+export function setResponse(form, response, { duration } = {}) {
+    // Set new response
+    form.response.value = response;
+    // If necessary, remove new response after specified duration if response has
+    // not been changed in meantime
+    if (duration) {
+        setTimeout(() => {
+            if (form.response.peek() === response) {
+                form.response.value = {};
+            }
+        }, duration);
+    }
+}

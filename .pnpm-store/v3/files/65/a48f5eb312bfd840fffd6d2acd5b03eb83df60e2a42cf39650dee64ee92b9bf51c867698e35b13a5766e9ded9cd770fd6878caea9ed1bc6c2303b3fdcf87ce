@@ -1,0 +1,21 @@
+/**
+ * Creates a validation functions that parses the Zod schema of a form.
+ *
+ * @param schema A Zod schema.
+ *
+ * @returns A validation function.
+ */
+export function zodForm(schema) {
+    return (values) => {
+        const result = schema.safeParse(values);
+        return result.success
+            ? {}
+            : result.error.issues.reduce((errors, error) => {
+                const path = error.path.join('.');
+                if (!errors[path]) {
+                    errors[path] = error.message;
+                }
+                return errors;
+            }, {});
+    };
+}

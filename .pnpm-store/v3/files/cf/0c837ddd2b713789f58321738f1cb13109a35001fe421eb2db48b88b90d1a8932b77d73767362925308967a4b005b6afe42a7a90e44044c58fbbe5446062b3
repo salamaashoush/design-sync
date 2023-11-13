@@ -1,0 +1,2 @@
+var r=require("preact"),e=0;function _(_,n,o,t,u,l){var i,f,c={};for(f in n)"ref"==f?i=n[f]:c[f]=n[f];var p={type:_,props:c,key:o,ref:i,__k:null,__:null,__b:0,__e:null,__d:void 0,__c:null,__h:null,constructor:void 0,__v:--e,__i:-1,__source:u,__self:l};if("function"==typeof _&&(i=_.defaultProps))for(f in i)void 0===c[f]&&(c[f]=i[f]);return r.options.vnode&&r.options.vnode(p),p}Object.defineProperty(exports,"Fragment",{enumerable:!0,get:function(){return r.Fragment}}),exports.jsx=_,exports.jsxDEV=_,exports.jsxs=_;
+//# sourceMappingURL=jsxRuntime.js.map

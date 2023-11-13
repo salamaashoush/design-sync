@@ -1,0 +1,66 @@
+import { batch } from '@preact/signals';
+import { useEffect } from 'preact/hooks';
+import { reset } from '../methods';
+import { getUniqueId, updateFormState } from '../utils';
+/**
+ * Handles the lifecycle dependent state of a field or field array.
+ *
+ * @param props The lifecycle properties.
+ */
+export function useLifecycle({ of: form, name, store, validate, transform, keepActive = false, keepState = true, }) {
+    useEffect(() => {
+        // Add validation functions
+        store.validate = validate
+            ? Array.isArray(validate)
+                ? validate
+                : [validate]
+            : [];
+        // Add transformation functions
+        if ('transform' in store) {
+            store.transform = transform
+                ? Array.isArray(transform)
+                    ? transform
+                    : [transform]
+                : [];
+        }
+    }, [store, transform, validate]);
+    useEffect(() => {
+        // Create unique consumer ID
+        const consumer = getUniqueId();
+        // Add consumer to field
+        store.consumers.add(consumer);
+        // Mark field as active and update form state if necessary
+        if (!store.active.peek()) {
+            batch(() => {
+                store.active.value = true;
+                updateFormState(form);
+            });
+        }
+        // On cleanup, remove consumer from field
+        return () => {
+            setTimeout(() => {
+                store.consumers.delete(consumer);
+                // Mark field as inactive if there is no other consumer
+                batch(() => {
+                    if (!keepActive && !store.consumers.size) {
+                        store.active.value = false;
+                        // Reset state if it is not to be kept
+                        if (!keepState) {
+                            reset(form, name);
+                            // Otherwise just update form state
+                        }
+                        else {
+                            updateFormState(form);
+                        }
+                    }
+                });
+                // Remove unmounted elements
+                if ('elements' in store) {
+                    store.elements.value = store.elements
+                        .peek()
+                        .filter((element) => element.isConnected);
+                }
+            });
+        };
+    }, [form, name, store, keepActive, keepState]);
+}

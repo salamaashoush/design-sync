@@ -1,0 +1,12 @@
+import { getFieldAndArrayStores } from './getFieldAndArrayStores';
+/**
+ * Updates the dirty state of the form.
+ *
+ * @param form The store of the form.
+ * @param dirty Whether dirty state is true.
+ */
+export function updateFormDirty(form, dirty) {
+    form.dirty.value =
+        dirty ||
+            getFieldAndArrayStores(form).some((fieldOrFieldArray) => fieldOrFieldArray.active.peek() && fieldOrFieldArray.dirty.peek());
+}

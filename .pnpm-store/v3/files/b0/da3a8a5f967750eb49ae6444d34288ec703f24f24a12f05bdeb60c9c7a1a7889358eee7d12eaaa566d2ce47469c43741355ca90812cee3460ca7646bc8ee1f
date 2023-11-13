@@ -1,0 +1,12 @@
+import { getFieldAndArrayStores } from './getFieldAndArrayStores';
+/**
+ * Updates the invalid state of the form.
+ *
+ * @param form The store of the form.
+ * @param dirty Whether there is an error.
+ */
+export function updateFormInvalid(form, invalid) {
+    form.invalid.value =
+        invalid ||
+            getFieldAndArrayStores(form).some((fieldOrFieldArray) => fieldOrFieldArray.active.peek() && fieldOrFieldArray.error.peek());
+}

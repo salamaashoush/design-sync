@@ -1,0 +1,17 @@
+import type { FieldValues, FormErrors, FormStore, ResponseData } from '../types';
+/**
+ * Value type of the error response options.
+ */
+type ErrorResponseOptions = Partial<{
+    shouldActive: boolean;
+}>;
+/**
+ * Sets an error response if a form error was not set at any field or field
+ * array.
+ *
+ * @param form The form of the errors.
+ * @param formErrors The form errors.
+ * @param options The error options.
+ */
+export declare function setErrorResponse<TFieldValues extends FieldValues, TResponseData extends ResponseData>(form: FormStore<TFieldValues, TResponseData>, formErrors: FormErrors<TFieldValues>, { shouldActive }: ErrorResponseOptions): void;
+export {};

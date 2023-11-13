@@ -1,3 +1,8 @@
+## 0.1.0
+
+### Minor Changes
+
+- 682978f: Release design sync CLI
 
 ## v0.0.3
 
@@ -18,4 +23,3 @@
 ## v0.0.1
 
 [compare changes](https://github.com/salamaashoush/tokenize/compare/v0.0.2...v0.0.1)
-

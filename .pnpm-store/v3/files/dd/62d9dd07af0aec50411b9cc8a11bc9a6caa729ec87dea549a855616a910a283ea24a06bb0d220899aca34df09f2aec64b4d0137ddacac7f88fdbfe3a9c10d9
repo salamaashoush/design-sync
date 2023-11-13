@@ -1,0 +1,71 @@
+{
+  "name": "@kobalte/core",
+  "version": "0.11.2",
+  "private": false,
+  "description": "Unstyled components and primitives for building accessible web apps and design systems with SolidJS.",
+  "keywords": [
+    "solid",
+    "solidjs",
+    "ui",
+    "library",
+    "design-system",
+    "components",
+    "headless",
+    "unstyled",
+    "aria"
+  ],
+  "homepage": "https://github.com/kobaltedev/kobalte/tree/main/packages/core#readme",
+  "bugs": {
+    "url": "https://github.com/kobaltedev/kobalte/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kobaltedev/kobalte.git"
+  },
+  "license": "MIT",
+  "author": "Fabien Marie-Louise <fabienml.dev@gmail.com>",
+  "sideEffects": false,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "solid": "./dist/source/index.jsx",
+      "import": "./dist/esm/index.js",
+      "browser": {
+        "import": "./dist/esm/index.js",
+        "require": "./dist/cjs/index.js"
+      },
+      "require": "./dist/cjs/index.js",
+      "node": "./dist/cjs/index.js"
+    }
+  },
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/index.js",
+  "types": "dist/types/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "@floating-ui/dom": "^1.5.1",
+    "@internationalized/date": "^3.4.0",
+    "@internationalized/message": "^3.1.1",
+    "@internationalized/number": "^3.2.1",
+    "@kobalte/utils": "^0.9.0"
+  },
+  "devDependencies": {
+    "@kobalte/tests": "^0.5.0"
+  },
+  "peerDependencies": {
+    "solid-js": "^1.7.11"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "rollup -c",
+    "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist",
+    "dev": "vite serve dev --host",
+    "test": "jest --passWithNoTests",
+    "typecheck": "tsc --noEmit"
+  }
+}
