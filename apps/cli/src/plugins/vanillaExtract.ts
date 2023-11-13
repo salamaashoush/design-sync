@@ -11,7 +11,7 @@ import {
   typographyToCssStyle,
 } from '@design-sync/w3c-dtfm';
 import { join } from 'path';
-import { TokensManager, TokensManagerPlugin } from '../manager/manager';
+import { TokensManager, TokensManagerPlugin } from '../manager';
 
 function getStyleName(path: string) {
   // get the last part of the path and camelCase it
@@ -25,6 +25,7 @@ function createTypographyStyle(tokenValue: unknown, path: string, varsName = 'va
   }
   const styleName = getStyleName(path);
   for (const [key, value] of Object.entries(style)) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (style as any)[key] = processPrimitiveValue(value, varsName);
   }
   return `export const ${styleName} = style(${serializeObject(style)})\n`;
@@ -37,9 +38,9 @@ interface VanillaExtractPluginConfig {
 
 export class VanillaExtractPlugin implements TokensManagerPlugin {
   public name = 'vanilla-extract';
-  private tokens: Record<string, Record<string, any>> = {};
+  private tokens: Record<string, Record<string, unknown>> = {};
   private styles: string[] = [];
-  private tokensContract: Record<string, any> = {};
+  private tokensContract: Record<string, unknown> = {};
   private outPath: string = process.cwd();
   private manager!: TokensManager;
 
