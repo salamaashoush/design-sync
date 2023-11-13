@@ -1,6 +1,6 @@
 {
   "name": "@design-sync/figma-plugin",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Tokenize Figma Plugin",
   "scripts": {
     "dev": "concurrently --kill-others \"pnpm dev:ui\" \"pnpm dev:main\"",
