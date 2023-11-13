@@ -7,7 +7,7 @@
   "scripts": {
     "lint": "eslint ./src --ext .ts,.tsx,.js,.jsx",
     "lint:fix": "pnpm lint --fix",
-    "verify": "tsc --pretty",
+    "test:types": "tsc --noEmit --skipLibCheck",
     "build:icons": "ts-node generate/main.ts"
   },
   "devDependencies": {
@@ -16,7 +16,7 @@
     "@types/node": "^20.9.0",
     "cheerio": "1.0.0-rc.12",
     "eslint": "^8.53.0",
-    "lint-staged": "^15.0.2",
+    "lint-staged": "^15.1.0",
     "prettier": "^3.0.3",
     "solid-js": "^1.8.5",
     "svgo": "^3.0.3",

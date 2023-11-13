@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "description": "Tokenize Figma Plugin",
   "scripts": {
-    "verify": "tsc --pretty",
+    "test:types": "tsc --noEmit --skipLibCheck",
     "build": "build-figma-plugin --minify",
     "watch": "build-figma-plugin --watch",
     "precommit": "lint-staged"
@@ -39,8 +39,8 @@
     "@vanilla-extract/esbuild-plugin": "^2.3.0",
     "@vanilla-extract/integration": "^6.2.2",
     "esbuild": "^0.19.5",
-    "eslint": "8.52.0",
-    "lint-staged": "^15.0.2",
+    "eslint": "8.53.0",
+    "lint-staged": "^15.1.0",
     "typescript": "^5.2.2"
   },
   "figma-plugin": {
