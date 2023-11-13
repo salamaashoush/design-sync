@@ -17,7 +17,7 @@
     "postinstall": "husky install",
     "changeset": "changeset",
     "ci:version": "changeset version",
-    "ci:publish": "turbo ci:publish"
+    "ci:publish": "changeset publish"
   },
   "license": "MIT",
   "dependencies": {
