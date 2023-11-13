@@ -16,7 +16,8 @@
     "precommit": "turbo precommit",
     "postinstall": "husky install",
     "changeset": "changeset",
-    "version": "changeset version"
+    "ci:version": "changeset version",
+    "ci:publish": "turbo ci:publish"
   },
   "license": "MIT",
   "dependencies": {
