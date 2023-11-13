@@ -21,7 +21,6 @@
     "release": "pnpm test && pnpm publish",
     "test": "pnpm lint && pnpm test:types && vitest run --coverage",
     "test:types": "tsc --noEmit --skipLibCheck",
-    "ci:publish": "pnpm publish",
     "precommit": "lint-staged"
   },
   "dependencies": {
