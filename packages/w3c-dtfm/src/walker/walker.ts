@@ -41,7 +41,7 @@ export const DEFAULT_MODE = 'default';
 export class TokensWalker {
   private readonly extensions: TokensWalkerExtension[];
   constructor(
-    private tokens: Record<string, any> = {},
+    private tokens: Record<string, unknown> = {},
     extensions: TokensWalkerExtension[] = [],
   ) {
     this.extensions = [new ColorGeneratorsExtension(this), new ColorModifiersExtension(this), ...extensions];
@@ -51,7 +51,7 @@ export class TokensWalker {
     return this.tokens;
   }
 
-  setTokens(tokens: Record<string, any>) {
+  setTokens(tokens: Record<string, unknown>) {
     this.tokens = tokens;
   }
 
@@ -86,10 +86,13 @@ export class TokensWalker {
 
     // for composite tokens, we need to deref the values of the subtokens
     if (isObject(tokenValue) && !Array.isArray(tokenValue)) {
-      return Object.entries(tokenValue).reduce((acc, [key, value]) => {
-        acc[key] = this.derefTokenValue(value);
-        return acc;
-      }, {} as any);
+      return Object.entries(tokenValue).reduce(
+        (acc, [key, value]) => {
+          acc[key] = this.derefTokenValue(value);
+          return acc;
+        },
+        {} as Record<string, unknown>,
+      );
     }
 
     return tokenValue;
