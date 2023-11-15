@@ -80,7 +80,10 @@ export function paintStylesToDesignTokens() {
         const token: TokenDefinition<'color'> = {
           $description: description,
           $type: 'color',
-          $value: serializeColor(color, opacity),
+          $value: serializeColor({
+            ...color,
+            a: opacity,
+          }),
         };
         set(colors, normalizedPath, token);
       }

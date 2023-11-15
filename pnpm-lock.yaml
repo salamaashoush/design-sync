@@ -28,64 +28,6 @@ importers:
         specifier: ^2.26.2
         version: 2.26.2
 
-  apps/cli:
-    dependencies:
-      '@design-sync/utils':
-        specifier: workspace:*
-        version: link:../../packages/utils
-      '@design-sync/w3c-dtfm':
-        specifier: workspace:*
-        version: link:../../packages/w3c-dtfm
-      c12:
-        specifier: ^1.5.1
-        version: 1.5.1
-      citty:
-        specifier: ^0.1.4
-        version: 0.1.4
-      consola:
-        specifier: ^3.2.3
-        version: 3.2.3
-      giget:
-        specifier: ^1.1.3
-        version: 1.1.3
-    devDependencies:
-      '@design-sync/eslint-config':
-        specifier: workspace:*
-        version: link:../../packages/eslint-config
-      '@design-sync/tsconfig':
-        specifier: workspace:*
-        version: link:../../packages/tsconfig
-      '@types/node':
-        specifier: ^20.9.0
-        version: 20.9.0
-      '@vanilla-extract/css':
-        specifier: ^1.14.0
-        version: 1.14.0
-      '@vitest/coverage-v8':
-        specifier: ^0.34.6
-        version: 0.34.6(vitest@0.34.6)
-      changelogen:
-        specifier: ^0.5.5
-        version: 0.5.5
-      eslint:
-        specifier: ^8.53.0
-        version: 8.53.0
-      prettier:
-        specifier: ^3.0.3
-        version: 3.0.3
-      tsx:
-        specifier: ^4.1.1
-        version: 4.1.1
-      typescript:
-        specifier: ^5.2.2
-        version: 5.2.2
-      unbuild:
-        specifier: ^2.0.0
-        version: 2.0.0(typescript@5.2.2)
-      vitest:
-        specifier: ^0.34.6
-        version: 0.34.6
-
   apps/new-plugin:
     dependencies:
       '@create-figma-plugin/ui':
@@ -127,9 +69,6 @@ importers:
       preact:
         specifier: ^10.18.2
         version: 10.18.2
-      tinycolor2:
-        specifier: ^1.6.0
-        version: 1.6.0
       valibot:
         specifier: ^0.20.1
         version: 0.20.1
@@ -158,9 +97,6 @@ importers:
       '@hyrious/esbuild-plugin-style':
         specifier: 0.3.5
         version: 0.3.5(esbuild@0.18.17)
-      '@types/tinycolor2':
-        specifier: ^1.4.6
-        version: 1.4.6
       '@vanilla-extract/esbuild-plugin':
         specifier: ^2.3.0
         version: 2.3.0
@@ -264,6 +200,64 @@ importers:
       vite-plugin-static-copy:
         specifier: ^0.17.0
         version: 0.17.0(vite@4.5.0)
+
+  apps/sync:
+    dependencies:
+      '@design-sync/utils':
+        specifier: workspace:*
+        version: link:../../packages/utils
+      '@design-sync/w3c-dtfm':
+        specifier: workspace:*
+        version: link:../../packages/w3c-dtfm
+      c12:
+        specifier: ^1.5.1
+        version: 1.5.1
+      citty:
+        specifier: ^0.1.4
+        version: 0.1.4
+      consola:
+        specifier: ^3.2.3
+        version: 3.2.3
+      giget:
+        specifier: ^1.1.3
+        version: 1.1.3
+    devDependencies:
+      '@design-sync/eslint-config':
+        specifier: workspace:*
+        version: link:../../packages/eslint-config
+      '@design-sync/tsconfig':
+        specifier: workspace:*
+        version: link:../../packages/tsconfig
+      '@types/node':
+        specifier: ^20.9.0
+        version: 20.9.0
+      '@vanilla-extract/css':
+        specifier: ^1.14.0
+        version: 1.14.0
+      '@vitest/coverage-v8':
+        specifier: ^0.34.6
+        version: 0.34.6(vitest@0.34.6)
+      changelogen:
+        specifier: ^0.5.5
+        version: 0.5.5
+      eslint:
+        specifier: ^8.53.0
+        version: 8.53.0
+      prettier:
+        specifier: ^3.0.3
+        version: 3.0.3
+      tsx:
+        specifier: ^4.1.1
+        version: 4.1.1
+      typescript:
+        specifier: ^5.2.2
+        version: 5.2.2
+      unbuild:
+        specifier: ^2.0.0
+        version: 2.0.0(typescript@5.2.2)
+      vitest:
+        specifier: ^0.34.6
+        version: 0.34.6
 
   packages/design-tokens:
     dependencies:
@@ -3279,7 +3273,7 @@ packages:
       scule: 1.0.0
       semver: 7.5.4
       std-env: 3.4.3
-      yaml: 2.3.3
+      yaml: 2.3.4
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -5652,7 +5646,7 @@ packages:
       fs-extra: 11.1.1
       globby: 13.2.2
       jiti: 1.21.0
-      mlly: 1.4.0
+      mlly: 1.4.2
       mri: 1.2.0
       pathe: 1.1.1
       typescript: 5.2.2
@@ -7966,11 +7960,6 @@ packages:
   /yaml@1.10.2:
     resolution: {integrity: sha512-r3vXyErRCYJ7wg28yvBY5VSoAF8ZvlcW9/BwUzEtUsjvX/DKs24dIkuwjtuprwJJHsbyUbLApepYTR1BN4uHrg==}
     engines: {node: '>= 6'}
-    dev: true
-
-  /yaml@2.3.3:
-    resolution: {integrity: sha512-zw0VAJxgeZ6+++/su5AFoqBbZbrEakwu+X0M5HmcwUiBL7AzcuPKjj5we4xfQLp78LkEMpD0cOnUhmgOVy3KdQ==}
-    engines: {node: '>= 14'}
     dev: true
 
   /yaml@2.3.4:

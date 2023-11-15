@@ -30,7 +30,6 @@ export class SyncService {
   async loadTokens() {
     const filePath = this.getActiveRemoteStorage()?.filePath ?? 'tokens.json';
     const tokens = await this.storageService?.load<object>(filePath);
-    console.log('loaded tokens', this.storageService?.options, tokens);
     if (tokens) {
       this.tokens.set(filePath, tokens);
     }

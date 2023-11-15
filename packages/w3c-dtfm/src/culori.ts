@@ -1,5 +1,6 @@
 import 'culori/css';
 import {
+  converter,
   filterBrightness,
   filterContrast,
   filterGrayscale,
@@ -7,90 +8,74 @@ import {
   filterInvert,
   filterSaturate,
   filterSepia,
-  parse,
-  type Color as CuloriColor,
+  formatHex,
+  formatHex8,
+  Rgb,
 } from 'culori/fn';
 import { TokenModifier } from './types';
 
-export function lightenColor(color: CuloriColor | string, amount: number) {
+const parseColor = converter('rgb');
+
+export type RGBA = Omit<Rgb, 'mode'> & { a?: number };
+export function parseColorToRgba(color: unknown): RGBA {
   if (typeof color === 'string') {
-    color = parseColor(color);
+    const c = parseColor(color) as RGBA;
+    if (!c) {
+      throw new Error(`invalid color ${color}`);
+    }
+    c.a = c.alpha;
+    return c;
   }
-  return filterBrightness(amount)(color);
+  (color as RGBA).a = (color as RGBA).alpha;
+  return color as RGBA;
 }
 
-export function darkenColor(color: CuloriColor | string, amount: number) {
-  if (typeof color === 'string') {
-    color = parseColor(color);
-  }
-  return filterBrightness(-amount)(color);
+function getRgbColor(color: unknown): Rgb {
+  return { ...parseColorToRgba(color), mode: 'rgb' };
 }
 
-export function saturateColor(color: CuloriColor | string, amount: number) {
-  if (typeof color === 'string') {
-    color = parseColor(color);
-  }
-  return filterSaturate(amount)(color);
+export function lightenColor(color: RGBA | string, amount: number) {
+  return filterBrightness(amount)(getRgbColor(color));
 }
 
-export function desaturateColor(color: CuloriColor | string, amount: number) {
-  if (typeof color === 'string') {
-    color = parseColor(color);
-  }
-  return filterSaturate(-amount)(color);
+export function darkenColor(color: RGBA | string, amount: number) {
+  return filterBrightness(-amount)(getRgbColor(color));
 }
 
-export function opacifyColor(color: CuloriColor | string, amount: number) {
-  if (typeof color === 'string') {
-    color = parseColor(color);
-  }
+export function saturateColor(color: RGBA | string, amount: number) {
+  return filterSaturate(amount)(getRgbColor(color));
+}
+
+export function desaturateColor(color: RGBA | string, amount: number) {
+  return filterSaturate(-amount)(getRgbColor(color));
+}
+
+export function opacifyColor(color: RGBA | string, amount: number) {
+  color = getRgbColor(color);
   const normalizedAmount = amount < 1 ? amount : Math.min(1, amount / 100);
   return normalizedAmount < 1
     ? { ...color, alpha: color.alpha ? color.alpha - normalizedAmount : normalizedAmount }
     : color;
 }
 
-export function contrastColor(color: CuloriColor | string, amount: number) {
-  if (typeof color === 'string') {
-    color = parseColor(color);
-  }
-  return filterContrast(amount)(color);
+export function contrastColor(color: RGBA | string, amount: number) {
+  return filterContrast(amount)(getRgbColor(color));
 }
 
-export function hueRotateColor(color: CuloriColor | string, amount: number) {
-  if (typeof color === 'string') {
-    color = parseColor(color);
-  }
-  return filterHueRotate(amount)(color);
+export function hueRotateColor(color: RGBA | string, amount: number) {
+  return filterHueRotate(amount)(getRgbColor(color));
 }
 
-export function invertColor(color: CuloriColor | string, amount: number) {
-  if (typeof color === 'string') {
-    color = parseColor(color);
-  }
-  return filterInvert(amount)(color);
+export function invertColor(color: RGBA | string, amount: number) {
+  return filterInvert(amount)(getRgbColor(color));
 }
 
-export function grayscaleColor(color: CuloriColor | string, amount: number) {
-  if (typeof color === 'string') {
-    color = parseColor(color);
-  }
-  return filterGrayscale(amount)(color);
+export function grayscaleColor(color: RGBA | string, amount: number) {
+  return filterGrayscale(amount)(getRgbColor(color));
 }
 
-export function sepiaColor(color: CuloriColor | string, amount: number) {
-  if (typeof color === 'string') {
-    color = parseColor(color);
-  }
-  return filterSepia(amount)(color);
-}
-
-export function parseColor(color: string) {
-  const parsed = parse(color);
-  if (!parsed) {
-    throw new Error(`invalid color value ${color}`);
-  }
-  return parsed;
+export function sepiaColor(color: RGBA | string, amount: number) {
+  return filterSepia(amount)(getRgbColor(color));
 }
 
 export function parseModifierValue(value: unknown) {
@@ -111,7 +96,7 @@ export function parseModifierValue(value: unknown) {
   throw new Error(`invalid number value ${value}`);
 }
 
-export function applyColorModifier(color: CuloriColor | string, modifier: TokenModifier) {
+export function applyColorModifier(color: RGBA | string, modifier: TokenModifier) {
   const value = parseModifierValue(modifier.value);
   switch (modifier.type) {
     case 'alpha':
@@ -139,7 +124,7 @@ export function applyColorModifier(color: CuloriColor | string, modifier: TokenM
   }
 }
 
-export function applyColorModifiers(color: CuloriColor, modifiers?: TokenModifier | TokenModifier[]) {
+export function applyColorModifiers(color: Rgb, modifiers?: TokenModifier | TokenModifier[]) {
   if (!modifiers) {
     return color;
   }
@@ -151,4 +136,7 @@ export function applyColorModifiers(color: CuloriColor, modifiers?: TokenModifie
   return modifiers.reduce(applyColorModifier, color);
 }
 
-export { formatHex, formatHex8, type Color as CuloriColor } from 'culori/fn';
+export function formatColor(color: unknown) {
+  const c = getRgbColor(color);
+  return typeof c.alpha === 'number' ? formatHex8(c) : formatHex(c);
+}

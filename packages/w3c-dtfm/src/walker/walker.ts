@@ -38,13 +38,22 @@ import type {
 export type TokenWalkerFn = (data: ProcessedDesignToken, walker: TokensWalker) => void;
 
 export const DEFAULT_MODE = 'default';
+
+interface TokensWalkerOptions {
+  extensions?: TokensWalkerExtension[];
+  normalizeValue?: boolean;
+}
 export class TokensWalker {
   private readonly extensions: TokensWalkerExtension[];
   constructor(
     private tokens: Record<string, unknown> = {},
-    extensions: TokensWalkerExtension[] = [],
+    private options: TokensWalkerOptions = {},
   ) {
-    this.extensions = [new ColorGeneratorsExtension(this), new ColorModifiersExtension(this), ...extensions];
+    this.extensions = [
+      new ColorGeneratorsExtension(this),
+      new ColorModifiersExtension(this),
+      ...(this.options.extensions ?? []),
+    ];
   }
 
   getTokens() {
@@ -67,6 +76,30 @@ export class TokensWalker {
       requiredModes: this.tokens.$extensions.modes.requiredModes || [],
       defaultMode: this.tokens.$extensions.modes.defaultMode || DEFAULT_MODE,
     };
+  }
+
+  getName() {
+    const n = this.tokens.$name;
+    if (typeof n === 'string') {
+      return n;
+    }
+    return Object.keys(this.tokens)[0];
+  }
+
+  getVersion() {
+    const v = this.tokens.$version;
+    if (typeof v === 'string') {
+      return v;
+    }
+    return '0.0.0';
+  }
+
+  getDescription() {
+    const d = this.tokens.$description;
+    if (typeof d === 'string') {
+      return d;
+    }
+    return '';
   }
 
   getToken(path: string) {
@@ -129,8 +162,8 @@ export class TokensWalker {
     return resolvedTokenValue;
   }
 
-  walkTokens(walker: TokenWalkerFn) {
-    this.walkTokensHelper(this.tokens, '', walker);
+  walkTokens(walker: TokenWalkerFn, normalize = this.options.normalizeValue) {
+    this.walkTokensHelper(this.tokens, '', walker, normalize);
   }
 
   runTokenExtensions(token: ProcessedDesignToken) {
@@ -149,7 +182,7 @@ export class TokensWalker {
     return actions;
   }
 
-  private buildTokenValueByMode(token: DesignToken) {
+  private buildTokenValueByMode(token: DesignToken, normalize: boolean) {
     const { requiredModes, defaultMode } = this.getModes();
     const valueByMode: ProcessedDesignToken['valueByMode'] = {
       [defaultMode]: {
@@ -159,10 +192,13 @@ export class TokensWalker {
     };
     for (const mode of requiredModes) {
       if (hasModeExtension(token)) {
-        valueByMode[mode] = {
-          normalized: this.normalizeTokenValue(token.$extensions.mode[mode] || token.$value),
-          raw: token.$extensions.mode[mode] || token.$value,
-        };
+        const modeValue = token.$extensions.mode[mode] || token.$value;
+        valueByMode[mode] = normalize
+          ? {
+              normalized: this.normalizeTokenValue(modeValue),
+              raw: modeValue,
+            }
+          : modeValue;
       }
     }
     return valueByMode;
@@ -182,9 +218,9 @@ export class TokensWalker {
     return extensions;
   }
 
-  private buildWalkerContext(token: DesignToken, fullPath: string): ProcessedDesignToken {
+  private buildWalkerContext(token: DesignToken, fullPath: string, normalize = false): ProcessedDesignToken {
     const { $type: type, $value: raw, $description: description } = token;
-    const normalized = this.normalizeTokenValue(raw);
+    const normalized = normalize ? this.normalizeTokenValue(raw) : raw;
     const parts = fullPath.split('.');
     const key = parts.pop() as string;
     const parentPath = parts.join('.');
@@ -197,11 +233,11 @@ export class TokensWalker {
       parentPath,
       key,
       extensions: this.buildTokenExtensions(token),
-      valueByMode: this.buildTokenValueByMode(token),
+      valueByMode: this.buildTokenValueByMode(token, normalize),
     };
   }
 
-  private walkTokensHelper(tokens: object, path = '', walker: TokenWalkerFn) {
+  private walkTokensHelper(tokens: object, path = '', walker: TokenWalkerFn, normalize = false) {
     for (const [key, token] of Object.entries(tokens)) {
       const currentPath = path ? `${path}.${key}` : key;
       if (isDesignTokenGroup(token)) {
@@ -216,14 +252,14 @@ export class TokensWalker {
               ...groupToken,
               $type: groupType,
             } as DesignToken;
-            walker(this.buildWalkerContext(token, `${currentPath}.${groupKey}`), this);
+            walker(this.buildWalkerContext(token, `${currentPath}.${groupKey}`, normalize), this);
           } else {
             // If the group token doesn't have a $value, treat it as another group or single token
             this.walkTokensHelper({ [groupKey]: groupToken }, `${currentPath}.${groupKey}`, walker);
           }
         }
       } else if (isDesignToken(token)) {
-        walker(this.buildWalkerContext(token, currentPath), this);
+        walker(this.buildWalkerContext(token, currentPath, normalize), this);
       } else if (isObject(token)) {
         // If the token isn't recognized as a group or single token, recurse into it to check its children
         this.walkTokensHelper(token, currentPath, walker);

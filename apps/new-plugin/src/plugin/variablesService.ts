@@ -1,5 +1,5 @@
 import { camelCase, get, isObject, set } from '@design-sync/utils';
-import { DesignToken, DesignTokensGroup, isDesignToken, isTokenAlias } from '@design-sync/w3c-dtfm';
+import { DesignToken, DesignTokensGroup, TokensWalker, isDesignToken, isTokenAlias } from '@design-sync/w3c-dtfm';
 import { DesignTokensGroupMetadata, DesignTokensMode } from '../types';
 import { convertValue, deserializeColor, isColorVariableValue, isVariableAlias, serializeColor } from './utils';
 import { SUPPORTED_TOKEN_TYPES, designTokenTypeToVariableType, guessTokenTypeFromScopes } from './variables';
@@ -75,11 +75,13 @@ export class VariablesService {
     return all.filter((c) => ids.includes(c.key));
   }
 
-  private createCollection(name: string, modes: DesignTokensMode[] = []) {
-    const collection = figma.variables.createVariableCollection(name);
+  private getCollection(name: string, modes: DesignTokensMode[] = []) {
+    const collection =
+      this.getLocalCollections().find((c) => c.name === name) ?? figma.variables.createVariableCollection(name);
     if (modes.length > 0) {
       collection.renameMode(collection.defaultModeId, modes[0].name);
     }
+
     for (const mode of modes) {
       if (!collection.modes.some((m) => m.name === mode.name)) {
         collection.addMode(mode.name);
@@ -178,7 +180,7 @@ export class VariablesService {
 
   private createCollectionFromDesignTokens(group: DesignTokensGroup) {
     const { name, modes } = this.getDesignTokensGroupMetadata(group);
-    const collection = this.createCollection(name, modes);
+    const collection = this.getCollection(name, modes);
     if (modes?.length) {
       for (const mode of modes) {
         this.createVariablesFromTokenSet(collection, get(group, mode.path), mode);
@@ -201,6 +203,12 @@ export class VariablesService {
   }
 
   importFromDesignTokens(group: DesignTokensGroup) {
+    const walker = new TokensWalker(group);
+    const { requiredModes, defaultMode } = walker.getModes();
+    const name = walker.getName();
+    const description = walker.getDescription();
+    const collection = this.getCollection(name, requiredModes);
+    walker.walkTokens((tokens) => {});
     // const collectionsWithModes = collections.filter((c) => c.includes('/'));
     // const tokensByMode: Record<string, any> = {};
     // for (const collectionName of collectionsWithModes) {
@@ -242,7 +250,8 @@ export class VariablesService {
       $extensions:
         modes?.length > 1
           ? {
-              modes: modes.map(({ name }) => camelCase(name)),
+              requiredModes: modes.map(({ name }) => camelCase(name)),
+              defaultMode: camelCase(modes.find(({ modeId }) => modeId === defaultModeId)?.name ?? ''),
             }
           : undefined,
     };

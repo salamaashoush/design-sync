@@ -4,11 +4,12 @@ import {
   DesignToken,
   Dimension,
   FontWeight,
+  formatColor,
   isFontFamilyToken,
   isFontWeightToken,
   isTypographyToken,
+  parseColorToRgba,
 } from '@design-sync/w3c-dtfm';
-import tiny from 'tinycolor2';
 
 export function isTextNode(node: SceneNode): node is TextNode {
   return node.type === 'TEXT';
@@ -30,26 +31,12 @@ export function isVariableAlias(value: VariableValue): value is VariableAlias {
   return isObject(value) && 'type' in value && value.type === 'VARIABLE_ALIAS' && 'id' in value;
 }
 
-export const deserializeColor = memoize((color: string, alpha = false): RGBA | RGB => {
+export const deserializeColor = memoize((color: string): RGBA | RGB => {
   if (color.includes('gradient')) {
     console.warn('gradient color is not supported');
     return { r: 0, g: 0, b: 0, a: 0 };
   }
-  const rgb = tiny(color).toRgb();
-  if (alpha) {
-    return {
-      r: rgb.r / 255,
-      g: rgb.g / 255,
-      b: rgb.b / 255,
-      a: rgb.a,
-    };
-  }
-
-  return {
-    r: rgb.r / 255,
-    g: rgb.g / 255,
-    b: rgb.b / 255,
-  };
+  return parseColorToRgba(color);
 });
 
 export const convertFontWeight = memoize((fontWeight: FontWeight) => {
@@ -154,17 +141,8 @@ export function numberToHex(value: number) {
   return hex.length === 1 ? '0' + hex : hex;
 }
 
-export function serializeColor(color: RGBA | RGB, opacity?: number): Color {
-  const { r, g, b } = color;
-  const hex = [numberToHex(r), numberToHex(g), numberToHex(b)];
-  if (isRGBA(color) && color.a !== 1) {
-    hex.push(numberToHex(color.a));
-  }
-  const hexString = `#${hex.join('')}`;
-  if (opacity) {
-    return tiny(hexString).setAlpha(opacity).toHex8String() as Color;
-  }
-  return hexString as Color;
+export function serializeColor(color: RGB | RGBA) {
+  return formatColor(color) as Color;
 }
 
 export function serializeLineHeight(lineHeight: LineHeight, refValue = 16): number {
