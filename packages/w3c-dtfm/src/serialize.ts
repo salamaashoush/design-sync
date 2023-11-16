@@ -1,20 +1,29 @@
 import { isValidJsObjectKey } from '@design-sync/utils';
 import { normalizeTokenAlias } from './alias';
 
-export function processPrimitiveValue(value: string | number, prefix: string): string | number {
+function addPrefix(path: string, prefix?: string | ((s: string) => string)) {
+  const normalizedPath = normalizeTokenAlias(path);
+  if (!prefix) {
+    return normalizedPath;
+  }
+  return typeof prefix === 'function' ? prefix(normalizedPath) : `${prefix}.${normalizeTokenAlias(path)}`;
+}
+
+export function processPrimitiveValue(
+  value: string | number,
+  prefix?: string | ((s: string) => string),
+): string | number {
   if (typeof value === 'number') {
     return value;
   }
-  // Helper function to add prefix and remove braces
-  const addPrefix = (path: string) => `${prefix}.${normalizeTokenAlias(path)}`;
   // Rule 1: Check if the value is a single object path
   if (value.startsWith('{') && value.endsWith('}')) {
-    return addPrefix(value);
+    return addPrefix(value, prefix);
   }
   /// Rule 2: If the value contains an object path amongst other text
   const objectPathRegex = /\{[^}]+\}/g;
   if (objectPathRegex.test(value)) {
-    return value.replace(objectPathRegex, (match) => `\${${addPrefix(match)}}`);
+    return value.replace(objectPathRegex, (match) => `\${${addPrefix(match, prefix)}}`);
   }
 
   return value;

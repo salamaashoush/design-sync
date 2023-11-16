@@ -1,15 +1,13 @@
-import { TokenWalkerFn, TokensWalker } from '@design-sync/w3c-dtfm';
+import { TokensWalker } from '@design-sync/w3c-dtfm';
 import { existsSync } from 'node:fs';
-import { mkdir, rm, writeFile } from 'node:fs/promises';
+import { rm } from 'node:fs/promises';
 import { join } from 'node:path';
 import { DesignSyncConfig } from './types';
-import { formatTextWithPrettier } from './utils';
 
 export interface TokensManagerPlugin {
   name: string;
-  start?(manager: TokensManager): Promise<void> | void;
-  walk: TokenWalkerFn;
-  end?(manager: TokensManager): Promise<void> | void;
+  config?(config: DesignSyncConfig): Promise<void> | void;
+  build: (walker: TokensWalker, config: DesignSyncConfig) => Promise<void> | void;
 }
 
 export class TokensManager {
@@ -17,28 +15,6 @@ export class TokensManager {
   private walker = new TokensWalker();
 
   constructor(private config: DesignSyncConfig) {}
-
-  setTokens(tokens: Record<string, any>) {
-    this.walker.setTokens(tokens);
-  }
-
-  getTokens() {
-    return this.walker.getTokens();
-  }
-
-  getModes() {
-    return this.walker.getModes();
-  }
-
-  async writeFile(path: string, content: string) {
-    // check if the folder exists
-    const folderPath = path.split('/').slice(0, -1).join('/');
-    if (!existsSync(folderPath)) {
-      await mkdir(folderPath, { recursive: true });
-    }
-    const formattedContent = await formatTextWithPrettier(content);
-    return writeFile(path, formattedContent);
-  }
 
   async run() {
     // clean the dist folder
@@ -49,18 +25,13 @@ export class TokensManager {
     // run the plugins
     await Promise.all(
       this.plugins.map(async (plugin) => {
-        await plugin.start?.(this);
-        this.walker.walkTokens(plugin.walk);
-        return plugin.end?.(this);
+        await plugin.config?.(this.config);
+        return plugin.build(this.walker, this.config);
       }),
     );
   }
 
   use(plugin: TokensManagerPlugin) {
     this.plugins.push(plugin);
-  }
-
-  getConfig() {
-    return this.config;
   }
 }

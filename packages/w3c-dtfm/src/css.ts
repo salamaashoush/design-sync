@@ -8,26 +8,16 @@ import { normalizeShadowValue } from './normalize/shadow';
 import { normalizeStrokeStyleValue } from './normalize/stroke';
 import { normalizeCubicBezierValue, normalizeDurationValue, normalizeTransitionValue } from './normalize/transition';
 import { normalizeFontFamilyValue, normalizeFontWeightValue, normalizeTypographyValue } from './normalize/typography';
+import { processPrimitiveValue } from './serialize';
 import { DesignToken, TokenDefinition } from './types';
 
-interface TokenAliasToCssVarOptions {
-  /**
-   * The prefix to use for the css var
-   */
-  prefix?: string;
-  defaultValue?: string;
-}
-
-export function tokenValueToCssVar(tokenValue: unknown, { prefix = '', defaultValue }: TokenAliasToCssVarOptions = {}) {
-  if (!isTokenAlias(tokenValue)) {
-    return tokenValue;
-  }
-
-  const tokenPath = normalizeTokenAlias(tokenValue);
-  if (defaultValue) {
-    return `var(${prefix}${tokenPath}, ${defaultValue})`;
-  }
-  return `var(${prefix}${tokenPath})`;
+export function processCssVarRef(tokenValue: string, prefix?: string, defaultValue?: string) {
+  return processPrimitiveValue(tokenValue, (path) => {
+    if (defaultValue) {
+      return `var(${prefix}${path}, ${defaultValue})`;
+    }
+    return `var(${prefix}${path})`;
+  });
 }
 
 export function tokenValueToCssValue(tokenValue: unknown) {

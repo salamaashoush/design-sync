@@ -28,6 +28,64 @@ importers:
         specifier: ^2.26.2
         version: 2.26.2
 
+  apps/cli:
+    dependencies:
+      '@design-sync/utils':
+        specifier: workspace:*
+        version: link:../../packages/utils
+      '@design-sync/w3c-dtfm':
+        specifier: workspace:*
+        version: link:../../packages/w3c-dtfm
+      c12:
+        specifier: ^1.5.1
+        version: 1.5.1
+      citty:
+        specifier: ^0.1.4
+        version: 0.1.4
+      consola:
+        specifier: ^3.2.3
+        version: 3.2.3
+      giget:
+        specifier: ^1.1.3
+        version: 1.1.3
+    devDependencies:
+      '@design-sync/eslint-config':
+        specifier: workspace:*
+        version: link:../../packages/eslint-config
+      '@design-sync/tsconfig':
+        specifier: workspace:*
+        version: link:../../packages/tsconfig
+      '@types/node':
+        specifier: ^20.9.0
+        version: 20.9.0
+      '@vanilla-extract/css':
+        specifier: ^1.14.0
+        version: 1.14.0
+      '@vitest/coverage-v8':
+        specifier: ^0.34.6
+        version: 0.34.6(vitest@0.34.6)
+      changelogen:
+        specifier: ^0.5.5
+        version: 0.5.5
+      eslint:
+        specifier: ^8.53.0
+        version: 8.53.0
+      prettier:
+        specifier: ^3.0.3
+        version: 3.0.3
+      tsx:
+        specifier: ^4.1.1
+        version: 4.1.1
+      typescript:
+        specifier: ^5.2.2
+        version: 5.2.2
+      unbuild:
+        specifier: ^2.0.0
+        version: 2.0.0(typescript@5.2.2)
+      vitest:
+        specifier: ^0.34.6
+        version: 0.34.6
+
   apps/new-plugin:
     dependencies:
       '@create-figma-plugin/ui':
@@ -200,64 +258,6 @@ importers:
       vite-plugin-static-copy:
         specifier: ^0.17.0
         version: 0.17.0(vite@4.5.0)
-
-  apps/sync:
-    dependencies:
-      '@design-sync/utils':
-        specifier: workspace:*
-        version: link:../../packages/utils
-      '@design-sync/w3c-dtfm':
-        specifier: workspace:*
-        version: link:../../packages/w3c-dtfm
-      c12:
-        specifier: ^1.5.1
-        version: 1.5.1
-      citty:
-        specifier: ^0.1.4
-        version: 0.1.4
-      consola:
-        specifier: ^3.2.3
-        version: 3.2.3
-      giget:
-        specifier: ^1.1.3
-        version: 1.1.3
-    devDependencies:
-      '@design-sync/eslint-config':
-        specifier: workspace:*
-        version: link:../../packages/eslint-config
-      '@design-sync/tsconfig':
-        specifier: workspace:*
-        version: link:../../packages/tsconfig
-      '@types/node':
-        specifier: ^20.9.0
-        version: 20.9.0
-      '@vanilla-extract/css':
-        specifier: ^1.14.0
-        version: 1.14.0
-      '@vitest/coverage-v8':
-        specifier: ^0.34.6
-        version: 0.34.6(vitest@0.34.6)
-      changelogen:
-        specifier: ^0.5.5
-        version: 0.5.5
-      eslint:
-        specifier: ^8.53.0
-        version: 8.53.0
-      prettier:
-        specifier: ^3.0.3
-        version: 3.0.3
-      tsx:
-        specifier: ^4.1.1
-        version: 4.1.1
-      typescript:
-        specifier: ^5.2.2
-        version: 5.2.2
-      unbuild:
-        specifier: ^2.0.0
-        version: 2.0.0(typescript@5.2.2)
-      vitest:
-        specifier: ^0.34.6
-        version: 0.34.6
 
   packages/design-tokens:
     dependencies:
@@ -1008,6 +1008,7 @@ packages:
     engines: {node: '>=6.9.0'}
     dependencies:
       regenerator-runtime: 0.13.11
+    dev: true
 
   /@babel/runtime@7.23.2:
     resolution: {integrity: sha512-mM8eg4yl5D6i3lu2QKPuPH4FArvJ8KhTofbE7jwMUv9KX5mBvwPAqnV3MlyBNqdp9RyRKP6Yck8TrfYrPvX3bg==}
@@ -5493,7 +5494,7 @@ packages:
   /media-query-parser@2.0.2:
     resolution: {integrity: sha512-1N4qp+jE0pL5Xv4uEcwVUhIkwdUO3S/9gML90nqKA7v7FcOS5vUtatfzok9S9U1EJU8dHWlcv95WLnKmmxZI9w==}
     dependencies:
-      '@babel/runtime': 7.22.6
+      '@babel/runtime': 7.23.2
 
   /meow@6.1.1:
     resolution: {integrity: sha512-3YffViIt2QWgTy6Pale5QpopX/IvU3LPL03jOTqp6pGj3VjesdO/U8CuHMKpnQr4shCNCM5fd5XFFvIIl6JBHg==}
@@ -5659,6 +5660,7 @@ packages:
       pathe: 1.1.1
       pkg-types: 1.0.3
       ufo: 1.1.2
+    dev: true
 
   /mlly@1.4.2:
     resolution: {integrity: sha512-i/Ykufi2t1EZ6NaPLdfnZk2AX8cs0d+mTzVKuPfqPKPatxLApaBoxJQ9x1/uckXtrS/U5oisPMDkNs0yQTaBRg==}
@@ -6026,7 +6028,7 @@ packages:
     resolution: {integrity: sha512-nN7pYi0AQqJnoLPC9eHFQ8AcyaixBUOwvqc5TDnIKCMEE6I0y8P7OKA7fPexsXGCGxQDl/cmrLAp26LhcwxZ4A==}
     dependencies:
       jsonc-parser: 3.2.0
-      mlly: 1.4.0
+      mlly: 1.4.2
       pathe: 1.1.1
 
   /postcss-calc@9.0.1(postcss@8.4.31):
@@ -6572,6 +6574,7 @@ packages:
 
   /regenerator-runtime@0.13.11:
     resolution: {integrity: sha512-kY1AZVr2Ra+t+piVaJ4gxaFaReZVH40AKNo7UCX6W+dEwBo/2oZJzqfuN1qLq1oL45o56cPaTXELwrTh8Fpggg==}
+    dev: true
 
   /regenerator-runtime@0.14.0:
     resolution: {integrity: sha512-srw17NI0TUWHuGa5CFGGmhfNIeja30WMBfbslPNhf6JrqQlLN5gcrvig1oqPxiVaXb0oW0XRKtH6Nngs5lKCIA==}
@@ -7447,6 +7450,7 @@ packages:
 
   /ufo@1.1.2:
     resolution: {integrity: sha512-TrY6DsjTQQgyS3E3dBaOXf0TpPD8u9FVrVYmKVegJuFw51n/YB9XPt+U6ydzFG5ZIN7+DIjPbNmXoBj9esYhgQ==}
+    dev: true
 
   /ufo@1.3.1:
     resolution: {integrity: sha512-uY/99gMLIOlJPwATcMVYfqDSxUR9//AUcgZMzwfSTJPDKzA1S8mX4VLqa+fiAtveraQUBCz4FFcwVZBGbwBXIw==}

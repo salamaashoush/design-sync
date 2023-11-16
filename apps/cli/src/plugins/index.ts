@@ -1,1 +1,1 @@
-export * from './vanillaExtract';
+export * from './vanillaExtractPlugin';

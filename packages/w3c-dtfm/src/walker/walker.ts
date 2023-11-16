@@ -35,7 +35,7 @@ import type {
   TokensWalkerExtensionAction,
 } from './types';
 
-export type TokenWalkerFn = (data: ProcessedDesignToken, walker: TokensWalker) => void;
+export type TokenWalkerFn<T> = (data: ProcessedDesignToken) => T;
 
 export const DEFAULT_MODE = 'default';
 
@@ -102,7 +102,7 @@ export class TokensWalker {
     return '';
   }
 
-  getToken(path: string) {
+  get(path: string) {
     return get(this.tokens, path);
   }
 
@@ -113,7 +113,7 @@ export class TokensWalker {
 
     if (isTokenAlias(tokenValue)) {
       const tokenPath = normalizeTokenAlias(tokenValue);
-      const value = this.getToken(tokenPath);
+      const value = this.get(tokenPath);
       return this.derefTokenValue(value.$value);
     }
 
@@ -162,8 +162,37 @@ export class TokensWalker {
     return resolvedTokenValue;
   }
 
-  walkTokens(walker: TokenWalkerFn, normalize = this.options.normalizeValue) {
+  walk<T = void>(walker: TokenWalkerFn<T>, normalize = this.options.normalizeValue) {
     this.walkTokensHelper(this.tokens, '', walker, normalize);
+  }
+
+  map<T>(mapper: TokenWalkerFn<T>, normalize = this.options.normalizeValue) {
+    const results: T[] = [];
+    this.walk((token) => {
+      results.push(mapper(token));
+    }, normalize);
+  }
+
+  filter(predicate: TokenWalkerFn<boolean>, normalize = this.options.normalizeValue) {
+    const results: ProcessedDesignToken[] = [];
+    this.walk((token) => {
+      if (predicate(token)) {
+        results.push(token);
+      }
+    }, normalize);
+    return results;
+  }
+
+  reduce<T>(
+    reducer: (acc: T, token: ProcessedDesignToken) => T,
+    initialValue: T,
+    normalize = this.options.normalizeValue,
+  ) {
+    let acc = initialValue;
+    this.walk((token) => {
+      acc = reducer(acc, token);
+    }, normalize);
+    return acc;
   }
 
   runTokenExtensions(token: ProcessedDesignToken) {
@@ -237,7 +266,7 @@ export class TokensWalker {
     };
   }
 
-  private walkTokensHelper(tokens: object, path = '', walker: TokenWalkerFn, normalize = false) {
+  private walkTokensHelper(tokens: object, path = '', walker: TokenWalkerFn<void>, normalize = false) {
     for (const [key, token] of Object.entries(tokens)) {
       const currentPath = path ? `${path}.${key}` : key;
       if (isDesignTokenGroup(token)) {
@@ -252,14 +281,14 @@ export class TokensWalker {
               ...groupToken,
               $type: groupType,
             } as DesignToken;
-            walker(this.buildWalkerContext(token, `${currentPath}.${groupKey}`, normalize), this);
+            walker(this.buildWalkerContext(token, `${currentPath}.${groupKey}`, normalize));
           } else {
             // If the group token doesn't have a $value, treat it as another group or single token
             this.walkTokensHelper({ [groupKey]: groupToken }, `${currentPath}.${groupKey}`, walker);
           }
         }
       } else if (isDesignToken(token)) {
-        walker(this.buildWalkerContext(token, currentPath, normalize), this);
+        walker(this.buildWalkerContext(token, currentPath, normalize));
       } else if (isObject(token)) {
         // If the token isn't recognized as a group or single token, recurse into it to check its children
         this.walkTokensHelper(token, currentPath, walker);
