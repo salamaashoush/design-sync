@@ -1,8 +1,19 @@
-import { defineConfig, vanillaExtractPlugin } from '.';
+import { cssPlugin, defineConfig, jsonPlugin, vanillaExtractPlugin } from '.';
 
 export default defineConfig({
-  repo: 'gh:salamaashoush/design-sync-examples#main',
+  uri: 'github:salamaashoush/kda-design-system/tokens#dedupe-tokens',
   out: 'generated',
-  tokensPath: 'tokens.json',
-  plugins: [vanillaExtractPlugin()],
+  plugins: [
+    cssPlugin({
+      selectors: {
+        dark: '@media (prefers-color-scheme: dark)',
+        light: '@media (prefers-color-scheme: light)',
+      },
+    }),
+    vanillaExtractPlugin({
+      themeContractName: 'Theme',
+      themeContractVarName: 'theme',
+    }),
+    jsonPlugin(),
+  ],
 });

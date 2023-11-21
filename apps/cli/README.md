@@ -43,7 +43,6 @@ bun design-sync init
 
 follow the prompt to create a `design-sync.config` file or pass `-y` to skip the prompt and use the default values.
 
-
 Sync:
   
 ```sh
@@ -61,14 +60,93 @@ bun design-sync sync
 ```
 
 ## Configuration
-WIP
+
+The configuration file is a `design-sync.config.ts` file in the root of your project.
+
+- `uri`: (string) the uri of a git repository to download the design tokens from, eg `gh:owner/repo/path/to/file/or/folder#branch` supports `github`, `gitlab`, `sourcehut` and `bitbucket` see [giget](https://github.com/unjs/giget) for more info.
+- `auth`: (string) Custom Authorization token to use for downloading tokens. (Can be overridden with `GIGET_AUTH` environment variable).
+- `out`: (string) the output directory for the generated files
+- `plugins`: (array) plugins to use, see [plugins](#plugins) for more info
+- `schemaExtensions` (array)- schema extensions to use, see [schema extensions](#schema-extensions) for more info
+- `prettify`: (boolean) format the generated files using `prettier`, default: `false`
 
 ## Plugins
-WIP
+
+### Css
+
+Transforms DTFM json to css variables and classes
+
+Usage:
+
+in the config file add the plugin to the plugins array
+
+```ts
+import { cssPlugin } from '@design-sync/sync'
+
+export default {
+  plugins: [cssPlugin({
+    // extract token types as css classes default: ['typography']
+    extractAsStyles: ['typography'],
+    // relative path in the `out` root config, default ''
+    outDir: 'css',
+    // extract typography as css variables in the format of `font` css property, default: false
+    typographyAsFontProperty: false,
+    // css selector per mode to wrap the css variables, default: ':root'
+    selectors: {
+      dark: '@media (prefers-color-scheme: dark)',
+      light: '@media (prefers-color-scheme: light)',
+    },
+  })],
+}
+```
+
+### Vanilla Extract
+
+Transforms DTFM json to vanilla extract themes
+
+Usage:
+
+in the config file add the plugin to the plugins array
+
+```ts
+import { vanillaExtractPlugin } from '@design-sync/sync'
+
+export default {
+  plugins: [vanillaExtractPlugin({
+    // relative path in the `out` root config, default ''
+    outDir: 'vanilla-extract',
+    // name of the file used to export the theme contract using `createThemeContract`, default: 'contract.css.ts'
+    themeContractName: 'contract',
+    // name of the exported variable from the theme contract and would also be used to reference the tokens, default: 'vars'
+    themeContractVarName: 'theme',
+  })],
+}
+```
+
+### JSON (flat)
+
+Transforms DTFM json to flat json file without all the tokens metadata and types, also dereference all token aliases
+
+Usage:
+
+in the config file add the plugin to the plugins array
+
+```ts
+import { jsonPlugin } from '@design-sync/sync'
+
+export default {
+  plugins: [jsonPlugin({
+    // relative path in the `out` root config, default ''
+    outDir: 'json',
+  })],
+}
+```
 
 ## Schema Extensions
-WIP
 
+- Modes -> allow you to override tokens per mode (dark, light, etc) and generate a theme for each mode, enabled by default.
+- Color Modifiers -> allow you to modify colors using common color modifiers like lighten, darken, saturate, etc, enabled by default.
+- Color Generators  -> allow you to generate more colors dynamically using color modifiers, enabled by default.
 
 ## Development
 

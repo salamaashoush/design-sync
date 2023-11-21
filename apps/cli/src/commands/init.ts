@@ -8,8 +8,8 @@ import { logger } from '../logger';
 async function configPrompt() {
   const repo = await logger.prompt('What is the url of your tokens git repo?', {
     type: 'text',
-    placeholder: 'gh:username/repo#branch',
-    default: 'gh:username/repo#branch',
+    placeholder: 'gh:username/repo/path/to/tokens#branch',
+    default: 'gh:username/repo/path/to/tokens#branch',
   });
 
   const tokensPath = await logger.prompt('Where are your tokens located?', {
@@ -28,18 +28,24 @@ async function configPrompt() {
     type: 'select',
     options: [
       'vanilla-extract',
-      'styled-components',
-      'emotion',
-      'tailwindcss',
-      'stitches',
-      'css-modules',
+      // 'styled-components',
+      // 'emotion',
+      // 'tailwindcss',
+      // 'stitches',
+      // 'css-modules',
       'css',
-      'typescript',
+      'json',
+      // 'typescript',
     ],
     initial: 'vanilla-extract',
   });
 
-  return { repo, tokensPath, out, plugin };
+  const prettify = await logger.prompt('Would you like to format files using prettier?', {
+    type: 'confirm',
+    initial: false,
+  });
+
+  return { repo, tokensPath, out, plugin, prettify };
 }
 
 export default defineCommand({
@@ -62,10 +68,11 @@ export default defineCommand({
   },
   async run({ args }) {
     let config: ConfigTemplateOptions = {
-      repo: 'gh:username/repo#branch',
+      repo: 'gh:username/repo/path/to/tokens#branch',
       out: 'src/design-sync',
       tokensPath: 'tokens.json',
       plugin: 'vanilla-extract',
+      prettify: false,
     };
 
     if (!args.default) {

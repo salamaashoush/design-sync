@@ -5,32 +5,34 @@ export interface ConfigTemplateOptions {
   repo: string;
   tokensPath: string;
   plugin: string;
+  prettify: boolean;
 }
 
-export function generateCJSConfigTemplate({ out, repo, tokensPath, plugin }: ConfigTemplateOptions) {
-  return `const { defineConfig, ${camelCase(plugin)} } = require('@design-sync/sync');
+export function generateCJSConfigTemplate({ out, repo, tokensPath, plugin, prettify }: ConfigTemplateOptions) {
+  const pluginName = `${camelCase(plugin)}Plugin`;
+  return `const { defineConfig, ${pluginName} } = require('@design-sync/sync');
 
 module.exports = defineConfig({
   repo:  "${repo}",
   out:  "${out}",
   tokensPath:  "${tokensPath}",
-  plugins: [${camelCase(plugin)}()],
+  plugins: [${pluginName}()],
+  prettify: ${prettify},
 });`;
 }
 
 export function generateESMConfigTemplate({ out, repo, tokensPath, plugin }: ConfigTemplateOptions) {
-  return `import { defineConfig, ${camelCase(plugin)} } from '@design-sync/sync';
+  const pluginName = `${camelCase(plugin)}Plugin`;
+  return `import { defineConfig, ${pluginName} } from '@design-sync/sync';
 
 export default defineConfig({
   repo:  "${repo}",
   out:  "${out}",
   tokensPath:  "${tokensPath}",
-  plugins: [${camelCase(plugin)}()],
+  plugins: [${pluginName}()],
 });`;
 }
 
-export function generateConfigTemplate({ out, repo, tokensPath, plugin }: ConfigTemplateOptions, isCJS: boolean) {
-  return isCJS
-    ? generateCJSConfigTemplate({ out, repo, tokensPath, plugin })
-    : generateESMConfigTemplate({ out, repo, tokensPath, plugin });
+export function generateConfigTemplate(options: ConfigTemplateOptions, isCJS: boolean) {
+  return isCJS ? generateCJSConfigTemplate(options) : generateESMConfigTemplate(options);
 }

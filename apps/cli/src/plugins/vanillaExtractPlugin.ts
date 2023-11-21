@@ -2,7 +2,6 @@
 import { camelCase, set } from '@design-sync/utils';
 import {
   ProcessedDesignToken,
-  TokensWalker,
   getModeRawValue,
   isTokenAlias,
   processPrimitiveValue,
@@ -10,50 +9,52 @@ import {
   tokenValueToCss,
   typographyToCssStyle,
 } from '@design-sync/w3c-dtfm';
-import { join } from 'path';
-import { TokensManagerPlugin } from '../manager';
+import { TokensManager, TokensManagerPlugin, TokensManagerPluginFile } from '../manager';
 import { DesignSyncConfig } from '../types';
-import { writeFile } from '../utils';
-
-function getStyleName(path: string) {
-  // get the last part of the path and camelCase it
-  return camelCase(path.split('.').pop()!);
-}
-
-function createTypographyStyle(tokenValue: unknown, path: string, varsName = 'vars') {
-  const style = typographyToCssStyle(tokenValue);
-  if (isTokenAlias(style)) {
-    return '';
-  }
-  const styleName = getStyleName(path);
-  for (const [key, value] of Object.entries(style)) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (style as any)[key] = processPrimitiveValue(value, varsName);
-  }
-  return `export const ${styleName} = style(${serializeObject(style)})\n`;
-}
 
 interface VanillaExtractPluginConfig {
   themeContractVarName?: string;
   themeContractName?: string;
+  outDir?: string;
+}
+
+function getStyleName(path: string) {
+  const parts = path.split('.');
+  if (path.includes('@')) {
+    // get the last three parts
+    return camelCase(
+      parts
+        .slice(parts.length - 3)
+        .join('-')
+        .replace('-@', '-'),
+    );
+  }
+
+  return camelCase(parts.pop()!);
 }
 
 class VanillaExtractPlugin {
   private tokens: Record<string, Record<string, unknown>> = {};
   private styles: string[] = [];
   private tokensContract: Record<string, unknown> = {};
-  private outPath: string = process.cwd();
-
+  private config: VanillaExtractPluginConfig & DesignSyncConfig;
   constructor(
-    private config: VanillaExtractPluginConfig & DesignSyncConfig,
-    private walker: TokensWalker,
+    config: VanillaExtractPluginConfig,
+    private manager: TokensManager,
   ) {
-    this.outPath = join(process.cwd(), this.config.out);
+    this.config = {
+      ...config,
+      ...manager.getConfig(),
+    };
     const { defaultMode, requiredModes } = this.walker.getModes();
     this.tokens[defaultMode] = {};
     for (const mode of requiredModes) {
       this.tokens[mode] = {};
     }
+  }
+
+  private get walker() {
+    return this.manager.getWalker();
   }
 
   private get themeVarsName() {
@@ -63,6 +64,9 @@ class VanillaExtractPlugin {
   private get themeContractName() {
     return this.config.themeContractName || 'contract';
   }
+
+  private wrapWithThemeVar = (path: string, isSinglePath: boolean) =>
+    isSinglePath ? `${this.themeVarsName}.${path}` : `\$\{${this.themeVarsName}.${path}\}`;
 
   private runTokenExtensions(token: ProcessedDesignToken) {
     const actions = this.walker.runTokenExtensions(token);
@@ -84,95 +88,116 @@ class VanillaExtractPlugin {
     }
   }
 
-  async run() {
+  private addTypographyStyle(token: ProcessedDesignToken) {
+    const { raw, fullPath } = token;
+    const style = typographyToCssStyle(raw);
+    if (isTokenAlias(style)) {
+      return '';
+    }
+    // use the last part of the path as the style name
+    const styleName = getStyleName(fullPath);
+    for (const [key, value] of Object.entries(style)) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (style as any)[key] = processPrimitiveValue(value, this.wrapWithThemeVar);
+    }
+    this.styles.push(`export const ${styleName} = style(${serializeObject(style)})\n`);
+  }
+
+  private addToken(token: ProcessedDesignToken) {
     const { requiredModes, defaultMode } = this.walker.getModes();
+    const { raw, type, fullPath, valueByMode } = token;
+    // add the token to the tokens contract
+    set(this.tokensContract, fullPath, '');
+    const defaultValue = processPrimitiveValue(tokenValueToCss(raw, type), this.wrapWithThemeVar);
+    // set the default value in the default mode
+    set(this.tokens[defaultMode], fullPath, defaultValue);
+    for (const mode of requiredModes) {
+      const rawValue = getModeRawValue(valueByMode, mode);
+      if (rawValue) {
+        set(this.tokens[mode], fullPath, processPrimitiveValue(tokenValueToCss(rawValue, type), this.wrapWithThemeVar));
+      } else {
+        set(this.tokens[mode], fullPath, defaultValue);
+      }
+    }
+  }
+  async run() {
     this.walker.walk((token) => {
-      const { raw, type, fullPath, valueByMode } = token;
-      switch (type) {
-        case 'typography': {
-          this.styles.push(createTypographyStyle(raw, fullPath));
-          break;
-        }
-        default: {
-          // add the token to the tokens contract
-          set(this.tokensContract, fullPath, '');
-          const defaultValue = processPrimitiveValue(tokenValueToCss(raw, type), this.themeVarsName);
-          // set the default value in the default mode
-          set(this.tokens[defaultMode], fullPath, defaultValue);
-          for (const mode of requiredModes) {
-            const rawValue = getModeRawValue(valueByMode, mode);
-            if (rawValue) {
-              set(
-                this.tokens[mode],
-                fullPath,
-                processPrimitiveValue(tokenValueToCss(rawValue, type), this.themeVarsName),
-              );
-            } else {
-              set(this.tokens[mode], fullPath, defaultValue);
-            }
-          }
-        }
+      if (token.type === 'typography') {
+        this.addTypographyStyle(token);
+      } else {
+        this.addToken(token);
       }
       this.runTokenExtensions(token);
-    });
-    await this.write();
+    }, false);
+    return this.getFiles();
   }
 
-  private async write() {
+  private getFiles() {
     const { requiredModes, defaultMode } = this.walker.getModes();
-    // 1. write the tokens theme contract
-    await this.writeTokensContract();
+    // 1. emit the tokens contract file and the typography file
+    const files: TokensManagerPluginFile[] = [this.getContractFile(), this.getStylesFile(this.styles)];
 
-    // 2. write the tokens theme files
+    // 2. emit the tokens theme files
     for (const mode of requiredModes) {
-      await this.writeTokensTheme(mode, this.tokens[mode]);
-    }
-    // 3. write the default theme file if it's not already written
-    if (!requiredModes.includes(defaultMode)) {
-      await this.writeTokensTheme(defaultMode, this.tokens[defaultMode]);
+      files.push(this.getThemeFile(mode, this.tokens[mode]));
     }
 
-    // 4. write the typography styles
-    await this.writeTypographyStyles(this.styles);
+    // 3. emit the default theme file if it's not already written
+    if (!requiredModes.includes(defaultMode)) {
+      files.push(this.getThemeFile(defaultMode, this.tokens[defaultMode]));
+    }
+    return files;
   }
 
-  private writeTokensContract() {
+  private getContractFile() {
     const content = [
       `import { createThemeContract } from '@vanilla-extract/css';\n`,
       `export const ${this.themeVarsName} = createThemeContract(${serializeObject(this.tokensContract)});`,
     ].join('\n');
-    return writeFile(join(this.outPath, `${this.themeContractName}.css.ts`), content);
+
+    return {
+      path: `${this.themeContractName}.css.ts`,
+      content,
+    };
   }
 
-  private writeTokensTheme(mode: string, tokens: object) {
+  private getThemeFile(mode: string, tokens: object) {
     const content = [
       `import { createTheme } from '@vanilla-extract/css';\n`,
       `import { ${this.themeVarsName} } from './${this.themeContractName}.css';\n`,
       `export const ${mode}Theme = createTheme(${this.themeVarsName}, ${serializeObject(tokens)});`,
     ].join('\n');
-    return writeFile(join(this.outPath, `${mode}.css.ts`), content);
+    return {
+      path: `${mode}.css.ts`,
+      content,
+    };
   }
 
-  private writeTypographyStyles(typography: string[]) {
+  private getStylesFile(typography: string[]) {
     const content = [
       `import { style } from '@vanilla-extract/css';\n`,
       `import { ${this.themeVarsName} } from './${this.themeContractName}.css';\n`,
       typography.join('\n'),
     ].join('\n');
-    return writeFile(join(this.outPath, 'typography.css.ts'), content);
+    return {
+      path: 'styles.css.ts',
+      content,
+    };
   }
 }
 
 export function vanillaExtractPlugin(config: VanillaExtractPluginConfig = {}): TokensManagerPlugin {
   return {
     name: 'vanilla-extract',
-    async build(walker, designSyncConfig) {
+    async build(manager) {
       const plugin = new VanillaExtractPlugin(
         {
+          themeContractVarName: 'vars',
+          themeContractName: 'contract',
+          outDir: '',
           ...config,
-          ...designSyncConfig,
         },
-        walker,
+        manager,
       );
       return plugin.run();
     },
