@@ -6,7 +6,6 @@ export function normalizeDimensionValue(value: unknown) {
     return value;
   }
   if (typeof value === 'number') {
-    console.warn(`number without unit received, assuming pixels`);
     return `${value}px` as Dimension;
   }
   if (typeof value === 'string') {

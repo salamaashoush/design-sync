@@ -20,13 +20,14 @@ export function isObject(value: unknown): value is object {
   return typeof value === 'object' && value !== null;
 }
 
+export function isDesignTokenGroup(value: unknown): value is TokenGroupDefinition<TokenType> {
+  return isObject(value) && '$type' in value && !('$value' in value);
+}
+
 export function isDesignToken(value: unknown): value is DesignToken {
   return isObject(value) && '$value' in value && '$type' in value;
 }
 
-export function isDesignTokenGroup(value: unknown): value is TokenGroupDefinition<TokenType> {
-  return !isDesignToken(value) && isObject(value) && '$type' in value;
-}
 export function isDesignTokenLike(value: unknown): value is Omit<DesignToken, '$type'> {
   return isObject(value) && '$value' in value;
 }
@@ -62,8 +63,16 @@ export function isCompositeToken(
   return ['border', 'shadow', 'transition', 'gradient', 'typography'].includes(token.$type);
 }
 
+export const TOKEN_ALIAS_REGEX = /\{[\w@#\-]+(\.[\w@#\-]+)*\}/g;
+export const EXACT_TOKEN_ALIAS_REGEX = /^\{[\w@#\-]+(\.[\w@#\-]+)*\}$/g;
+export function hasTokenAlias(value: unknown): value is TokenAlias {
+  TOKEN_ALIAS_REGEX.lastIndex = 0;
+  return typeof value === 'string' && TOKEN_ALIAS_REGEX.test(value);
+}
+
 export function isTokenAlias(value: unknown): value is TokenAlias {
-  return typeof value === 'string' && value.match(/(\$[^\s,]+\w)|({([^}]*)})/g) !== null;
+  EXACT_TOKEN_ALIAS_REGEX.lastIndex = 0;
+  return typeof value === 'string' && EXACT_TOKEN_ALIAS_REGEX.test(value);
 }
 
 export function isColorToken(value: unknown): value is TokenDefinition<'color'> {

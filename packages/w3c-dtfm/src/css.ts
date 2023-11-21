@@ -11,13 +11,16 @@ import { normalizeFontFamilyValue, normalizeFontWeightValue, normalizeTypography
 import { processPrimitiveValue } from './serialize';
 import { DesignToken, TokenDefinition } from './types';
 
-export function processCssVarRef(tokenValue: string, prefix?: string, defaultValue?: string) {
-  return processPrimitiveValue(tokenValue, (path) => {
-    if (defaultValue) {
-      return `var(${prefix}${path}, ${defaultValue})`;
-    }
-    return `var(${prefix}${path})`;
-  });
+export function tokenAliasToCssVarName(path: string, prefix?: string) {
+  return `--${prefix ?? ''}${path.replace(/\./g, '-').replace('-@', '-')}`;
+}
+
+export function processCssVarRef(tokenValue: string | number, prefix?: string, defaultValue?: string) {
+  return processPrimitiveValue(tokenValue, (path) =>
+    defaultValue
+      ? `var(${tokenAliasToCssVarName(path, prefix)}, ${defaultValue})`
+      : `var(${tokenAliasToCssVarName(path, prefix)})`,
+  );
 }
 
 export function tokenValueToCssValue(tokenValue: unknown) {
@@ -143,7 +146,7 @@ export function gradientToCssValue(gradient?: TokenDefinition<'gradient'>['$valu
   return value.map((stop) => `${stop.color} ${stop.position ?? 0 * 100}%`).join(', ');
 }
 
-export function tokenValueToCss(tokenValue: DesignToken['$value'], type: DesignToken['$type']): string | number {
+export function tokenValueToCss(tokenValue: DesignToken['$value'], type: DesignToken['$type']) {
   switch (type) {
     case 'color':
       return colorToCssValue(tokenValue as TokenDefinition<'color'>['$value']);
@@ -172,8 +175,9 @@ export function tokenValueToCss(tokenValue: DesignToken['$value'], type: DesignT
     case 'link':
     case 'other':
     case 'number':
-    default:
       return `${tokenValue}`;
+    default:
+      return '';
   }
 }
 
