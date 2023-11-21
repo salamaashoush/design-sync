@@ -13,8 +13,8 @@
   "devDependencies": {
     "@design-sync/eslint-config": "workspace:*",
     "@design-sync/tsconfig": "workspace:*",
-    "@figma/plugin-typings": "^1.80.0",
-    "eslint": "^8.53.0",
+    "@figma/plugin-typings": "^1.81.0",
+    "eslint": "^8.54.0",
     "lint-staged": "^15.1.0",
     "typescript": "^5.2.2"
   }

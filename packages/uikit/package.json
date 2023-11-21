@@ -15,17 +15,17 @@
     "@design-sync/figma-icons": "workspace:*",
     "@kobalte/core": "^0.11.2",
     "@kobalte/vanilla-extract": "^0.5.0",
-    "@vanilla-extract/css": "^1.13.0",
-    "@vanilla-extract/recipes": "^0.5.0",
+    "@vanilla-extract/css": "^1.14.0",
+    "@vanilla-extract/recipes": "^0.5.1",
     "@vanilla-extract/sprinkles": "^1.6.1"
   },
   "peerDependencies": {
-    "solid-js": "^1.8.3"
+    "solid-js": "^1.8.5"
   },
   "devDependencies": {
     "@design-sync/eslint-config": "workspace:*",
     "@design-sync/tsconfig": "workspace:*",
-    "eslint": "^8.53.0",
+    "eslint": "^8.54.0",
     "lint-staged": "^15.1.0",
     "solid-js": "^1.8.5",
     "typescript": "^5.2.2"
