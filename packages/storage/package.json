@@ -1,6 +1,6 @@
 {
   "name": "@design-sync/storage",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Tokenize storage",
   "main": "src/index.ts",
   "private": true,
