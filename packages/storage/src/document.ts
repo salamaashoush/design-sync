@@ -10,13 +10,13 @@ export class DocumentStorage extends GitStorage {
   }
 
   async save(tokens: any, { filePath, branch }: SaveFileOptions): Promise<void> {
-    const b = this.options.branch ?? branch;
-    const path = `${this.options.repoPath}/${b}/${filePath}`;
+    const b = this.ref ?? branch;
+    const path = `${this.repo}/${b}/${filePath}`;
     this.pluginDataStorage.setDocumentData(path, tokens);
   }
 
   async load(filePath: string): Promise<any> {
-    const path = `${this.options.repoPath}/${this.options.branch}/${filePath}`;
+    const path = `${this.repo}/${this.ref}/${filePath}`;
     return this.pluginDataStorage.getDocumentData(path);
   }
 }

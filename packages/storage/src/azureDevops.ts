@@ -8,14 +8,12 @@ export class AzureDevOpsStorage extends GitStorage {
   }
 
   private getAuthHeader() {
-    const { accessToken } = this.options;
-    const pat = btoa(`:${accessToken}`);
+    const pat = btoa(`:${this.accessToken}`);
     return `Basic ${pat}`;
   }
 
   private async getRef(branch: string) {
-    const { repoPath } = this.options;
-    const [organization, repo] = repoPath.split('/');
+    const [organization, repo] = this.repo.split('/');
     const filter = encodeURIComponent(`heads/${branch}`);
     const response = await fetch(
       `https://dev.azure.com/${organization}/_apis/git/repositories/${repo}/refs?filter=${filter}&api-version=5.1`,
@@ -35,11 +33,10 @@ export class AzureDevOpsStorage extends GitStorage {
   }
 
   async save(tokens: any, { commitMessage, filePath }: SaveFileOptions): Promise<void> {
-    const { repoPath, branch } = this.options;
     const exists = await this.exists(filePath);
-    const ref = await this.getRef(branch);
+    const ref = await this.getRef(this.ref);
     console.log(ref);
-    const [organization, repo] = repoPath.split('/');
+    const [organization, repo] = this.repo.split('/');
     const response = await fetch(
       `https://dev.azure.com/${organization}/_apis/git/repositories/${repo}/pushes?api-version=6.1-preview.2`,
       {
@@ -79,10 +76,9 @@ export class AzureDevOpsStorage extends GitStorage {
       throw new Error('Failed to save tokens');
     }
   }
-  async load(filePath: string) {
-    const { repoPath } = this.options;
-    const [organization, repo] = repoPath.split('/');
-    const path = encodeURIComponent(filePath);
+  async load(filePath?: string) {
+    const [organization, repo] = this.repo.split('/');
+    const path = encodeURIComponent(filePath ?? this.path);
     const response = await fetch(
       `https://dev.azure.com/${organization}/_apis/git/repositories/${repo}/items?scopePath=${path}&includeContent=true&api-version=5.1`,
       {

@@ -6,3 +6,4 @@ export * from './github';
 export * from './gitlab';
 export * from './local';
 export * from './pluginData';
+export * from './utils';
