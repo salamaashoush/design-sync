@@ -1,5 +1,16 @@
 # @design-sync/w3c-dtfm
 
+## 0.2.0
+
+### Minor Changes
+
+- 605fe58: New cli plugins for `json` and `css` and a lot of improvements and bug fixes
+
+### Patch Changes
+
+- Updated dependencies [605fe58]
+  - @design-sync/utils@0.2.0
+
 ## 0.1.0
 
 ### Minor Changes

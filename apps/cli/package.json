@@ -1,7 +1,7 @@
 {
   "name": "@design-sync/sync",
   "description": "CLI for Design Sync",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "repository": "salamaashoush/design-sync",
   "license": "MIT",
   "sideEffects": false,
