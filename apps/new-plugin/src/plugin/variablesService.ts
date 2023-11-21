@@ -1,12 +1,5 @@
 import { camelCase, set } from '@design-sync/utils';
-import {
-  DEFAULT_MODE,
-  DesignToken,
-  TokensWalker,
-  getModeRawValue,
-  isTokenAlias,
-  normalizeTokenAlias,
-} from '@design-sync/w3c-dtfm';
+import { DEFAULT_MODE, TokensWalker, getModeRawValue, isTokenAlias, normalizeTokenAlias } from '@design-sync/w3c-dtfm';
 import { convertValue, deserializeColor, isColorVariableValue, isVariableAlias, serializeColor } from './utils';
 import { designTokenTypeToVariableType, guessTokenTypeFromScopes } from './variables';
 
@@ -45,7 +38,7 @@ export class VariablesStore {
     }
   }
 
-  findVariable(name: string, modeId?: string, collectionId?: string) {
+  find(name: string, modeId?: string, collectionId?: string) {
     const variable = this.getByName(name);
     if (!modeId) {
       return variable;
@@ -107,7 +100,7 @@ export class VariablesService {
     const modeId =
       collection.modes.find((m) => m.name === mode || m.modeId === mode)?.modeId ?? collection.defaultModeId;
     const variable =
-      this.variablesStore.findVariable(name, modeId, collection.id) ??
+      this.variablesStore.find(name, modeId, collection.id) ??
       figma.variables.createVariable(name, collection.id, type);
     console.log('createOrUpdateVariable', variable, modeId, value);
     variable.setValueForMode(modeId, value);
@@ -140,7 +133,7 @@ export class VariablesService {
     while (aliasesValues.length && generations > 0) {
       for (let i = 0; i < aliasesValues.length; i++) {
         const { name, refName, mode } = aliasesValues[i];
-        if (this.variablesStore.findVariable(refName)) {
+        if (this.variablesStore.find(refName)) {
           aliasesValues.splice(i, 1);
           this.variablesStore.set(name, this.createVariableAlias(name, mode, refName, collection));
         }
@@ -150,7 +143,7 @@ export class VariablesService {
     this.aliasesToProcess = {};
   }
 
-  importFromDesignTokens(tokens: Record<string, unknown>) {
+  import(tokens: Record<string, unknown>) {
     const walker = new TokensWalker(tokens);
     const { requiredModes, defaultMode } = walker.getModes();
     const name = walker.getName();
@@ -209,7 +202,7 @@ export class VariablesService {
     for (const variableId of variableIds) {
       const { name, resolvedType, valuesByMode, description, scopes } = figma.variables.getVariableById(variableId)!;
       const fullPath = `${name.replace(/\//g, '.').split('.').map(camelCase).join('.')}`;
-      const token: DesignToken = {
+      const token = {
         $value: this.serializeVariableValue(valuesByMode?.[defaultModeId], resolvedType),
         $description: description ?? '',
         $type: resolvedType === 'COLOR' ? 'color' : guessTokenTypeFromScopes(scopes),

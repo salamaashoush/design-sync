@@ -23,22 +23,22 @@
     "precommit": "lint-staged"
   },
   "dependencies": {
+    "deepmerge": "4.3.1",
     "fast-memoize": "^2.5.2",
-    "scule": "^1.1.0",
     "just-clone": "6.2.0",
     "just-safe-get": "4.2.0",
     "just-safe-set": "4.2.1",
-    "deepmerge": "4.3.1"
+    "scule": "^1.1.0"
   },
   "devDependencies": {
     "@design-sync/eslint-config": "workspace:*",
     "@design-sync/tsconfig": "workspace:*",
-    "eslint": "^8.54.0",
-    "lint-staged": "^15.1.0",
-    "@types/node": "^20.9.1",
+    "@types/node": "^20.9.3",
     "@vitest/coverage-v8": "^0.34.6",
     "changelogen": "^0.5.5",
-    "typescript": "^5.2.2",
+    "eslint": "^8.54.0",
+    "lint-staged": "^15.1.0",
+    "typescript": "^5.3.2",
     "unbuild": "^2.0.0",
     "vitest": "^0.34.6"
   },
