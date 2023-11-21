@@ -9,8 +9,8 @@ export class GitlabStorage extends GitStorage {
   }
 
   async save(tokens: any, { commitMessage, filePath, branch }: SaveFileOptions): Promise<void> {
-    const projectId = encodeURIComponent(this.options.repoPath);
-    const b = branch || this.options.branch;
+    const projectId = encodeURIComponent(this.repo);
+    const b = branch || this.ref;
     const exists = await this.exists(filePath);
     const content = JSON.stringify(tokens, null, 2);
     const actions = [
@@ -24,7 +24,7 @@ export class GitlabStorage extends GitStorage {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Private-Token': this.options.accessToken,
+        'Private-Token': this.accessToken,
       },
       body: JSON.stringify({
         id: projectId,
@@ -38,17 +38,17 @@ export class GitlabStorage extends GitStorage {
     }
   }
 
-  async load(filePath: string): Promise<any> {
-    const projectId = encodeURIComponent(this.options.repoPath);
-    const path = encodeURIComponent(filePath);
-    const branch = encodeURIComponent(this.options.branch);
+  async load(filePath?: string): Promise<any> {
+    const projectId = encodeURIComponent(this.repo);
+    const path = encodeURIComponent(filePath ?? this.path);
+    const branch = encodeURIComponent(this.ref);
     const response = await fetch(
       `https://gitlab.com/api/v4/projects/${projectId}/repository/files/${path}/raw?ref=${branch}`,
       {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Private-Token': this.options.accessToken,
+          'Private-Token': this.accessToken,
         },
       },
     );

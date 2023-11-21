@@ -11,12 +11,12 @@ interface TextInputProps {
   label: string;
   placeholder?: string;
   value?: ReadonlySignal<string | null | undefined>;
-  error: ReadonlySignal<string>;
+  error?: ReadonlySignal<string>;
   required?: boolean;
   ref: Ref<HTMLInputElement>;
-  onInput: JSX.GenericEventHandler<HTMLInputElement>;
+  onInput?: JSX.GenericEventHandler<HTMLInputElement>;
   onChange: JSX.GenericEventHandler<HTMLInputElement>;
-  onBlur: JSX.FocusEventHandler<HTMLInputElement>;
+  onBlur?: JSX.FocusEventHandler<HTMLInputElement>;
 }
 
 export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(({ label, value, error, ...props }, ref) => {
@@ -31,7 +31,7 @@ export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(({ label, 
         aria-invalid={!!error}
         aria-errormessage={`${props.name}-error`}
       />
-      {error.value && (
+      {error?.value && (
         <Text className={errorStyle} id={`${props.name}-error`}>
           {error}
         </Text>

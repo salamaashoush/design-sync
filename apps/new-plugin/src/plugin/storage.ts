@@ -1,11 +1,4 @@
-import {
-  AzureDevOpsStorage,
-  BitbucketStorage,
-  GithubStorage,
-  GitlabStorage,
-  LocalStorage,
-  PluginDataStorage,
-} from '@design-sync/storage';
+import { LocalStorage, PluginDataStorage, createGitStorage } from '@design-sync/storage';
 import { RemoteStorage } from '../types';
 import { stringToUint8Array, uint8ArrayToString } from './utils';
 
@@ -20,19 +13,7 @@ class FigmaBase64Encoder {
     return uint8ArrayToString(figma.base64Decode(data));
   }
 }
-
-export function createGitStorage(remoteStorage: RemoteStorage) {
-  const base64 = new FigmaBase64Encoder();
-  switch (remoteStorage.type) {
-    case 'github':
-      return new GithubStorage(remoteStorage, base64);
-    case 'gitlab':
-      return new GitlabStorage(remoteStorage, base64);
-    case 'bitbucket':
-      return new BitbucketStorage(remoteStorage, base64);
-    case 'azure-devops':
-      return new AzureDevOpsStorage(remoteStorage, base64);
-    default:
-      throw new Error(`Unknown remote storage type: ${remoteStorage.type}`);
-  }
+const base64 = new FigmaBase64Encoder();
+export function createGitStorageForFigma(remoteStorage: RemoteStorage) {
+  return createGitStorage(remoteStorage.uri, remoteStorage.accessToken, base64);
 }

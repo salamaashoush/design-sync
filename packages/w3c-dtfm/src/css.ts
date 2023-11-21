@@ -8,26 +8,19 @@ import { normalizeShadowValue } from './normalize/shadow';
 import { normalizeStrokeStyleValue } from './normalize/stroke';
 import { normalizeCubicBezierValue, normalizeDurationValue, normalizeTransitionValue } from './normalize/transition';
 import { normalizeFontFamilyValue, normalizeFontWeightValue, normalizeTypographyValue } from './normalize/typography';
+import { processPrimitiveValue } from './serialize';
 import { DesignToken, TokenDefinition } from './types';
 
-interface TokenAliasToCssVarOptions {
-  /**
-   * The prefix to use for the css var
-   */
-  prefix?: string;
-  defaultValue?: string;
+export function tokenAliasToCssVarName(path: string, prefix?: string) {
+  return `--${prefix ?? ''}${path.replace(/\./g, '-').replace('-@', '-')}`;
 }
 
-export function tokenValueToCssVar(tokenValue: unknown, { prefix = '', defaultValue }: TokenAliasToCssVarOptions = {}) {
-  if (!isTokenAlias(tokenValue)) {
-    return tokenValue;
-  }
-
-  const tokenPath = normalizeTokenAlias(tokenValue);
-  if (defaultValue) {
-    return `var(${prefix}${tokenPath}, ${defaultValue})`;
-  }
-  return `var(${prefix}${tokenPath})`;
+export function processCssVarRef(tokenValue: string | number, prefix?: string, defaultValue?: string) {
+  return processPrimitiveValue(tokenValue, (path) =>
+    defaultValue
+      ? `var(${tokenAliasToCssVarName(path, prefix)}, ${defaultValue})`
+      : `var(${tokenAliasToCssVarName(path, prefix)})`,
+  );
 }
 
 export function tokenValueToCssValue(tokenValue: unknown) {
@@ -153,7 +146,7 @@ export function gradientToCssValue(gradient?: TokenDefinition<'gradient'>['$valu
   return value.map((stop) => `${stop.color} ${stop.position ?? 0 * 100}%`).join(', ');
 }
 
-export function tokenValueToCss(tokenValue: DesignToken['$value'], type: DesignToken['$type']): string | number {
+export function tokenValueToCss(tokenValue: DesignToken['$value'], type: DesignToken['$type']) {
   switch (type) {
     case 'color':
       return colorToCssValue(tokenValue as TokenDefinition<'color'>['$value']);
@@ -182,8 +175,9 @@ export function tokenValueToCss(tokenValue: DesignToken['$value'], type: DesignT
     case 'link':
     case 'other':
     case 'number':
-    default:
       return `${tokenValue}`;
+    default:
+      return '';
   }
 }
 

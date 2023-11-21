@@ -1,5 +1,4 @@
 import { RpcServer } from '@design-sync/rpc';
-import { paintStylesToDesignTokens, shadowStylesToDesignTokens, textStylesToDesignTokens } from '../plugin/styles';
 import { syncService } from '../plugin/syncService';
 import { variablesService } from '../plugin/variablesService';
 import { RemoteStorage, RemoteStorageWithoutId } from '../types';
@@ -73,17 +72,17 @@ export function setupRpcServerHandlers() {
   //   });
   // });
   server.handle('tokens/sync', async ({ collections, exportPaints, exportShadows, exportTypography }) => {
-    const tokens = {
-      styles: {
-        ...(exportPaints ? paintStylesToDesignTokens() : {}),
-        typography: exportTypography ? textStylesToDesignTokens() : {},
-        shadows: exportShadows ? shadowStylesToDesignTokens() : {},
-      },
-      collections: collections.length > 0 ? await variablesService.exportToDesignTokens(collections, true) : [],
-    };
+    // const tokens = {
+    //   styles: {
+    //     ...(exportPaints ? paintStylesToDesignTokens() : {}),
+    //     typography: exportTypography ? textStylesToDesignTokens() : {},
+    //     shadows: exportShadows ? shadowStylesToDesignTokens() : {},
+    //   },
+    //   collections: collections.length > 0 ? await variablesService.exportToDesignTokens(collections, true) : [],
+    // };
     await syncService.loadTokens();
     // await syncService.saveTokens(tokens);
-    console.log('exported collections', tokens);
+    // console.log('exported collections', tokens);
   });
 
   server.handle('remoteStorages/all', async () => syncService.getRemoteStorages());

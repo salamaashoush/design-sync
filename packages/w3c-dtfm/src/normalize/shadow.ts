@@ -1,5 +1,5 @@
 import { isTokenAlias } from '../guards';
-import { Shadow } from '../types';
+import { Color, Shadow } from '../types';
 import { normalizeColorValue } from './color';
 import { normalizeDimensionValue } from './dimension';
 
@@ -36,7 +36,7 @@ export function normalizeShadowValue(value: unknown) {
       offsetY: normalizeDimensionValue(shadow.offsetY || '0'),
       blur: normalizeDimensionValue(shadow.blur || '0'),
       spread: normalizeDimensionValue(shadow.spread || '0'),
-      color: normalizeColorValue(shadow.color),
+      color: normalizeColorValue(shadow.color) as Color,
     });
   }
   return shadows;

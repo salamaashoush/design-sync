@@ -34,6 +34,7 @@ export function Settings() {
 
   const handleFormSubmit = useCallback(
     (values: RemoteStorageWithoutId) => {
+      console.log('values', values);
       if (inEdit) {
         updateRemoteStorage([{ ...values, id: inEdit.id }]);
         setInEdit(undefined);
@@ -55,7 +56,9 @@ export function Settings() {
       }
     >
       <Modal open={open} onCloseButtonClick={handleModalClose} title="Add remote storage" position="bottom">
-        {open && <RemoteStorageForm key={inEdit?.id ?? ''} onSubmit={handleFormSubmit} values={inEdit} />}
+        {open && (
+          <RemoteStorageForm key={inEdit?.id ?? ''} onSubmit={handleFormSubmit} values={inEdit} editMode={!!inEdit} />
+        )}
       </Modal>
       <Box flexDirection="column" gap="extraSmall">
         {remoteStorages?.map((remoteStorage) => (

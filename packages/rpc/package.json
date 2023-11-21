@@ -3,6 +3,7 @@
   "version": "0.0.2",
   "description": "RPC for Tokenize",
   "main": "src/index.ts",
+  "private": true,
   "scripts": {
     "lint": "eslint ./src --ext .ts,.tsx,.js,.jsx",
     "lint:fix": "pnpm run lint --fix",
@@ -16,7 +17,7 @@
   "devDependencies": {
     "@design-sync/eslint-config": "workspace:*",
     "@design-sync/tsconfig": "workspace:*",
-    "eslint": "^8.53.0",
+    "eslint": "^8.54.0",
     "lint-staged": "^15.1.0",
     "typescript": "^5.2.2"
   }

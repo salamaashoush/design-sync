@@ -1,55 +1,109 @@
-import { isValidJsObjectKey } from '@design-sync/utils';
+import { TEMPLATE_STRING_REGEX, hasTemplateString, isObjectPath, isValidJsObjectKey } from '@design-sync/utils';
 import { normalizeTokenAlias } from './alias';
+import { TOKEN_ALIAS_REGEX, hasTokenAlias, isTokenAlias } from './guards';
 
-export function processPrimitiveValue(value: string | number, prefix: string): string | number {
-  if (typeof value === 'number') {
+type WrapFn = (s: string, isSingleAlias: boolean) => string;
+function processPath(path: string, wrap?: WrapFn, isSingleAlias = false) {
+  const normalizedPath = normalizeTokenAlias(path);
+  return typeof wrap === 'function' ? wrap(normalizedPath, isSingleAlias) : normalizedPath;
+}
+
+export function processPrimitiveValue(value: string | number, wrap?: WrapFn): string | number {
+  if (typeof value !== 'string') {
     return value;
   }
-  // Helper function to add prefix and remove braces
-  const addPrefix = (path: string) => `${prefix}.${normalizeTokenAlias(path)}`;
-  // Rule 1: Check if the value is a single object path
-  if (value.startsWith('{') && value.endsWith('}')) {
-    return addPrefix(value);
-  }
-  /// Rule 2: If the value contains an object path amongst other text
-  const objectPathRegex = /\{[^}]+\}/g;
-  if (objectPathRegex.test(value)) {
-    return value.replace(objectPathRegex, (match) => `\${${addPrefix(match)}}`);
-  }
 
+  if (isTokenAlias(value.trim())) {
+    return processPath(value, wrap, true);
+  }
+  if (hasTokenAlias(value)) {
+    TOKEN_ALIAS_REGEX.lastIndex = 0;
+    return value.replace(TOKEN_ALIAS_REGEX, (match) => processPath(match, wrap));
+  }
   return value;
 }
 
-export function serializeObject(obj: object): string {
+export function processJSKey(key: string): string {
+  return isValidJsObjectKey(key) ? key : JSON.stringify(key);
+}
+
+export function correctJSObjectKey(path: string): string {
+  // Regular expression to match valid JavaScript identifiers
+  const validIdentifier = /^[a-zA-Z_$][a-zA-Z0-9_$]*$/;
+
+  return path
+    .split('.')
+    .map((part) => {
+      // Check if the part is a valid identifier
+      if (validIdentifier.test(part)) {
+        return part;
+      } else {
+        // If not, enclose it in brackets and quotes
+        return `['${part}']`;
+      }
+    })
+    .join('.')
+    .replace(/\.\[/g, '['); // Replace ".[" with "["
+}
+export function processJSValue(value: unknown) {
+  if (typeof value === 'undefined' || value === null) {
+    return value;
+  }
+
+  if (typeof value === 'number') {
+    return `"${value}"`;
+  }
+
+  if (hasTemplateString(value)) {
+    const processed = value.replace(TEMPLATE_STRING_REGEX, (_, match) => `\${${correctJSObjectKey(match)}\}`);
+    return `\`${processed}\``;
+  }
+
+  if (isObjectPath(value)) {
+    return value;
+  }
+
+  return JSON.stringify(value);
+}
+
+export function processCSSKey(key: string): string {
+  return key.replace(/([A-Z])/g, '-$1').toLowerCase();
+}
+
+interface SerializeObjectOptions {
+  processKey?: (key: string) => string;
+  processValue?: (value: string) => string;
+  separator?: string;
+  wrap?: (entries: string) => string;
+  indent?: string;
+  filterEmpty?: boolean;
+}
+export function serializeObject(obj: object, options: SerializeObjectOptions = {}): string {
+  const {
+    indent = '  ',
+    processKey = processJSKey,
+    processValue = processJSValue,
+    separator = ',\n',
+    wrap = (s) => `{\n${s}\n}`,
+    filterEmpty = false,
+  } = options;
   const entries = [];
   for (const [key, value] of Object.entries(obj)) {
-    const validKey = isValidJsObjectKey(key) ? key : JSON.stringify(key);
-    if (typeof value === 'undefined' || value === null) {
-      entries.push(`${validKey}: ${value}`);
+    if (value === undefined || value === null || (filterEmpty && value === '')) {
       continue;
     }
-    if (typeof value === 'object') {
-      entries.push(`${validKey}: ${serializeObject(value)}`);
-      continue;
-    }
-    const isTemplateString = /\${[^}]+}/g.test(value);
-    if (isTemplateString) {
-      entries.push(`${validKey}: \`${value}\``);
-      continue;
-    }
-
-    const isJSObjectPath = /[a-z_](\w*\.[a-z_]\w*)+/gi.test(value);
-    if (isJSObjectPath) {
-      entries.push(`${validKey}: ${value}`);
-      continue;
-    }
-
-    if (typeof value === 'number') {
-      entries.push(`${validKey}: "${value}"`);
-      continue;
-    }
-
-    entries.push(`${validKey}: ${JSON.stringify(value)}`);
+    const processedKey = processKey(key);
+    const processedValue = typeof value === 'object' ? serializeObject(value, options) : processValue(value);
+    entries.push(`${processedKey}: ${processedValue}`);
   }
-  return `{\n${entries.join(',\n')}\n}`;
+  return wrap(entries.join(separator).replace(/^/gm, indent));
+}
+
+export function serializeObjectToCSS(obj: object, selector: string): string {
+  return serializeObject(obj, {
+    processKey: processCSSKey,
+    processValue: (value) => value,
+    separator: ';\n',
+    wrap: (s) => (selector.startsWith('@media') ? `${selector} {\n:root {\n${s}\n}\n}` : `${selector} {\n${s}\n}`),
+  });
 }

@@ -2,7 +2,7 @@ import { GitStorage } from '@design-sync/storage';
 import { get, isObject } from '@design-sync/utils';
 import { isTokenAlias, normalizeTokenAlias, type DesignToken, type TokenAlias } from '@design-sync/w3c-dtfm';
 import { RemoteStorage, RemoteStorageWithoutId } from '../types';
-import { createGitStorage, localStorage } from './storage';
+import { createGitStorageForFigma, localStorage } from './storage';
 
 export class SyncService {
   private remoteStorages: Map<string, RemoteStorage> = new Map();
@@ -21,25 +21,26 @@ export class SyncService {
     if (this.activeStorageId) {
       const activeStorageRemoteStorage = this.remoteStorages.get(this.activeStorageId);
       if (activeStorageRemoteStorage) {
-        this.storageService = createGitStorage(activeStorageRemoteStorage);
+        this.storageService = createGitStorageForFigma(activeStorageRemoteStorage);
       }
     }
     return true;
   }
 
   async loadTokens() {
-    const filePath = this.getActiveRemoteStorage()?.filePath ?? 'tokens.json';
+    const filePath = this.storageService?.path ?? 'tokens.json';
     const tokens = await this.storageService?.load<object>(filePath);
-    console.log('loaded tokens', this.storageService?.options, tokens);
+
     if (tokens) {
       this.tokens.set(filePath, tokens);
     }
+    console.log('loaded tokens', tokens);
     return tokens;
   }
 
   async saveTokens(tokens: object) {
-    const filePath = this.getActiveRemoteStorage()?.filePath ?? 'tokens.json';
-    console.log('saving tokens', this.storageService?.options, tokens);
+    const filePath = this.storageService?.path ?? 'tokens.json';
+    console.log('saving tokens', tokens);
     await this.storageService?.save(tokens, {
       commitMessage: `Update tokens.json`,
       filePath,
@@ -77,7 +78,7 @@ export class SyncService {
   async activateRemoteStorage(id: string) {
     const storage = this.remoteStorages.get(id);
     if (storage) {
-      this.storageService = createGitStorage(storage);
+      this.storageService = createGitStorageForFigma(storage);
       this.activeStorageId = id;
       localStorage.set('activeStorage', id);
     }

@@ -10,15 +10,11 @@ export default defineCommand({
     description: 'Sync tokens from the git repo',
   },
   args: {
-    repo: {
+    uri: {
       type: 'positional',
       description: 'git repo url',
-      valueHint: 'gh:username/repo#branch',
+      valueHint: 'gh:username/repo/path/to/files#branch',
       required: false,
-    },
-    tokensPath: {
-      type: 'string',
-      description: 'path to tokens file in repo',
     },
     out: {
       type: 'string',
@@ -32,22 +28,29 @@ export default defineCommand({
       type: 'string',
       description: 'git provider auth token',
     },
+    cwd: {
+      type: 'string',
+      description: 'path to working directory',
+    },
+    prettify: {
+      type: 'boolean',
+      description: 'prettify output',
+    },
   },
   async run({ args }) {
-    const config = await resolveConfig();
+    const config = await resolveConfig(args);
     const tokensManager = new TokensManager(config);
-    const { repo, tokensPath, auth, plugins = [] } = config;
+    const { uri, auth, plugins = [] } = config;
     for (const plugin of plugins) {
-      logger.debug(`loading plugin ${plugin.name}`);
+      logger.info(`Loading plugin ${plugin.name}`);
       tokensManager.use(plugin);
     }
 
     try {
-      const tokensObj = await fetchTokens(repo, tokensPath, auth);
-      tokensManager.setTokens(tokensObj);
-      logger.debug('processing tokens');
-      await tokensManager.run();
-      logger.debug('tokens processed successfully');
+      const tokensObj = await fetchTokens(uri, auth);
+      logger.start('Processing tokens...');
+      await tokensManager.run(tokensObj);
+      logger.success('Tokens processed successfully.');
     } catch (error) {
       // eslint-disable-next-line no-console
       logger.error(error);

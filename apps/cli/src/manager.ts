@@ -1,15 +1,18 @@
-import { TokenWalkerFn, TokensWalker } from '@design-sync/w3c-dtfm';
+import { TokensWalker } from '@design-sync/w3c-dtfm';
 import { existsSync } from 'node:fs';
-import { mkdir, rm, writeFile } from 'node:fs/promises';
+import { rm } from 'node:fs/promises';
 import { join } from 'node:path';
+import { logger } from './logger';
 import { DesignSyncConfig } from './types';
-import { formatTextWithPrettier } from './utils';
+import { formatAndWriteFile } from './utils';
 
+export interface TokensManagerPluginFile {
+  path: string;
+  content: string;
+}
 export interface TokensManagerPlugin {
   name: string;
-  start?(manager: TokensManager): Promise<void> | void;
-  walk: TokenWalkerFn;
-  end?(manager: TokensManager): Promise<void> | void;
+  build: (walker: TokensManager) => Promise<TokensManagerPluginFile[]>;
 }
 
 export class TokensManager {
@@ -18,49 +21,42 @@ export class TokensManager {
 
   constructor(private config: DesignSyncConfig) {}
 
-  setTokens(tokens: Record<string, any>) {
+  getWalker() {
+    return this.walker;
+  }
+
+  getLogger() {
+    return logger;
+  }
+
+  getConfig() {
+    return this.config;
+  }
+
+  async run(tokens: Record<string, unknown>) {
     this.walker.setTokens(tokens);
-  }
-
-  getTokens() {
-    return this.walker.getTokens();
-  }
-
-  getModes() {
-    return this.walker.getModes();
-  }
-
-  async writeFile(path: string, content: string) {
-    // check if the folder exists
-    const folderPath = path.split('/').slice(0, -1).join('/');
-    if (!existsSync(folderPath)) {
-      await mkdir(folderPath, { recursive: true });
-    }
-    const formattedContent = await formatTextWithPrettier(content);
-    return writeFile(path, formattedContent);
-  }
-
-  async run() {
     // clean the dist folder
     const outPath = join(process.cwd(), this.config.out);
     if (existsSync(outPath)) {
       await rm(outPath, { recursive: true });
     }
-    // run the plugins
-    await Promise.all(
-      this.plugins.map(async (plugin) => {
-        await plugin.start?.(this);
-        this.walker.walkTokens(plugin.walk);
-        return plugin.end?.(this);
-      }),
-    );
+    try {
+      // run the plugins
+      for (const plugin of this.plugins) {
+        const files = await plugin.build(this);
+        await Promise.all(
+          files.map(async (file) => {
+            await formatAndWriteFile(join(this.config.out, file.path), file.content, this.config.prettify);
+            logger.success(`${plugin.name}: File ${file.path} written`);
+          }),
+        );
+      }
+    } catch (e) {
+      logger.error('Failed to build tokens', e);
+    }
   }
 
   use(plugin: TokensManagerPlugin) {
     this.plugins.push(plugin);
-  }
-
-  getConfig() {
-    return this.config;
   }
 }

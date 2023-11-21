@@ -1,6 +1,6 @@
-import { applyColorModifiers, formatHex, formatHex8, parseColor } from '../culori';
+import { applyColorModifiers, formatColor, parseColor } from '../culori';
 import { isTokenAlias } from '../guards';
-import { Color, TokenModifier } from '../types';
+import { TokenModifier } from '../types';
 
 export function normalizeColorValue(value: unknown, modifiers?: TokenModifier | TokenModifier[]) {
   if (isTokenAlias(value)) {
@@ -9,7 +9,7 @@ export function normalizeColorValue(value: unknown, modifiers?: TokenModifier | 
   if (typeof value === 'string') {
     const parsed = parseColor(value);
     const color = applyColorModifiers(parsed, modifiers);
-    return (typeof color.alpha === 'number' && color.alpha < 1 ? formatHex8(color) : formatHex(color)) as Color;
+    return formatColor(color);
   }
-  throw new Error(`normalizeColorValue: expected string, received ${typeof value}`);
+  throw new Error(`normalizeColorValue: expected string, received ${typeof value}, ${JSON.stringify(value)}`);
 }

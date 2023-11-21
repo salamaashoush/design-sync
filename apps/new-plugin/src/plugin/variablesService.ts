@@ -1,8 +1,14 @@
-import { camelCase, get, isObject, set } from '@design-sync/utils';
-import { DesignToken, DesignTokensGroup, isDesignToken, isTokenAlias } from '@design-sync/w3c-dtfm';
-import { DesignTokensGroupMetadata, DesignTokensMode } from '../types';
+import { camelCase, set } from '@design-sync/utils';
+import {
+  DEFAULT_MODE,
+  DesignToken,
+  TokensWalker,
+  getModeRawValue,
+  isTokenAlias,
+  normalizeTokenAlias,
+} from '@design-sync/w3c-dtfm';
 import { convertValue, deserializeColor, isColorVariableValue, isVariableAlias, serializeColor } from './utils';
-import { SUPPORTED_TOKEN_TYPES, designTokenTypeToVariableType, guessTokenTypeFromScopes } from './variables';
+import { designTokenTypeToVariableType, guessTokenTypeFromScopes } from './variables';
 
 export class VariablesStore {
   private store: Map<string, Variable> = new Map();
@@ -57,6 +63,7 @@ export class VariablesStore {
 
 export class VariablesService {
   private aliasesToProcess: Record<string, any> = {};
+
   constructor(private variablesStore: VariablesStore = new VariablesStore()) {}
 
   getLocalCollections(ids?: string[]) {
@@ -75,26 +82,30 @@ export class VariablesService {
     return all.filter((c) => ids.includes(c.key));
   }
 
-  private createCollection(name: string, modes: DesignTokensMode[] = []) {
-    const collection = figma.variables.createVariableCollection(name);
+  private getCollection(name: string, modes: string[] = [], defaultMode = 'Value') {
+    const collection =
+      this.getLocalCollections().find((c) => c.name === name) ?? figma.variables.createVariableCollection(name);
     if (modes.length > 0) {
-      collection.renameMode(collection.defaultModeId, modes[0].name);
+      collection.renameMode(collection.defaultModeId, defaultMode === DEFAULT_MODE ? 'Value' : defaultMode);
     }
+
     for (const mode of modes) {
-      if (!collection.modes.some((m) => m.name === mode.name)) {
-        collection.addMode(mode.name);
+      if (!collection.modes.some((m) => m.name === mode)) {
+        collection.addMode(mode);
       }
     }
     return collection;
   }
 
   private createOrUpdateVariable(
-    collection: VariableCollection,
-    modeId: string,
+    mode: string,
     type: VariableResolvedDataType,
     name: string,
     value: VariableValue,
+    collection: VariableCollection,
   ) {
+    const modeId =
+      collection.modes.find((m) => m.name === mode || m.modeId === mode)?.modeId ?? collection.defaultModeId;
     const variable =
       this.variablesStore.findVariable(name, modeId, collection.id) ??
       figma.variables.createVariable(name, collection.id, type);
@@ -103,16 +114,24 @@ export class VariablesService {
     return variable;
   }
 
-  private createVariableAlias(collection: VariableCollection, modeId: string, key: string, ref: string) {
+  private createVariableAlias(name: string, mode: string, ref: string, collection: VariableCollection) {
     const refVariable = this.variablesStore.getByName(ref);
     if (!refVariable) {
       throw new Error(`Variable ${ref} not found`);
     }
-    console.log('createVariableAlias', refVariable, key, this.aliasesToProcess);
-    return this.createOrUpdateVariable(collection, modeId, refVariable.resolvedType, key, {
-      type: 'VARIABLE_ALIAS',
-      id: `${refVariable.id}`,
-    });
+    const modeId =
+      collection.modes.find((m) => m.name === mode || m.modeId === mode)?.modeId ?? collection.defaultModeId;
+    console.log('createVariableAlias', refVariable, name, this.aliasesToProcess);
+    return this.createOrUpdateVariable(
+      modeId,
+      refVariable.resolvedType,
+      name,
+      {
+        type: 'VARIABLE_ALIAS',
+        id: `${refVariable.id}`,
+      },
+      collection,
+    );
   }
 
   private processAliases(collection: VariableCollection) {
@@ -120,10 +139,10 @@ export class VariablesService {
     let generations = aliasesValues.length;
     while (aliasesValues.length && generations > 0) {
       for (let i = 0; i < aliasesValues.length; i++) {
-        const { key, valueKey, modeId } = aliasesValues[i];
-        if (this.variablesStore.findVariable(valueKey)) {
+        const { name, refName, mode } = aliasesValues[i];
+        if (this.variablesStore.findVariable(refName)) {
           aliasesValues.splice(i, 1);
-          this.variablesStore.set(key, this.createVariableAlias(collection, modeId, key, valueKey));
+          this.variablesStore.set(name, this.createVariableAlias(name, mode, refName, collection));
         }
       }
       generations--;
@@ -131,96 +150,36 @@ export class VariablesService {
     this.aliasesToProcess = {};
   }
 
-  private traverseToken(collection: VariableCollection, modeId: string, tokenKey: string, tokenValue: any) {
-    if (isDesignToken(tokenValue)) {
-      if (!SUPPORTED_TOKEN_TYPES.includes(tokenValue.$type)) {
-        return;
-      }
-      const type = designTokenTypeToVariableType(tokenValue.$type);
-      if (isTokenAlias(tokenValue.$value)) {
-        const valueKey = tokenValue.$value.trim().replace(/\./g, '/').replace(/[${}]/g, '');
-        if (this.variablesStore.has(valueKey)) {
-          this.createVariableAlias(collection, modeId, tokenKey, valueKey);
+  importFromDesignTokens(tokens: Record<string, unknown>) {
+    const walker = new TokensWalker(tokens);
+    const { requiredModes, defaultMode } = walker.getModes();
+    const name = walker.getName();
+    const collection = this.getCollection(name, requiredModes, defaultMode);
+    walker.walk((token) => {
+      const { valueByMode, fullPath, type, raw } = token;
+      const figmaType = designTokenTypeToVariableType(type);
+      const name = fullPath.trim().replace(/\./g, '/');
+      for (const mode of Object.keys(valueByMode)) {
+        const modeValue = getModeRawValue(valueByMode, mode) as string;
+        if (isTokenAlias(modeValue)) {
+          const refName = normalizeTokenAlias(modeValue).trim().replace(/\./g, '/');
+          if (this.variablesStore.has(refName)) {
+            this.variablesStore.set(name, this.createVariableAlias(name, mode, refName, collection));
+          } else {
+            this.aliasesToProcess[name] = {
+              name,
+              type,
+              mode,
+              refName,
+            };
+          }
         } else {
-          this.aliasesToProcess[tokenKey] = {
-            key: tokenKey,
-            type,
-            modeId,
-            valueKey,
-          };
-        }
-      } else {
-        const value =
-          type === 'COLOR'
-            ? deserializeColor(tokenValue.$value as string)
-            : convertValue(tokenValue.$value as string).value;
-        this.createOrUpdateVariable(collection, modeId, type, tokenKey, value);
-      }
-    } else {
-      for (const [key, value] of Object.entries(tokenValue)) {
-        if (key.charAt(0) !== '$') {
-          this.traverseToken(collection, modeId, `${tokenKey}/${key}`, value);
+          const value = figmaType === 'COLOR' ? deserializeColor(modeValue) : convertValue(modeValue).value;
+          this.variablesStore.set(name, this.createOrUpdateVariable(mode, figmaType, name, value, collection));
         }
       }
-    }
-  }
-  private getDesignTokensGroupMetadata(group: DesignTokensGroup): DesignTokensGroupMetadata {
-    const { $description, description, $extensions, modes, $modes, $name, name } = group as any;
-    const inferredModes = ($extensions?.modes ?? modes ?? $modes ?? []).map((m: any) =>
-      isObject(m) ? m : { name: m, id: m },
-    );
-    return {
-      name: $name || name || '',
-      description: $description || description || '',
-      modes: inferredModes,
-    };
-  }
-
-  private createCollectionFromDesignTokens(group: DesignTokensGroup) {
-    const { name, modes } = this.getDesignTokensGroupMetadata(group);
-    const collection = this.createCollection(name, modes);
-    if (modes?.length) {
-      for (const mode of modes) {
-        this.createVariablesFromTokenSet(collection, get(group, mode.path), mode);
-      }
-    } else {
-      this.createVariablesFromTokenSet(collection, group);
-    }
-  }
-
-  private createVariablesFromTokenSet(
-    collection: VariableCollection,
-    tokens: Record<string, any>,
-    mode?: DesignTokensMode,
-  ) {
-    const modeId = collection.modes.find((m) => m.name === mode?.name)?.modeId ?? collection.defaultModeId;
-    for (const [key, value] of Object.entries(tokens)) {
-      this.traverseToken(collection, modeId, key, value);
-    }
+    });
     this.processAliases(collection);
-  }
-
-  importFromDesignTokens(group: DesignTokensGroup) {
-    // const collectionsWithModes = collections.filter((c) => c.includes('/'));
-    // const tokensByMode: Record<string, any> = {};
-    // for (const collectionName of collectionsWithModes) {
-    //   const [mode, collection] = collectionName.split('/');
-    //   tokensByMode[collection] = tokensByMode[collection] ?? {
-    //     modes: new Set(),
-    //     tokens: {},
-    //   };
-    //   tokensByMode[collection].modes.add(mode);
-    //   tokensByMode[collection].tokens[mode] = tokens[collectionName];
-    // }
-    // for (const [collection, { modes, tokens }] of Object.entries(tokensByMode)) {
-    //   this.createCollectionFromDesignTokens(collection, tokens, modes);
-    // }
-    // const collectionsWithoutModes = collections.filter((c) => !c.includes('/'));
-    // for (const collectionName of collectionsWithoutModes) {
-    //   this.createCollectionFromDesignTokens(collectionName, tokens[collectionName]);
-    // }
-
-    this.createCollectionFromDesignTokens(group);
   }
 
   private serializeVariableValue(value: VariableValue, resolvedType: VariableResolvedDataType) {
@@ -242,7 +201,8 @@ export class VariablesService {
       $extensions:
         modes?.length > 1
           ? {
-              modes: modes.map(({ name }) => camelCase(name)),
+              requiredModes: modes.map(({ name }) => camelCase(name)),
+              defaultMode: camelCase(modes.find(({ modeId }) => modeId === defaultModeId)?.name ?? ''),
             }
           : undefined,
     };

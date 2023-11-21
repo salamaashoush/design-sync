@@ -4,10 +4,15 @@ export interface SaveFileOptions {
   branch?: string;
 }
 
-export interface GitStorageOptions {
+export interface GitInfo {
+  provider: 'github' | 'gitlab' | 'bitbucket' | 'azure';
+  repo: string;
+  path: string;
+  ref: string;
+}
+
+export interface GitStorageOptions extends Omit<GitInfo, 'provider'> {
   accessToken: string;
-  branch: string;
-  repoPath: string;
 }
 
 export interface FileStorage {
@@ -15,7 +20,7 @@ export interface FileStorage {
   load(filePath: string): Promise<any>;
 }
 
-class Base64Encoder {
+export class Base64Encoder {
   encode(data: string): string {
     return btoa(data);
   }
@@ -24,10 +29,20 @@ class Base64Encoder {
   }
 }
 export abstract class GitStorage<T extends GitStorageOptions = GitStorageOptions> implements FileStorage {
+  public accessToken: string;
+  public repo: string;
+  public path: string;
+  public ref = 'main';
+
   constructor(
-    public options: T,
+    info: T,
     protected base64 = new Base64Encoder(),
-  ) {}
+  ) {
+    this.accessToken = info.accessToken;
+    this.repo = info.repo;
+    this.path = info.path;
+    this.ref = info.ref;
+  }
   abstract save(tokens: any, options: SaveFileOptions): Promise<void>;
-  abstract load<D = any>(filePath: string): Promise<D>;
+  abstract load<D = any>(path?: string): Promise<D>;
 }

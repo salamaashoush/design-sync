@@ -1,29 +1,16 @@
 import { Button } from '@create-figma-plugin/ui';
-import { setValue, useForm, valiForm } from '@modular-forms/preact';
+import { useComputed, useSignal } from '@preact/signals';
 import { h } from 'preact';
-import { Input, enumType, nullish, object, string, url } from 'valibot';
+import { useCallback } from 'preact/hooks';
 import { Box } from '../../components/Box';
-import { SelectInput } from '../../components/SelectInput';
 import { TextInput } from '../../components/TextInput';
 
-const RemoteStorageFormSchema = object({
-  type: enumType(['github', 'gitlab', 'bitbucket', 'azure-devops']),
-  name: string(),
-  repoPath: string(),
-  accessToken: string(),
-  branch: string(),
-  filePath: string(),
-  baseUrl: nullish(string([url()])),
-});
-
-export type RemoteStorageFormData = Input<typeof RemoteStorageFormSchema>;
-
-const REMOTE_STORAGES = [
-  { value: 'github', text: 'GitHub' },
-  { value: 'gitlab', text: 'GitLab' },
-  { value: 'bitbucket', text: 'Bitbucket' },
-  { value: 'azure-devops', text: 'Azure DevOps' },
-];
+export interface RemoteStorageFormData {
+  name: string;
+  uri: string;
+  accessToken: string;
+  apiUrl?: string;
+}
 
 interface RemoteStorageFormProps {
   onSubmit: (values: RemoteStorageFormData) => void;
@@ -31,113 +18,72 @@ interface RemoteStorageFormProps {
   editMode?: boolean;
 }
 export function RemoteStorageForm(props: RemoteStorageFormProps) {
-  const [syncProviderForm, { Form, Field }] = useForm<RemoteStorageFormData>({
-    validate: valiForm(RemoteStorageFormSchema),
-    validateOn: 'touched',
-    revalidateOn: 'change',
-    initialValues: {
-      type: 'github',
-      ...props.values,
-    },
-  });
+  const uri = useSignal(props.values?.uri ?? '');
+  const name = useSignal(props.values?.name ?? '');
+  const accessToken = useSignal(props.values?.accessToken ?? '');
+  const apiUrl = useSignal(props.values?.apiUrl);
+  const disabled = useComputed(() => !uri.value || !name.value);
+  console.log('RemoteStorageForm', props.values);
+  const handleSubmit = useCallback(() => {
+    props.onSubmit({
+      name: name.value,
+      uri: uri.value,
+      apiUrl: apiUrl.value,
+      accessToken: accessToken.value,
+    });
+    console.log('handleSubmit', name.value, uri.value, apiUrl.value);
+  }, []);
 
   return (
-    <Form onSubmit={props.onSubmit}>
-      <Field name="type">
-        {(field, props) => (
-          <SelectInput
-            label="Type"
-            placeholder="Select a type"
-            options={REMOTE_STORAGES}
-            error={field.error.value}
-            value={field.value.value}
-            required
-            onValueChange={(value) => {
-              setValue(syncProviderForm, 'type', value as any);
-            }}
-            {...props}
-          />
-        )}
-      </Field>
+    <Box direction="column">
+      <TextInput
+        name="name"
+        onChange={(e) => {
+          name.value = e.currentTarget.value;
+        }}
+        label="Name"
+        placeholder="Gitlab"
+        value={name}
+        required
+      />
 
-      <Field name="name">
-        {(field, props) => (
-          <TextInput {...props} label="Name" placeholder="Gitlab" value={field.value} error={field.error} required />
-        )}
-      </Field>
+      <TextInput
+        name="uri"
+        label="Repo URI"
+        placeholder="github:owner/repo#ref/path/to/folder"
+        value={uri}
+        onChange={(e) => {
+          uri.value = e.currentTarget.value;
+        }}
+        required
+      />
 
-      <Field name="accessToken">
-        {(field, props) => (
-          <TextInput
-            {...props}
-            label="Personal Access Token"
-            placeholder="xxxxxxxxx"
-            value={field.value}
-            error={field.error}
-            required
-          />
-        )}
-      </Field>
-      <Field name="repoPath">
-        {(field, props) => (
-          <TextInput
-            {...props}
-            label="Respositry"
-            placeholder="owner/repo"
-            value={field.value}
-            error={field.error}
-            required
-          />
-        )}
-      </Field>
+      <TextInput
+        name="accessToken"
+        label="Access token"
+        placeholder="********"
+        value={accessToken}
+        onChange={(e) => {
+          accessToken.value = e.currentTarget.value;
+        }}
+        required
+      />
 
-      <Field name="branch">
-        {(field, props) => (
-          <TextInput
-            {...props}
-            label="Branch"
-            placeholder="e.g. master"
-            value={field.value}
-            error={field.error}
-            required
-          />
-        )}
-      </Field>
+      <TextInput
+        name="apiUrl"
+        label="API URL (optional)"
+        placeholder='e.g. "https://api.github.com"'
+        value={apiUrl}
+        onChange={(e) => {
+          apiUrl.value = e.currentTarget.value;
+        }}
+      />
 
-      <Field name="filePath">
-        {(field, props) => (
-          <TextInput
-            {...props}
-            label="File Path"
-            placeholder="e.g. tokens.json or Folder Path (e.g. tokens)"
-            value={field.value}
-            error={field.error}
-            required
-          />
-        )}
-      </Field>
-
-      <Field name="baseUrl">
-        {(field, props) => (
-          <TextInput
-            {...props}
-            onChange={(e) => {
-              const value = e.currentTarget.value || undefined;
-              console.log(value);
-              setValue(syncProviderForm, 'baseUrl', value);
-            }}
-            label="Base URL (optional)"
-            placeholder='e.g. "https://api.github.com"'
-            value={field.value}
-            error={field.error}
-          />
-        )}
-      </Field>
       <Box justify="flex-end" paddingX="medium">
-        <Button type="submit" loading={syncProviderForm.submitting.value} disabled={syncProviderForm.submitting.value}>
+        <Button onClick={handleSubmit} disabled={disabled.value}>
           {props.editMode ? 'Update' : 'Add'}
         </Button>
       </Box>
-    </Form>
+    </Box>
   );
 }
