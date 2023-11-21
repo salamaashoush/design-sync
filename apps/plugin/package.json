@@ -7,7 +7,6 @@
     "dev": "concurrently --kill-others \"pnpm dev:ui\" \"pnpm dev:main\"",
     "dev:ui": "vite",
     "dev:main": "pnpm build:main --watch",
-    "build": "pnpm run clean && pnpm run \"/^build:.*/\"",
     "build:ui": "vite build",
     "serve:ui": "vite preview",
     "build:main": "esbuild src/plugin/main.ts --outfile=dist/main.js --bundle --target=es2019",

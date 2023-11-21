@@ -5,7 +5,6 @@
   "private": true,
   "scripts": {
     "test:types": "tsc --noEmit --skipLibCheck",
-    "build": "build-figma-plugin --minify",
     "watch": "build-figma-plugin --watch",
     "precommit": "lint-staged"
   },
