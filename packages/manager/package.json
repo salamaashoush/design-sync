@@ -1,7 +1,7 @@
 {
-  "name": "@design-sync/utils",
-  "version": "0.2.0",
-  "description": "Generic utilities JS/TS utils used by Design Sync",
+  "name": "@design-sync/manager",
+  "version": "0.0.0",
+  "description": "Plugable design tokens manager",
   "repository": "salamaashoush/design-sync",
   "license": "MIT",
   "sideEffects": false,
@@ -23,12 +23,15 @@
     "precommit": "lint-staged"
   },
   "dependencies": {
-    "deepmerge": "4.3.1",
-    "fast-memoize": "^2.5.2",
-    "just-clone": "6.2.0",
-    "just-safe-get": "4.2.0",
-    "just-safe-set": "4.2.1",
-    "scule": "^1.1.0"
+    "@design-sync/utils": "workspace:*",
+    "@design-sync/w3c-dtfm": "workspace:*",
+    "c12": "^1.5.1",
+    "consola": "^3.2.3",
+    "fast-glob": "^3.3.2",
+    "giget": "^1.1.3"
+  },
+  "peerDependencies": {
+    "prettier": "^3.0.0"
   },
   "devDependencies": {
     "@design-sync/eslint-config": "workspace:*",
