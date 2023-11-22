@@ -1,5 +1,11 @@
 ## 0.1.0
 
+## 0.3.0
+
+### Minor Changes
+
+- 51a1587: Fix package installation during init command
+
 ## 0.2.0
 
 ### Minor Changes

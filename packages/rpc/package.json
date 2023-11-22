@@ -1,6 +1,6 @@
 {
   "name": "@design-sync/rpc",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "RPC for Tokenize",
   "main": "src/index.ts",
   "private": true,

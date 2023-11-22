@@ -1,5 +1,18 @@
 # @design-sync/sync
 
+## 0.5.0
+
+### Minor Changes
+
+- 51a1587: Fix package installation during init command
+
+### Patch Changes
+
+- Updated dependencies [51a1587]
+  - @design-sync/utils@0.3.0
+  - @design-sync/manager@0.1.1
+  - @design-sync/w3c-dtfm@0.2.1
+
 ## 0.4.0
 
 ### Minor Changes

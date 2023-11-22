@@ -1,5 +1,13 @@
 # @design-sync/figma-plugin
 
+## 0.0.3
+
+### Patch Changes
+
+- Updated dependencies [51a1587]
+  - @design-sync/utils@0.3.0
+  - @design-sync/rpc@0.0.4
+
 ## 0.0.2
 
 ### Patch Changes
