@@ -1,5 +1,11 @@
 # @design-sync/sync
 
+## 0.6.0
+
+### Minor Changes
+
+- fe99a19: Export `defineConfig` from cli package
+
 ## 0.5.0
 
 ### Minor Changes
