@@ -2,9 +2,11 @@ import { TokensWalker } from '@design-sync/w3c-dtfm';
 import { existsSync } from 'node:fs';
 import { rm } from 'node:fs/promises';
 import { join } from 'node:path';
+import { defaultConfig, resolveConfig } from './config';
+import { fetchTokens } from './fetcher';
 import { logger } from './logger';
 import { DesignSyncConfig } from './types';
-import { formatAndWriteFile } from './utils';
+import { formatAndWriteFile } from './writer';
 
 export interface TokensManagerPluginFile {
   path: string;
@@ -18,8 +20,7 @@ export interface TokensManagerPlugin {
 export class TokensManager {
   private plugins: TokensManagerPlugin[] = [];
   private walker = new TokensWalker();
-
-  constructor(private config: DesignSyncConfig) {}
+  private config: DesignSyncConfig = defaultConfig;
 
   getWalker() {
     return this.walker;
@@ -33,8 +34,24 @@ export class TokensManager {
     return this.config;
   }
 
-  async run(tokens: Record<string, unknown>) {
+  private async fetch(uri?: string, auth?: string) {
+    const r = uri || this.config.uri;
+    if (!r) {
+      logger.error('No repo provided');
+    }
+    const a = auth || this.config.auth;
+    const tokens = await fetchTokens(r, a);
     this.walker.setTokens(tokens);
+  }
+
+  async run(configOverride?: Partial<DesignSyncConfig>, tokens?: Record<string, unknown>) {
+    logger.start('Processing tokens...');
+    this.config = await resolveConfig(configOverride);
+    if (!tokens) {
+      await this.fetch();
+    } else {
+      this.walker.setTokens(tokens);
+    }
     // clean the dist folder
     const outPath = join(process.cwd(), this.config.out);
     if (existsSync(outPath)) {
@@ -51,6 +68,7 @@ export class TokensManager {
           }),
         );
       }
+      logger.success('Tokens processed successfully.');
     } catch (e) {
       logger.error('Failed to build tokens', e);
     }

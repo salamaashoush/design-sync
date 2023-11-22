@@ -1,4 +1,4 @@
-import { TokensWalkerExtension } from '@design-sync/w3c-dtfm';
+import type { TokensWalkerExtension } from '@design-sync/w3c-dtfm';
 import { TokensManagerPlugin } from './manager';
 
 export interface DesignSyncConfig {

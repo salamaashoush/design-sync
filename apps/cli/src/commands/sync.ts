@@ -1,8 +1,5 @@
+import { TokensManager, logger } from '@design-sync/manager';
 import { defineCommand } from 'citty';
-import { resolveConfig } from '../config';
-import { fetchTokens } from '../fetch';
-import { logger } from '../logger';
-import { TokensManager } from '../manager';
 
 export default defineCommand({
   meta: {
@@ -38,19 +35,9 @@ export default defineCommand({
     },
   },
   async run({ args }) {
-    const config = await resolveConfig(args);
-    const tokensManager = new TokensManager(config);
-    const { uri, auth, plugins = [] } = config;
-    for (const plugin of plugins) {
-      logger.info(`Loading plugin ${plugin.name}`);
-      tokensManager.use(plugin);
-    }
-
+    const tokensManager = new TokensManager();
     try {
-      const tokensObj = await fetchTokens(uri, auth);
-      logger.start('Processing tokens...');
-      await tokensManager.run(tokensObj);
-      logger.success('Tokens processed successfully.');
+      await tokensManager.run(args);
     } catch (error) {
       // eslint-disable-next-line no-console
       logger.error(error);

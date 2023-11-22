@@ -1,7 +1,7 @@
+import { TokensManagerPlugin } from '@design-sync/manager';
 import { set } from '@design-sync/utils';
 import { getModeNormalizeValue } from '@design-sync/w3c-dtfm';
 import { join } from 'node:path';
-import { TokensManagerPlugin } from '../manager';
 
 interface JSONPluginConfig {
   outDir?: string;

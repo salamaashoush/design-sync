@@ -5,7 +5,7 @@
 <!-- [![bundle][bundle-src]][bundle-href]
 [![Codecov][codecov-src]][codecov-href] -->
 
-General JS/TS utils used in the design sync project
+Generic utilities JS/TS utils used by Design Sync
 
 ## Usage
 

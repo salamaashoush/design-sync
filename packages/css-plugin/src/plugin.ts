@@ -1,3 +1,4 @@
+import { TokensManager, TokensManagerPlugin, TokensManagerPluginFile } from '@design-sync/manager';
 import { kebabCase, set } from '@design-sync/utils';
 import {
   ProcessedDesignToken,
@@ -10,7 +11,6 @@ import {
   typographyToCssStyle,
 } from '@design-sync/w3c-dtfm';
 import { join } from 'node:path';
-import { TokensManager, TokensManagerPlugin, TokensManagerPluginFile } from '../manager';
 
 interface CSSPluginConfig {
   selectors?: string | string[] | Record<string, string | string[]>;

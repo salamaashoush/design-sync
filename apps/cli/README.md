@@ -72,75 +72,7 @@ The configuration file is a `design-sync.config.ts` file in the root of your pro
 
 ## Plugins
 
-### Css
-
-Transforms DTFM json to css variables and classes
-
-Usage:
-
-in the config file add the plugin to the plugins array
-
-```ts
-import { cssPlugin } from '@design-sync/cli'
-
-export default {
-  plugins: [cssPlugin({
-    // extract token types as css classes default: ['typography']
-    extractAsStyles: ['typography'],
-    // relative path in the `out` root config, default ''
-    outDir: 'css',
-    // extract typography as css variables in the format of `font` css property, default: false
-    typographyAsFontProperty: false,
-    // css selector per mode to wrap the css variables, default: ':root'
-    selectors: {
-      dark: '@media (prefers-color-scheme: dark)',
-      light: '@media (prefers-color-scheme: light)',
-    },
-  })],
-}
-```
-
-### Vanilla Extract
-
-Transforms DTFM json to vanilla extract themes
-
-Usage:
-
-in the config file add the plugin to the plugins array
-
-```ts
-import { vanillaExtractPlugin } from '@design-sync/cli'
-
-export default {
-  plugins: [vanillaExtractPlugin({
-    // relative path in the `out` root config, default ''
-    outDir: 'vanilla-extract',
-    // name of the file used to export the theme contract using `createThemeContract`, default: 'contract.css.ts'
-    themeContractName: 'contract',
-    // name of the exported variable from the theme contract and would also be used to reference the tokens, default: 'vars'
-    themeContractVarName: 'theme',
-  })],
-}
-```
-
-### JSON (flat)
-
-Transforms DTFM json to flat json file without all the tokens metadata and types, also dereference all token aliases
-
-Usage:
-
-in the config file add the plugin to the plugins array
-
-```ts
-import { jsonPlugin } from '@design-sync/cli'
-
-export default {
-  plugins: [jsonPlugin({
-    // relative path in the `out` root config, default ''
-    outDir: 'json',
-  })],
-}
-```
+- 
 
 ## Schema Extensions
 

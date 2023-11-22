@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-use-before-define */
+import { DesignSyncConfig, TokensManager, TokensManagerPlugin, TokensManagerPluginFile } from '@design-sync/manager';
 import { camelCase, set } from '@design-sync/utils';
 import {
   ProcessedDesignToken,
@@ -9,8 +9,6 @@ import {
   tokenValueToCss,
   typographyToCssStyle,
 } from '@design-sync/w3c-dtfm';
-import { TokensManager, TokensManagerPlugin, TokensManagerPluginFile } from '../manager';
-import { DesignSyncConfig } from '../types';
 
 interface VanillaExtractPluginConfig {
   themeContractVarName?: string;
