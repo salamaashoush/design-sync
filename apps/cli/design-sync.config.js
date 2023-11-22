@@ -1,7 +1,7 @@
 import { cssPlugin } from '@design-sync/css-plugin';
 import { jsonPlugin } from '@design-sync/json-plugin';
-import { defineConfig } from '@design-sync/manager';
 import { vanillaExtractPlugin } from '@design-sync/vanilla-extract-plugin';
+import { defineConfig } from '.';
 
 console.log('dedupe-tokens config');
 export default defineConfig({

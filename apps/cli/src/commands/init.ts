@@ -17,7 +17,7 @@ export function generateCJSConfigTemplate({ out, uri, plugins, prettify }: Confi
     (plugin) => `const ${camelCase(plugin)}Plugin = require('@design-sync/${plugin}-plugin');`,
   );
   const pluginCalls = plugins.map((plugin) => `${camelCase(plugin)}Plugin()`);
-  return `const { defineConfig } = require('@design-sync/manager');
+  return `const { defineConfig } = require('@design-sync/cli');
 ${pluginImports.join('\n')}
 
 module.exports = defineConfig({
@@ -33,7 +33,7 @@ export function generateESMConfigTemplate({ out, uri, plugins, prettify }: Confi
     (plugin) => `import { ${camelCase(plugin)}Plugin } from '@design-sync/${plugin}-plugin';`,
   );
   const pluginCalls = plugins.map((plugin) => `${camelCase(plugin)}Plugin()`);
-  return `import { defineConfig } from '@design-sync/manager';
+  return `import { defineConfig } from '@design-sync/cli';
 ${pluginImports.join('\n')}
 
 export default defineConfig({
