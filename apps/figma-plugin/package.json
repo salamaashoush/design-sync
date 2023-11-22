@@ -1,6 +1,6 @@
 {
   "name": "@design-sync/figma-plugin-2",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Tokenize Figma Plugin",
   "private": true,
   "scripts": {
