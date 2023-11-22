@@ -3,7 +3,7 @@ import { camelCase } from '@design-sync/utils';
 import { defineCommand } from 'citty';
 import { existsSync } from 'fs';
 import { writeFile } from 'fs/promises';
-import { addDevDependency } from 'nypm';
+import { addDevDependency, detectPackageManager } from 'nypm';
 import { join } from 'path';
 export interface ConfigTemplateOptions {
   out: string;
@@ -120,11 +120,13 @@ export default defineCommand({
 
     const deps = ['@design-sync/cli', ...config.plugins.map((plugin) => `@design-sync/${plugin}-plugin`)];
     logger.start(`Installing dependencies ${deps.join(', ')} ...`);
+    const packageManager = await detectPackageManager(args.cwd, {
+      includeParentDirs: true,
+    });
     for (const dep of deps) {
-      await addDevDependency(dep, { cwd: args.cwd });
+      await addDevDependency(dep, { cwd: args.cwd, silent: true, packageManager });
+      logger.success(`Installed ${dep}`);
     }
-    logger.success('Dependencies installed');
-
     const configPath = isTypescript ? 'design-sync.config.ts' : 'design-sync.config.js';
     await writeFile(join(args.cwd, configPath), template);
     logger.success(`Config file created at ${configPath}`);
