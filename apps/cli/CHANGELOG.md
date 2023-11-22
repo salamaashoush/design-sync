@@ -1,5 +1,11 @@
 # @design-sync/sync
 
+## 0.3.0
+
+### Minor Changes
+
+- f812ca3: Rename cli package from `@design-sync/sync` to `@design-sync/cli`
+
 ## 0.2.0
 
 ### Minor Changes
