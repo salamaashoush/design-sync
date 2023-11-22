@@ -1,25 +1,23 @@
-# DesignSync
+<p align="center">
+ <img style="display:block;" align="center" src="./assets/logo.png" width="200" />
+</p>
+<h1 align="center">DesignSync</h1>
+<h4 align="center">Set of tools to help you sync your design tokens across platforms.</h3>
+<p align="center">🚧 In early development. 🚧</p>
 
-[![figma](https://img.shields.io/badge/built%20for-figma-fb6558.svg?style=for-the-badge&logo=figma)](https://pnpm.io/)
-[![pnpm](https://img.shields.io/badge/maintained%20with-pnpm-f69220.svg?style=for-the-badge&logo=pnpm)](https://pnpm.io/)
-[![turborepo](https://img.shields.io/badge/built%20with-turborepo-803261.svg?style=for-the-badge&logo=turborepo)](https://turborepo.org/)
-[![solid](https://img.shields.io/badge/made%20with-solid-4f88c6.svg?style=for-the-badge&logo=solid)](https://solidjs.com/)
+## Packages
 
-Figma plugin and a set of utils to tokenize your design system
+- [@design-sync/cli](./apps/cli/README.md)
+- [@design-sync/manager](./apps/manager/README.md)
+- [@design-sync/css-plugin](./packages/css-plugin/README.md)
+- [@design-sync/json-plugin](./packages/json-plugin/README.md)
+- [@design-sync/vanilla-extract-plugin](./packages/vanilla-extract-plugin/README.md)
+- [@design-sync/utils](./packages/utils/README.md)
+- [@design-sync/w3c-dtfm](./packages/w3c-dtfm/README.md)
 
-## Why?
+## Figma plugin
 
-Token studio is great but it's not completely free. This project aims to provide a free alternative to token studio with more features.
-
-🚧 In early development. 🚧
-
-## Project goals
-
-- Develop a Figma plugin to help you tokenize your design system.
-- Develop a set of utils and libraries to help you sync/convert tokens to other formats.
-- Extract some useful libraries from the plugin and make them available as standalone packages.
-  - Full accessible Figma UI design system for solidjs to help you build your own plugins.
-  - Useful set of development utils for Figma plugins development (RPC utils, Transformers, Converters, etc. )
+- [Figma plugin](./apps/figma-plugin/README.md)
 
 ## Development
 
@@ -29,29 +27,18 @@ Token studio is great but it's not completely free. This project aims to provide
 pnpm install
 ```
 
-### Run the dev server
-
-We need tp run build at least once to generate the `manifest.json` file in the dist folder.
-
-go to the plugin folder and run the build command.
+### Running tasks across packages
 
 ```bash
-cd apps/plugin
-pnpm run build
+pnpm run test|lint|build
 ```
 
-Then we can run the dev server to watch for changes in the plugin and ui code.
-
+### Changeset
+  
 ```bash
-pnpm run dev
+pnpm run changeset
 ```
 
-### Load the plugin into Figma
+### Publish
 
-Load the `manifest.json` file in the `apps/plugin/dist` folder into Figma.
-
-### Build the plugin
-
-```bash
-pnpm run build
-```
+Github Actions version packages based on changeset commits and create a PR to changes versions once merged to main it will publish the packages to npm.

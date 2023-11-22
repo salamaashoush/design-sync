@@ -9,54 +9,31 @@ Design Sync CLI
 
 ## Usage
 
-Install package:
+Initialize and install packages
 
 ```sh
 # npm
-npm install -D @design-sync/cli
-
-# yarn
-yarn add --dev @design-sync/cli
-
-# pnpm
-pnpm i -D @design-sync/cli
-
-# bun
-bun install -D @design-sync/cli
-```
-
-Initialize:
-
-```sh
-# npm
-npm run dsync init
-
-# yarn
-yarn dsync init
-
-# pnpm
-pnpm dsync init
-
-# bun
-bun dsync init
+npx @design-sync/cli init
 ```
 
 follow the prompt to create a `design-sync.config` file or pass `-y` to skip the prompt and use the default values.
 
 Sync:
-  
+
+add a `sync` script to your `package.json` file
+
+```json
+{
+  "scripts": {
+    "sync": "dsync sync"
+  }
+}
+```
+
+then run
+
 ```sh
-# npm
-npm dsync sync
-
-# yarn
-yarn dsync sync
-
-# pnpm
-pnpm dsync sync
-
-# bun
-bun dsync sync
+<npm|pnpm|yarn|bun> run sync
 ```
 
 ## Configuration
