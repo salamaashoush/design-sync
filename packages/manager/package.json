@@ -1,6 +1,6 @@
 {
   "name": "@design-sync/manager",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Plugable design tokens manager",
   "repository": "salamaashoush/design-sync",
   "license": "MIT",
