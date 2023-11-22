@@ -1,4 +1,4 @@
-# @design-sync/sync
+# @design-sync/cli
 
 [![npm version][npm-version-src]][npm-version-href]
 [![npm downloads][npm-downloads-src]][npm-downloads-href]
@@ -13,32 +13,32 @@ Install package:
 
 ```sh
 # npm
-npm install -D @design-sync/sync
+npm install -D @design-sync/cli
 
 # yarn
-yarn add --dev @design-sync/sync
+yarn add --dev @design-sync/cli
 
 # pnpm
-pnpm install @design-sync/sync
+pnpm i -D @design-sync/cli
 
 # bun
-bun install @design-sync/sync
+bun install -D @design-sync/cli
 ```
 
 Initialize:
 
 ```sh
 # npm
-npm run design-sync init
+npm run dsync init
 
 # yarn
-yarn design-sync init
+yarn dsync init
 
 # pnpm
-pnpm design-sync init
+pnpm dsync init
 
 # bun
-bun design-sync init
+bun dsync init
 ```
 
 follow the prompt to create a `design-sync.config` file or pass `-y` to skip the prompt and use the default values.
@@ -47,16 +47,16 @@ Sync:
   
 ```sh
 # npm
-npm run design-sync sync
+npm dsync sync
 
 # yarn
-yarn dlx design-sync sync
+yarn dsync sync
 
 # pnpm
-pnpm dlx design-sync sync
+pnpm dsync sync
 
 # bun
-bun design-sync sync
+bun dsync sync
 ```
 
 ## Configuration
@@ -81,7 +81,7 @@ Usage:
 in the config file add the plugin to the plugins array
 
 ```ts
-import { cssPlugin } from '@design-sync/sync'
+import { cssPlugin } from '@design-sync/cli'
 
 export default {
   plugins: [cssPlugin({
@@ -109,7 +109,7 @@ Usage:
 in the config file add the plugin to the plugins array
 
 ```ts
-import { vanillaExtractPlugin } from '@design-sync/sync'
+import { vanillaExtractPlugin } from '@design-sync/cli'
 
 export default {
   plugins: [vanillaExtractPlugin({
@@ -132,7 +132,7 @@ Usage:
 in the config file add the plugin to the plugins array
 
 ```ts
-import { jsonPlugin } from '@design-sync/sync'
+import { jsonPlugin } from '@design-sync/cli'
 
 export default {
   plugins: [jsonPlugin({
@@ -164,11 +164,11 @@ Published under [MIT License](./LICENSE).
 
 <!-- Badges -->
 
-[npm-version-src]: https://img.shields.io/npm/v/@design-sync/sync?style=flat&colorA=18181B&colorB=F0DB4F
-[npm-version-href]: https://npmjs.com/package/@design-sync/sync
-[npm-downloads-src]: https://img.shields.io/npm/dm/@design-sync/sync?style=flat&colorA=18181B&colorB=F0DB4F
-[npm-downloads-href]: https://npmjs.com/package/@design-sync/sync
-<!-- [codecov-src]: https://img.shields.io/codecov/c/gh/unjs/@design-sync/sync/main?style=flat&colorA=18181B&colorB=F0DB4F
-[codecov-href]: https://codecov.io/gh/unjs/@design-sync/sync
-[bundle-src]: https://img.shields.io/bundlephobia/minzip/@design-sync/sync?style=flat&colorA=18181B&colorB=F0DB4F
-[bundle-href]: https://bundlephobia.com/result?p=@design-sync/sync -->
+[npm-version-src]: https://img.shields.io/npm/v/@design-sync/cli?style=flat&colorA=18181B&colorB=F0DB4F
+[npm-version-href]: https://npmjs.com/package/@design-sync/cli
+[npm-downloads-src]: https://img.shields.io/npm/dm/@design-sync/cli?style=flat&colorA=18181B&colorB=F0DB4F
+[npm-downloads-href]: https://npmjs.com/package/@design-sync/cli
+<!-- [codecov-src]: https://img.shields.io/codecov/c/gh/unjs/@design-sync/cli/main?style=flat&colorA=18181B&colorB=F0DB4F
+[codecov-href]: https://codecov.io/gh/unjs/@design-sync/cli
+[bundle-src]: https://img.shields.io/bundlephobia/minzip/@design-sync/cli?style=flat&colorA=18181B&colorB=F0DB4F
+[bundle-href]: https://bundlephobia.com/result?p=@design-sync/cli -->

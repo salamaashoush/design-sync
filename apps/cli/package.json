@@ -1,5 +1,5 @@
 {
-  "name": "@design-sync/sync",
+  "name": "@design-sync/cli",
   "description": "CLI for Design Sync",
   "version": "0.2.0",
   "repository": "salamaashoush/design-sync",
@@ -31,6 +31,9 @@
     "fast-glob": "^3.3.2",
     "giget": "^1.1.3"
   },
+  "peerDependencies": {
+    "prettier": "^3.0.0"
+  },
   "devDependencies": {
     "@design-sync/eslint-config": "workspace:*",
     "@design-sync/tsconfig": "workspace:*",
@@ -46,7 +49,7 @@
     "vitest": "^0.34.6"
   },
   "bin": {
-    "design-sync": "bin/design-sync.mjs"
+    "dsync": "bin/design-sync.mjs"
   },
   "publishConfig": {
     "access": "public",
