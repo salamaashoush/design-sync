@@ -6,7 +6,7 @@ export interface DesignSyncConfig {
   out: string;
   auth?: string;
   cwd?: string;
-  plugins?: TokensManagerPlugin[];
+  plugins: TokensManagerPlugin[];
   schemaExtensions?: TokensWalkerExtension[];
   prettify?: boolean;
 }

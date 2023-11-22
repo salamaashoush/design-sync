@@ -44,9 +44,16 @@ export class TokensManager {
     this.walker.setTokens(tokens);
   }
 
+  private registerPlugins() {
+    for (const plugin of this.config.plugins) {
+      this.use(plugin);
+    }
+  }
+
   async run(configOverride?: Partial<DesignSyncConfig>, tokens?: Record<string, unknown>) {
     logger.start('Processing tokens...');
     this.config = await resolveConfig(configOverride);
+    this.registerPlugins();
     if (!tokens) {
       await this.fetch();
     } else {

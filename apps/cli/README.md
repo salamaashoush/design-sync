@@ -72,7 +72,9 @@ The configuration file is a `design-sync.config.ts` file in the root of your pro
 
 ## Plugins
 
-- 
+- [css-plugin](../../packages/css-plugin/README.md)
+- [json-plugin](../../packages/json-plugin/README.md)
+- [vanilla-extract-plugin](../../packages/vanilla-extract-plugin/README.md)
 
 ## Schema Extensions
 

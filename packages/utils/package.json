@@ -35,7 +35,6 @@
     "@design-sync/tsconfig": "workspace:*",
     "@types/node": "^20.9.3",
     "@vitest/coverage-v8": "^0.34.6",
-    "changelogen": "^0.5.5",
     "eslint": "^8.54.0",
     "lint-staged": "^15.1.0",
     "typescript": "^5.3.2",
