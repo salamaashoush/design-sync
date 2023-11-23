@@ -14,10 +14,7 @@ export default defineConfig({
         light: '@media (prefers-color-scheme: light)',
       },
     }),
-    vanillaExtractPlugin({
-      themeContractName: 'Theme',
-      themeContractVarName: 'theme',
-    }),
+    vanillaExtractPlugin(),
     jsonPlugin(),
   ],
 });

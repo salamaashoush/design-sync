@@ -11,9 +11,10 @@ import {
 } from '@design-sync/w3c-dtfm';
 
 interface VanillaExtractPluginConfig {
-  themeContractVarName?: string;
-  themeContractName?: string;
+  varsName?: string;
   outDir?: string;
+  themeSelector?: string;
+  createGlobalTheme?: boolean;
 }
 
 function getStyleName(path: string) {
@@ -55,16 +56,20 @@ class VanillaExtractPlugin {
     return this.manager.getWalker();
   }
 
-  private get themeVarsName() {
-    return this.config.themeContractVarName || 'vars';
+  private get varsName() {
+    return this.config.varsName || 'vars';
   }
 
-  private get themeContractName() {
-    return this.config.themeContractName || 'contract';
+  private get contractImport() {
+    return `import { ${this.varsName} } from './contract.css';\n`;
+  }
+
+  private get defaultThemeImport() {
+    return `import { defaultVars } from './default.css';\n`;
   }
 
   private wrapWithThemeVar = (path: string, isSinglePath: boolean) =>
-    isSinglePath ? `${this.themeVarsName}.${path}` : `\$\{${this.themeVarsName}.${path}\}`;
+    isSinglePath ? `${this.varsName}.${path}` : `\$\{${this.varsName}.${path}\}`;
 
   private runTokenExtensions(token: ProcessedDesignToken) {
     const actions = this.walker.runTokenExtensions(token);
@@ -133,37 +138,40 @@ class VanillaExtractPlugin {
   private getFiles() {
     const { requiredModes, defaultMode } = this.walker.getModes();
     // 1. emit the tokens contract file and the typography file
-    const files: TokensManagerPluginFile[] = [this.getContractFile(), this.getStylesFile(this.styles)];
+    const files: TokensManagerPluginFile[] = [this.getThemeContractFile(), this.createStylesFile(this.styles)];
 
     // 2. emit the tokens theme files
     for (const mode of requiredModes) {
-      files.push(this.getThemeFile(mode, this.tokens[mode]));
+      files.push(this.createThemeFile(mode, this.tokens[mode]));
     }
 
     // 3. emit the default theme file if it's not already written
     if (!requiredModes.includes(defaultMode)) {
-      files.push(this.getThemeFile(defaultMode, this.tokens[defaultMode]));
+      files.push(this.createThemeFile(defaultMode, this.tokens[defaultMode]));
     }
     return files;
   }
 
-  private getContractFile() {
+  private getThemeContractFile() {
     const content = [
       `import { createThemeContract } from '@vanilla-extract/css';\n`,
-      `export const ${this.themeVarsName} = createThemeContract(${serializeObject(this.tokensContract)});`,
+      `export const ${this.varsName} = createThemeContract(${serializeObject(this.tokensContract)});`,
     ].join('\n');
-
     return {
-      path: `${this.themeContractName}.css.ts`,
+      path: 'contract.css.ts',
       content,
     };
   }
 
-  private getThemeFile(mode: string, tokens: object) {
+  private createThemeFile(mode: string, tokens: object) {
+    if (this.config.createGlobalTheme) {
+      return this.createGlobalThemeFile(mode, tokens);
+    }
+
     const content = [
       `import { createTheme } from '@vanilla-extract/css';\n`,
-      `import { ${this.themeVarsName} } from './${this.themeContractName}.css';\n`,
-      `export const ${mode}Theme = createTheme(${this.themeVarsName}, ${serializeObject(tokens)});`,
+      this.contractImport,
+      `export const ${mode}Theme = createTheme(${this.varsName}, ${serializeObject(tokens)});`,
     ].join('\n');
     return {
       path: `${mode}.css.ts`,
@@ -171,10 +179,25 @@ class VanillaExtractPlugin {
     };
   }
 
-  private getStylesFile(typography: string[]) {
+  private createGlobalThemeFile(mode: string, tokens: object) {
+    const { themeSelector = ':root' } = this.config;
+    const content = [
+      `import { createGlobalTheme } from "@vanilla-extract/css";\n`,
+      this.contractImport,
+      `export const ${mode}Theme = createGlobalTheme("${themeSelector}", ${this.varsName}, ${serializeObject(
+        tokens,
+      )});`,
+    ].join('\n');
+    return {
+      path: `${mode}.css.ts`,
+      content,
+    };
+  }
+
+  private createStylesFile(typography: string[]) {
     const content = [
       `import { style } from '@vanilla-extract/css';\n`,
-      `import { ${this.themeVarsName} } from './${this.themeContractName}.css';\n`,
+      this.contractImport,
       typography.join('\n'),
     ].join('\n');
     return {
@@ -190,8 +213,9 @@ export function vanillaExtractPlugin(config: VanillaExtractPluginConfig = {}): T
     async build(manager) {
       const plugin = new VanillaExtractPlugin(
         {
-          themeContractVarName: 'vars',
-          themeContractName: 'contract',
+          varsName: 'vars',
+          themeSelector: ':root',
+          createGlobalTheme: true,
           outDir: '',
           ...config,
         },
