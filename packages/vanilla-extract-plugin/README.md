@@ -35,10 +35,14 @@ export default {
   plugins: [vanillaExtractPlugin({
     // relative path in the `out` root config, default ''
     outDir: 'vanilla-extract',
-    // name of the file used to export the theme contract using `createThemeContract`, default: 'contract.css.ts'
-    themeSelector: 'contract',
-    // name of the exported variable from the theme contract and would also be used to reference the tokens, default: 'vars'
-    varsName: 'theme',
+    // name of the exported variable from the theme contract, default: 'contract'
+    contractName: 'contract',
+    // global theme selector, default: ':root'
+    globalThemeSelector: ':root',
+    // create global themes, default: false
+    createGlobalThemes: false,
+    // create global theme contract, default: false
+    createGlobalContract: false,
   })],
 }
 ```
