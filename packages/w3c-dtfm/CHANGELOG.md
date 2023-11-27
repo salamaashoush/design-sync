@@ -1,5 +1,11 @@
 # @design-sync/w3c-dtfm
 
+## 0.4.0
+
+### Minor Changes
+
+- 0c27e5b: Fix token alias regex to allow `.$value` as part of the path
+
 ## 0.3.0
 
 ### Minor Changes
