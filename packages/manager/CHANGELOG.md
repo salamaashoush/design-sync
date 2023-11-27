@@ -1,5 +1,16 @@
 # @design-sync/manager
 
+## 0.3.0
+
+### Minor Changes
+
+- 78d7186: Add banner to generated files and use modern media query syntax for responsive extension
+
+### Patch Changes
+
+- Updated dependencies [78d7186]
+  - @design-sync/w3c-dtfm@0.5.0
+
 ## 0.2.1
 
 ### Patch Changes
