@@ -1,32 +1,57 @@
+import { hasTokenExtensions } from '../../guards';
 import { normalizeColorValue } from '../../normalize';
+import { ColorTokenModifier, WithExtension } from '../../types';
 import {
   TokensWalkerExtension,
   type DesignTokenValueByMode,
   type ProcessedDesignToken,
   type TokensWalkerExtensionAction,
 } from '../types';
-import { getModeNormalizeValue } from '../utils';
+import { getModeNormalizeValue, isMatchTokenExtensionFilter } from '../utils';
+import { hasGeneratorsExtension } from './generators';
 
-export class ColorModifiersExtension extends TokensWalkerExtension {
-  public name = 'color-modifiers-extension';
-  public target = 'color' as const;
+export interface ColorTokenModifiersExtension {
+  modifiers: ColorTokenModifier[];
+}
+export function hasColorTokenModifiersExtension(value: unknown): value is WithExtension<ColorTokenModifiersExtension> {
+  return (
+    hasTokenExtensions(value) &&
+    'modifiers' in value.$extensions &&
+    Array.isArray(value.$extensions.modifiers) &&
+    value.$extensions.modifiers.length > 0
+  );
+}
 
-  run(token: ProcessedDesignToken): TokensWalkerExtensionAction[] {
-    const modifiers = token.extensions.modifiers;
-    if (modifiers.length === 0) {
-      return [];
-    }
-    const payload: DesignTokenValueByMode = {};
-    for (const mode of Object.keys(token.valueByMode)) {
-      payload[mode] = normalizeColorValue(getModeNormalizeValue(token.valueByMode, mode), modifiers);
-    }
+const defaultFilter = {
+  type: 'color',
+} as const;
+export interface ColorModifiersExtensionOptions {
+  filter?: TokensWalkerExtension['filter'];
+}
 
-    return [
-      {
-        type: 'update',
-        path: token.fullPath,
-        payload,
-      },
-    ];
-  }
+export function colorModifiersExtension({
+  filter = defaultFilter,
+}: ColorModifiersExtensionOptions = {}): TokensWalkerExtension {
+  return {
+    name: 'default-color-modifiers-extension',
+    filter: (token: ProcessedDesignToken) =>
+      hasGeneratorsExtension(token.original) && isMatchTokenExtensionFilter(token, filter),
+
+    run(token: ProcessedDesignToken): TokensWalkerExtensionAction[] {
+      const modifiers = token.extensions?.modifiers as ColorTokenModifier[];
+      const payload: DesignTokenValueByMode = {};
+      for (const mode of Object.keys(token.valueByMode)) {
+        payload[mode] = normalizeColorValue(getModeNormalizeValue(token.valueByMode, mode), modifiers);
+      }
+
+      return [
+        {
+          extension: 'default-color-modifiers-extension',
+          type: 'update',
+          path: token.path,
+          payload,
+        },
+      ];
+    },
+  };
 }

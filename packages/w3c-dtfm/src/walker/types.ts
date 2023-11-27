@@ -1,5 +1,5 @@
-import { DerefToken, DesignToken, TokenGeneratorsExtension, TokenModifiersExtension, TokenType } from '../types';
-import type { TokensWalker } from './walker';
+import { DerefToken, DesignToken, TokenType } from '../types';
+import { TokensWalker } from './walker';
 
 export interface DesignTokenValueRecord {
   normalized: DerefToken<DesignToken>['$value'];
@@ -10,38 +10,58 @@ export type DesignTokenValueByMode = Record<
   DerefToken<DesignToken>['$value'] | DesignToken['$value'] | DesignTokenValueRecord
 >;
 
-export interface TokenExtensions extends TokenGeneratorsExtension, TokenModifiersExtension {}
 export interface ProcessedDesignToken {
-  normalized: DerefToken<DesignToken>['$value'];
+  normalizedValue?: DerefToken<DesignToken>['$value'];
   type: TokenType;
-  raw: DesignToken['$value'];
-  extensions: TokenExtensions;
+  rawValue: DesignToken['$value'];
+  extensions?: Record<string, unknown>;
   description?: string;
-  fullPath: string;
-  parentPath: string;
-  key: string;
+  path: string;
   valueByMode: DesignTokenValueByMode;
+  original: DesignToken;
+  isResponsive?: boolean;
+  isGenerated?: boolean;
 }
 
-export type TokensWalkerExtensionAction =
-  | {
-      type: 'update';
-      path: string;
-      payload: DesignTokenValueByMode;
-    }
-  | {
-      type: 'add';
-      path: string;
-      payload: DesignTokenValueByMode;
-    }
-  | {
-      type: 'remove';
-      path: string;
-    };
+export interface TokensWalkerExtensionBaseAction {
+  extension: string;
+  isResponsive?: boolean;
+}
 
-export abstract class TokensWalkerExtension {
-  abstract name: string;
-  abstract target: TokenType | TokenType[];
-  constructor(protected walker: TokensWalker) {}
-  abstract run(token: ProcessedDesignToken): TokensWalkerExtensionAction[];
+export type TokensWalkerExtensionAction = TokensWalkerExtensionBaseAction &
+  (
+    | {
+        type: 'update';
+        path: string;
+        payload: Record<string, unknown>;
+      }
+    | {
+        type: 'add';
+        path: string;
+        payload: Record<string, unknown>;
+      }
+    | {
+        type: 'remove';
+        path: string | string[];
+      }
+  );
+
+export type PathMatcher = string | RegExp;
+export interface TokensWalkerExtensionFilterObj {
+  type?: TokenType | TokenType[];
+  path?: PathMatcher | PathMatcher[];
+}
+
+export type TokensWalkerExtensionFilter =
+  | '*'
+  | string
+  | TokensWalkerExtensionFilterObj
+  | ((token: ProcessedDesignToken) => boolean)
+  | RegExp
+  | TokenType;
+
+export interface TokensWalkerExtension {
+  name: string;
+  filter: TokensWalkerExtensionFilter | TokensWalkerExtensionFilter[];
+  run(token: ProcessedDesignToken, walker: TokensWalker): TokensWalkerExtensionAction[];
 }

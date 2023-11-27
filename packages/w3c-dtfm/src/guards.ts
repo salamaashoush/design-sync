@@ -5,9 +5,7 @@ import {
   RequiredKeys,
   TokenAlias,
   TokenDefinition,
-  TokenGeneratorsExtension,
   TokenGroupDefinition,
-  TokenModifiersExtension,
   TokenType,
   WithExtension,
 } from './types';
@@ -42,14 +40,6 @@ export function hasModeExtension(value: unknown): value is WithExtension<ModeExt
 
 export function hasModesExtension(value: unknown): value is WithExtension<ModesExtension> {
   return hasTokenExtensions(value) && 'modes' in value.$extensions;
-}
-
-export function hasModifiersExtension(value: unknown): value is WithExtension<TokenModifiersExtension> {
-  return hasTokenExtensions(value) && 'modifiers' in value.$extensions;
-}
-
-export function hasGeneratorsExtension(value: unknown): value is WithExtension<TokenGeneratorsExtension> {
-  return hasTokenExtensions(value) && 'generators' in value.$extensions;
 }
 
 export function isCompositeToken(

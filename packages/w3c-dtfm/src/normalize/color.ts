@@ -1,8 +1,8 @@
 import { applyColorModifiers, formatColor, parseColor } from '../culori';
 import { isTokenAlias } from '../guards';
-import { TokenModifier } from '../types';
+import { ColorTokenModifier } from '../types';
 
-export function normalizeColorValue(value: unknown, modifiers?: TokenModifier | TokenModifier[]) {
+export function normalizeColorValue(value: unknown, modifiers?: ColorTokenModifier | ColorTokenModifier[]) {
   if (isTokenAlias(value)) {
     return value;
   }

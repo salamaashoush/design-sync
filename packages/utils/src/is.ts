@@ -35,3 +35,7 @@ export function hasTemplateString(value: unknown): value is string {
 export function isValidJsObjectKey(key: string) {
   return /^[a-zA-Z_$][0-9a-zA-Z_$]*$/.test(key);
 }
+
+export function isRegExp(value: unknown): value is RegExp {
+  return value instanceof RegExp;
+}

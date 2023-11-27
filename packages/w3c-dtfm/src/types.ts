@@ -179,25 +179,8 @@ export type ColorModifier =
   | 'grayscale'
   | 'sepia'
   | 'hue-rotate';
-export interface TokenModifier {
+
+export interface ColorTokenModifier {
   type: ColorModifier;
   value: string | number | Record<string, string | number>;
-}
-export interface TokenModifiersExtension {
-  modifiers: TokenModifier[];
-}
-
-export interface TokenGenerator {
-  type: ColorModifier;
-  value: Record<
-    string,
-    | number
-    | {
-        value: number;
-        base: string;
-      }
-  >;
-}
-export interface TokenGeneratorsExtension {
-  generators: TokenGenerator[];
 }

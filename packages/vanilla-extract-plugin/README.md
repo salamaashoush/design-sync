@@ -29,16 +29,20 @@ bun install @design-sync/vanilla-extract-plugin
 in the config file add the plugin to the plugins array
 
 ```ts
-import { vanillaExtractPlugin } from '@design-sync/cli'
+import { vanillaExtractPlugin } from '@design-sync/vanilla-extract-plugin'
 
 export default {
   plugins: [vanillaExtractPlugin({
     // relative path in the `out` root config, default ''
     outDir: 'vanilla-extract',
-    // name of the file used to export the theme contract using `createThemeContract`, default: 'contract.css.ts'
-    themeContractName: 'contract',
-    // name of the exported variable from the theme contract and would also be used to reference the tokens, default: 'vars'
-    themeContractVarName: 'theme',
+    // name of the exported variable from the theme contract, default: 'contract'
+    contractName: 'contract',
+    // global theme selector, default: ':root'
+    globalThemeSelector: ':root',
+    // create global themes, default: false
+    createGlobalThemes: false,
+    // create global theme contract, default: false
+    createGlobalContract: false,
   })],
 }
 ```

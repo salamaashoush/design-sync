@@ -19,17 +19,17 @@ export function jsonPlugin(config: JSONPluginConfig = { outDir: '' }): TokensMan
         tokens[mode] = {};
       }
       walker.walk((token) => {
-        const { normalized, fullPath, valueByMode } = token;
-        set(tokens[defaultMode], fullPath, normalized);
+        const { normalizedValue, path, valueByMode } = token;
+        set(tokens[defaultMode], path, normalizedValue);
         for (const mode of requiredModes) {
-          const normalizedValue = getModeNormalizeValue(valueByMode, mode);
-          if (normalizedValue) {
-            set(tokens[mode], fullPath, normalizedValue);
+          const normalizedModeValue = getModeNormalizeValue(valueByMode, mode);
+          if (normalizedModeValue) {
+            set(tokens[mode], path, normalizedModeValue);
           } else {
-            set(tokens[mode], fullPath, normalized);
+            set(tokens[mode], path, normalizedValue);
           }
         }
-      }, true);
+      });
 
       return Object.entries(tokens).map(([mode, tokens]) => ({
         path: join(config.outDir || '', `${mode}.json`),

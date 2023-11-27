@@ -8,7 +8,10 @@ export const defaultConfig = {
   cwd: process.cwd(),
   plugins: [],
   schemaExtensions: [],
+  disableDefaultSchemaExtensions: false,
   prettify: false,
+  requiredModes: [],
+  defaultMode: '',
 };
 export async function resolveConfig(overrides: Partial<DesignSyncConfig> = {}) {
   const configResult = await loadConfig<DesignSyncConfig>({
