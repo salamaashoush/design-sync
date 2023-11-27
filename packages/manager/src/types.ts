@@ -8,5 +8,8 @@ export interface DesignSyncConfig {
   cwd?: string;
   plugins: TokensManagerPlugin[];
   schemaExtensions?: TokensWalkerExtension[];
+  disableDefaultSchemaExtensions?: boolean;
   prettify?: boolean;
+  requiredModes?: string[];
+  defaultMode?: string;
 }

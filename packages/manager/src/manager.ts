@@ -1,3 +1,4 @@
+import { toArray } from '@design-sync/utils';
 import { TokensWalker } from '@design-sync/w3c-dtfm';
 import { existsSync } from 'node:fs';
 import { rm } from 'node:fs/promises';
@@ -44,16 +45,25 @@ export class TokensManager {
     this.walker.setTokens(tokens);
   }
 
-  private registerPlugins() {
-    for (const plugin of this.config.plugins) {
-      this.use(plugin);
+  private registerPluginsAndExtensions() {
+    this.use(this.config.plugins);
+    if (this.config.disableDefaultSchemaExtensions) {
+      this.walker.disableDefaultExtensions();
+    }
+    if (this.config.schemaExtensions) {
+      this.walker.use(this.config.schemaExtensions);
     }
   }
 
   async run(configOverride?: Partial<DesignSyncConfig>, tokens?: Record<string, unknown>) {
     logger.start('Processing tokens...');
     this.config = await resolveConfig(configOverride);
-    this.registerPlugins();
+    this.walker.setOptions({
+      defaultMode: this.config.defaultMode,
+      requiredModes: this.config.requiredModes,
+    });
+
+    this.registerPluginsAndExtensions();
     if (!tokens) {
       await this.fetch();
     } else {
@@ -81,7 +91,14 @@ export class TokensManager {
     }
   }
 
-  use(plugin: TokensManagerPlugin) {
-    this.plugins.push(plugin);
+  use(plugin: TokensManagerPlugin | TokensManagerPlugin[]) {
+    const plugins = toArray(plugin);
+    for (const plugin of plugins) {
+      if (this.plugins.some((p) => p.name === plugin.name)) {
+        logger.warn(`Plugin ${plugin.name} already registered`);
+        continue;
+      }
+      this.plugins.push(plugin);
+    }
   }
 }
