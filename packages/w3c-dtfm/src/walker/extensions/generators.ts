@@ -1,55 +1,91 @@
+import { hasTokenExtensions } from '../../guards';
 import { normalizeColorValue } from '../../normalize';
-import type { TokenGenerator } from '../../types';
+import type { ColorModifier, WithExtension } from '../../types';
 import {
   DesignTokenValueByMode,
   ProcessedDesignToken,
   TokensWalkerExtension,
   TokensWalkerExtensionAction,
 } from '../types';
-import { getModeNormalizeValue } from '../utils';
+import { getModeNormalizeValue, isMatchTokenExtensionFilter } from '../utils';
+import { TokensWalker } from '../walker';
 
-export class ColorGeneratorsExtension extends TokensWalkerExtension {
-  public name = 'color-generators-extension';
-  public target = 'color' as const;
+export interface TokenGenerator {
+  type: ColorModifier;
+  value: Record<
+    string,
+    | number
+    | {
+        value: number;
+        base: string;
+      }
+  >;
+}
+export interface TokenGeneratorsExtension {
+  generators: TokenGenerator[];
+}
 
-  run(token: ProcessedDesignToken): TokensWalkerExtensionAction[] {
-    const generators = token.extensions.generators;
-    if (generators.length === 0) {
-      return [];
-    }
-    const results: TokensWalkerExtensionAction[] = [];
-    for (const generator of generators) {
-      this.runGenerator(generator, token, results);
-    }
-    return results;
-  }
+export function hasGeneratorsExtension(value: unknown): value is WithExtension<TokenGeneratorsExtension> {
+  return (
+    hasTokenExtensions(value) &&
+    'generators' in value.$extensions &&
+    Array.isArray(value.$extensions.generators) &&
+    value.$extensions.generators.length > 0
+  );
+}
 
-  private runGenerator(
-    generator: TokenGenerator,
-    token: ProcessedDesignToken,
-    generated: TokensWalkerExtensionAction[],
-  ) {
-    const modes = Object.keys(token.valueByMode);
-    for (const [key, value] of Object.entries(generator.value)) {
-      const path = `${token.fullPath}${key}`;
-      const payload = modes.reduce((acc, mode) => {
-        const baseColor =
-          typeof value === 'number'
-            ? getModeNormalizeValue(token.valueByMode, mode)
-            : this.walker.derefTokenValue(value.base);
+function runGenerator(
+  generator: TokenGenerator,
+  token: ProcessedDesignToken,
+  walker: TokensWalker,
+  results: TokensWalkerExtensionAction[] = [],
+) {
+  const modes = Object.keys(token.valueByMode);
+  for (const [key, value] of Object.entries(generator.value)) {
+    const path = `${token.path}${key}`;
+    const payload = {} as DesignTokenValueByMode;
+    for (const mode of modes) {
+      const baseColor =
+        typeof value === 'number' ? getModeNormalizeValue(token.valueByMode, mode) : walker.derefTokenValue(value.base);
 
-        const amount = typeof value === 'number' ? value : value.value;
-        acc[mode] = normalizeColorValue(baseColor, {
-          type: generator.type,
-          value: amount,
-        });
-        return acc;
-      }, {} as DesignTokenValueByMode);
-      generated.push({
+      const amount = typeof value === 'number' ? value : value.value;
+      payload[mode] = normalizeColorValue(baseColor, {
+        type: generator.type,
+        value: amount,
+      });
+      results.push({
+        extension: 'default-color-generators-extension',
         type: 'add',
         path,
         payload,
       });
     }
   }
+  return results;
+}
+
+interface ColorGeneratorsExtensionOptions {
+  filter?: TokensWalkerExtension['filter'];
+}
+
+const defaultFilter = {
+  type: 'color',
+} as const;
+export function colorGeneratorsExtension({
+  filter = defaultFilter,
+}: ColorGeneratorsExtensionOptions = {}): TokensWalkerExtension {
+  return {
+    name: 'default-color-generators-extension',
+    filter: (token: ProcessedDesignToken) =>
+      hasGeneratorsExtension(token.original) && isMatchTokenExtensionFilter(token, filter),
+
+    run(token: ProcessedDesignToken, walker: TokensWalker): TokensWalkerExtensionAction[] {
+      const generators = token.extensions?.generators as TokenGenerator[];
+      const results: TokensWalkerExtensionAction[] = [];
+      for (const generator of generators) {
+        runGenerator(generator, token, walker, results);
+      }
+      return results;
+    },
+  };
 }

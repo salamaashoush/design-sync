@@ -99,11 +99,11 @@ export function serializeObject(obj: object, options: SerializeObjectOptions = {
   return wrap(entries.join(separator).replace(/^/gm, indent));
 }
 
-export function serializeObjectToCSS(obj: object, selector: string): string {
+export function serializeObjectToCSS(obj: object, selector: string, mediaQuery?: string): string {
   return serializeObject(obj, {
     processKey: processCSSKey,
     processValue: (value) => value,
     separator: ';\n',
-    wrap: (s) => (selector.startsWith('@media') ? `${selector} {\n:root {\n${s}\n}\n}` : `${selector} {\n${s}\n}`),
+    wrap: (s) => (mediaQuery ? `${mediaQuery} {\n${selector} {\n${s}\n}\n}` : `${selector} {\n${s}\n}`),
   });
 }
