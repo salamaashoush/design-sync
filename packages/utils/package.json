@@ -1,6 +1,6 @@
 {
   "name": "@design-sync/utils",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Generic utilities JS/TS utils used by Design Sync",
   "repository": "salamaashoush/design-sync",
   "license": "MIT",
