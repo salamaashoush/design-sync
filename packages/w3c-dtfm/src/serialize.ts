@@ -12,7 +12,6 @@ export function processPrimitiveValue(value: string | number, wrap?: WrapFn): st
   if (typeof value !== 'string') {
     return value;
   }
-
   if (isTokenAlias(value.trim())) {
     return processPath(value, wrap, true);
   }

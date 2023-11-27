@@ -53,8 +53,8 @@ export function isCompositeToken(
   return ['border', 'shadow', 'transition', 'gradient', 'typography'].includes(token.$type);
 }
 
-export const TOKEN_ALIAS_REGEX = /\{[\w@#\-]+(\.[\w@#\-]+)*\}/g;
-export const EXACT_TOKEN_ALIAS_REGEX = /^\{[\w@#\-]+(\.[\w@#\-]+)*\}$/g;
+export const TOKEN_ALIAS_REGEX = /\{[\w@#-$]+(\.[\w@#-$]+)*\}/g;
+export const EXACT_TOKEN_ALIAS_REGEX = /^\{[\w@#-$]+(\.[\w@#-$]+)*\}$/g;
 export function hasTokenAlias(value: unknown): value is TokenAlias {
   TOKEN_ALIAS_REGEX.lastIndex = 0;
   return typeof value === 'string' && TOKEN_ALIAS_REGEX.test(value);
