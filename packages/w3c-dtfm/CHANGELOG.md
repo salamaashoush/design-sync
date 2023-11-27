@@ -1,5 +1,11 @@
 # @design-sync/w3c-dtfm
 
+## 0.5.0
+
+### Minor Changes
+
+- 78d7186: Add banner to generated files and use modern media query syntax for responsive extension
+
 ## 0.4.0
 
 ### Minor Changes

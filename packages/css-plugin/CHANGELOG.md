@@ -1,5 +1,13 @@
 # @design-sync/css-plugin
 
+## 0.2.2
+
+### Patch Changes
+
+- Updated dependencies [78d7186]
+  - @design-sync/w3c-dtfm@0.5.0
+  - @design-sync/manager@0.3.0
+
 ## 0.2.1
 
 ### Patch Changes
