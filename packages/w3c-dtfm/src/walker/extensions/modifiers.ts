@@ -1,6 +1,6 @@
 import { hasTokenExtensions } from '../../guards';
 import { normalizeColorValue } from '../../normalize';
-import { ColorModifier, WithExtension } from '../../types';
+import { ColorTokenModifier, WithExtension } from '../../types';
 import {
   TokensWalkerExtension,
   type DesignTokenValueByMode,
@@ -10,10 +10,6 @@ import {
 import { getModeNormalizeValue, isMatchTokenExtensionFilter } from '../utils';
 import { hasGeneratorsExtension } from './generators';
 
-export interface ColorTokenModifier {
-  type: ColorModifier;
-  value: string | number | Record<string, string | number>;
-}
 export interface ColorTokenModifiersExtension {
   modifiers: ColorTokenModifier[];
 }

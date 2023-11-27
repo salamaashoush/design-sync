@@ -12,7 +12,7 @@ import {
   formatHex8,
   parse,
 } from 'culori/fn';
-import { TokenModifier } from './types';
+import { ColorTokenModifier } from './types';
 
 export function parseColor(color: string | Color) {
   if (typeof color === 'string') {
@@ -87,7 +87,7 @@ export function parseModifierValue(value: unknown) {
   throw new Error(`invalid number value ${value}`);
 }
 
-export function applyColorModifier(color: Color | string, modifier: TokenModifier) {
+export function applyColorModifier(color: Color | string, modifier: ColorTokenModifier) {
   const c = parseColor(color);
   const value = parseModifierValue(modifier.value);
   switch (modifier.type) {
@@ -116,7 +116,7 @@ export function applyColorModifier(color: Color | string, modifier: TokenModifie
   }
 }
 
-export function applyColorModifiers(color: Color | string, modifiers?: TokenModifier | TokenModifier[]) {
+export function applyColorModifiers(color: Color | string, modifiers?: ColorTokenModifier | ColorTokenModifier[]) {
   if (!modifiers) {
     return color;
   }

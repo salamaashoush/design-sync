@@ -179,3 +179,8 @@ export type ColorModifier =
   | 'grayscale'
   | 'sepia'
   | 'hue-rotate';
+
+export interface ColorTokenModifier {
+  type: ColorModifier;
+  value: string | number | Record<string, string | number>;
+}
