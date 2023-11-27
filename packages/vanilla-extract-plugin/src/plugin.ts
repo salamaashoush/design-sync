@@ -207,8 +207,8 @@ export function vanillaExtractPlugin(config: VanillaExtractPluginConfig = {}): T
         {
           contractName: 'vars',
           globalThemeSelector: ':root',
-          createGlobalThemes: true,
-          createGlobalContract: true,
+          createGlobalThemes: false,
+          createGlobalContract: false,
           outDir: '',
           ...config,
         },

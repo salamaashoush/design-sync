@@ -12,32 +12,30 @@ const defaultBreakpoints = {
   xxl: '2560px',
 };
 
-function getSortedBreakpoints(breakpoints: Record<string, string>) {
-  return Object.keys(breakpoints).sort((a, b) => parseInt(a, 10) - parseInt(b, 10));
+function normalizeBp(bp: string) {
+  return typeof bp === 'string' ? (bp.includes('px') ? bp : `${bp}px`) : `${bp}px`;
 }
 
 function up(breakpoint: string, breakpoints: Record<string, string>) {
   const bp = breakpoints[breakpoint];
-  return `@media (min-width: ${bp})`;
+  bp.replace('px', '');
+  return `@media (width >= ${bp})`;
 }
 
 function down(breakpoint: string, breakpoints: Record<string, string>) {
   const bp = breakpoints[breakpoint];
-  return `@media (max-width: ${bp})`;
+  return `@media (width <= ${bp})`;
 }
 
 function between(start: string, end: string, breakpoints: Record<string, string>) {
   const bpStart = breakpoints[start];
   const bpEnd = breakpoints[end];
-  return `@media (min-width: ${bpStart}) and (max-width: ${bpEnd})`;
+  return `@media  (${bpStart} <= width <= ${bpEnd})`;
 }
 
 function only(breakpoint: string, breakpoints: Record<string, string>) {
   const bp = breakpoints[breakpoint];
-  const keys = getSortedBreakpoints(breakpoints);
-  const nextIndex = keys.indexOf(breakpoint) + 1;
-  const nextBp = breakpoints[keys[nextIndex]];
-  return `@media (min-width: ${bp}) and (max-width: ${nextBp})`;
+  return `@media (width: ${bp})`;
 }
 
 export interface ResponsiveExtensionOptions {
@@ -69,7 +67,9 @@ export function responsiveExtension({
       const breaks = {} as Record<string, string>;
       // normalize breakpoints
       for (const [key, value] of Object.entries(breakpoints)) {
-        breaks[pathToBreakpoint(key)] = isTokenAlias(value) ? (walker.derefTokenValue(value) as string) : value;
+        breaks[pathToBreakpoint(key)] = normalizeBp(
+          isTokenAlias(value) ? (walker.derefTokenValue(value) as string) : value,
+        );
       }
 
       const payload = {} as Record<string, DesignTokenValueByMode>;
