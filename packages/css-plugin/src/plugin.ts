@@ -1,6 +1,7 @@
 import { TokensManager, TokensManagerPlugin, TokensManagerPluginFile } from '@design-sync/manager';
 import { kebabCase, set } from '@design-sync/utils';
 import {
+  DesignTokenValueByMode,
   ProcessedDesignToken,
   getModeRawValue,
   isTokenAlias,
@@ -21,22 +22,18 @@ interface CSSPluginConfig {
 
 function getClassName(path: string) {
   const parts = path.split('.');
-  if (path.includes('@')) {
-    // get the last two parts
-    return kebabCase(
-      parts
-        .slice(parts.length - 3)
-        .join('-')
-        .replace('-@', '-'),
-    );
-  }
-
-  return kebabCase(parts.pop()!);
+  return kebabCase(
+    parts
+      .slice(parts.length - 3)
+      .join('-')
+      .replace('-@', '-'),
+  );
 }
 
 class CSSPlugin {
   private tokens: Record<string, Record<string, string>> = {};
   private styles: string[] = [];
+  private mediaQueries = new Map<string, string[]>();
 
   constructor(
     private config: CSSPluginConfig,
@@ -54,38 +51,74 @@ class CSSPlugin {
 
   private createCssVar(token: ProcessedDesignToken) {
     const { defaultMode, requiredModes } = this.walker.getModes();
-    const { raw, type, fullPath, valueByMode } = token;
+    const { rawValue, type, path, valueByMode } = token;
 
-    const varName = tokenAliasToCssVarName(fullPath);
+    const varName = tokenAliasToCssVarName(path);
     // add the token to the tokens contract
-    const defaultValue = processCssVarRef(tokenValueToCss(raw, type));
+    const defaultValue = processCssVarRef(tokenValueToCss(rawValue, type));
     // set the default value in the default mode
     set(this.tokens[defaultMode], varName, defaultValue);
     for (const mode of requiredModes) {
-      const rawValue = getModeRawValue(valueByMode, mode);
-      if (rawValue) {
-        set(this.tokens[mode], varName, processCssVarRef(tokenValueToCss(rawValue, type)));
+      const rawModeValue = getModeRawValue(valueByMode, mode);
+      if (rawModeValue) {
+        set(this.tokens[mode], varName, processCssVarRef(tokenValueToCss(rawModeValue, type)));
       }
     }
   }
-
-  private createCssClass(token: ProcessedDesignToken) {
-    const { raw, fullPath } = token;
-    const style = typographyToCssStyle(raw);
-    if (isTokenAlias(style)) {
-      return '';
-    }
-    const className = getClassName(fullPath);
+  private processCssStyleObject(style: Record<string, string | number>) {
     for (const [key, value] of Object.entries(style)) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (style as any)[key] = processCssVarRef(value);
     }
-    const classCode = serializeObjectToCSS(style, `.${className}`);
+    return style;
+  }
+  private createCssClass(token: ProcessedDesignToken) {
+    const { defaultMode } = this.walker.getModes();
+    const { rawValue, path, isResponsive, valueByMode } = token;
+    const selector = `.${getClassName(path)}`;
+    let baseStyle = {};
+    if (isResponsive) {
+      baseStyle = typographyToCssStyle(getModeRawValue(valueByMode.base as DesignTokenValueByMode, defaultMode));
+      if (!isTokenAlias(baseStyle)) {
+        baseStyle = this.processCssStyleObject(baseStyle);
+      }
+      for (const [breakpoint, value] of Object.entries(valueByMode)) {
+        if (breakpoint === 'base') {
+          continue;
+        }
+        const rawModeValue = getModeRawValue(value as DesignTokenValueByMode, defaultMode);
+        const style = typographyToCssStyle(rawModeValue);
+        if (isTokenAlias(style)) {
+          continue;
+        }
 
+        this.processCssStyleObject(style);
+        // filter all keys that are with the same value as the base
+        const filteredEntries = Object.entries(style).filter(([key, value]) => (baseStyle as any)[key] !== value);
+        if (filteredEntries.length === 0) {
+          continue;
+        }
+        this.mediaQueries.set(breakpoint, [
+          ...(this.mediaQueries.get(breakpoint) ?? []),
+          serializeObjectToCSS(Object.fromEntries(filteredEntries), selector),
+        ]);
+      }
+    } else {
+      const style = typographyToCssStyle(rawValue);
+      if (isTokenAlias(style)) {
+        return '';
+      }
+      baseStyle = this.processCssStyleObject(style);
+    }
+
+    const classCode = serializeObjectToCSS(baseStyle, selector);
     this.styles.push(classCode);
   }
 
   private getStylesFiles() {
+    for (const [breakpoint, styles] of this.mediaQueries.entries()) {
+      this.styles.push(`${breakpoint} {\n${styles.join('\n')}\n}`);
+    }
     return this.styles.length === 0
       ? []
       : [
