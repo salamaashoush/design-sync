@@ -6,16 +6,16 @@ import { defineConfig, responsiveExtension } from '.';
 console.log('dedupe-tokens config');
 
 const breakpoints = {
-  xs: '0px',
-  sm: '640px',
-  md: '768px',
-  lg: '1024px',
-  xl: '1280px',
-  xxl: '1536px',
+  xs: '{kda.foundation.breakpoint.xs}',
+  sm: '{kda.foundation.breakpoint.sm}',
+  md: '{kda.foundation.breakpoint.md}',
+  lg: '{kda.foundation.breakpoint.lg}',
+  xl: '{kda.foundation.breakpoint.xl}',
+  xxl: '{kda.foundation.breakpoint.xxl}',
 };
 const breakpointKeys = Object.keys(breakpoints);
 export default defineConfig({
-  uri: 'github:salamaashoush/kda-design-system/tokens#dedupe-tokens',
+  uri: 'github:kadena-community/design-system/tokens#main',
   out: 'generated',
   defaultMode: 'light',
   requiredModes: ['light', 'dark'],
