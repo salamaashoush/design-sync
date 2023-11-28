@@ -1,4 +1,4 @@
-import type { TokensWalkerExtension } from '@design-sync/w3c-dtfm';
+import type { TokensWalkerExtension, TokensWalkerFilter } from '@design-sync/w3c-dtfm';
 import { TokensManagerPlugin } from './manager';
 
 export interface DesignSyncConfig {
@@ -12,4 +12,5 @@ export interface DesignSyncConfig {
   prettify?: boolean;
   requiredModes?: string[];
   defaultMode?: string;
+  filter?: TokensWalkerFilter;
 }

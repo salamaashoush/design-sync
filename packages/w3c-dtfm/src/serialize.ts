@@ -1,6 +1,7 @@
 import { TEMPLATE_STRING_REGEX, hasTemplateString, isObjectPath, isValidJsObjectKey } from '@design-sync/utils';
 import { normalizeTokenAlias } from './alias';
-import { TOKEN_ALIAS_REGEX, hasTokenAlias, isTokenAlias } from './guards';
+import { TOKEN_ALIAS_REGEX } from './constants';
+import { hasTokenAlias, isTokenAlias } from './guards';
 
 type WrapFn = (s: string, isSingleAlias: boolean) => string;
 function processPath(path: string, wrap?: WrapFn, isSingleAlias = false) {

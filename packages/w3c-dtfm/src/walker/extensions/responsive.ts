@@ -51,6 +51,7 @@ function defaultPathToBreakpoint(path: string) {
   const key = path.split('.').pop() as string;
   return key.replaceAll('@', '').replaceAll('_', '').replaceAll('-', '');
 }
+
 export function responsiveExtension({
   filter,
   breakpoints = defaultBreakpoints,
