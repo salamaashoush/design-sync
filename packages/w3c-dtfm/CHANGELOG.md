@@ -1,5 +1,11 @@
 # @design-sync/w3c-dtfm
 
+## 0.6.0
+
+### Minor Changes
+
+- 85010e7d: Add `filter` config to allow filtering tokens before processing them, by default all supported token types are processed
+
 ## 0.5.0
 
 ### Minor Changes

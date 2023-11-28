@@ -1,5 +1,17 @@
 # @design-sync/sync
 
+## 0.8.0
+
+### Minor Changes
+
+- 85010e7d: Add `filter` config to allow filtering tokens before processing them, by default all supported token types are processed
+
+### Patch Changes
+
+- Updated dependencies [85010e7d]
+  - @design-sync/w3c-dtfm@0.6.0
+  - @design-sync/manager@0.4.0
+
 ## 0.7.2
 
 ### Patch Changes
