@@ -4,4 +4,4 @@
 '@design-sync/cli': minor
 ---
 
-Add `filter` config to allow filtering tokens before processing them, by default all supported token types are processed.
+Add `filter` config to allow filtering tokens before processing them, by default all supported token types are processed
