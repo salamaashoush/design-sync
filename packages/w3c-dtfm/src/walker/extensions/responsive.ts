@@ -13,7 +13,8 @@ const defaultBreakpoints = {
 };
 
 function normalizeBp(bp: string) {
-  return typeof bp === 'string' ? (bp.includes('px') ? bp : `${bp}px`) : `${bp}px`;
+  // if the bp is a number followed by any unit return it as is otherwise return use px as default
+  return /^-?\d+(\.\d+)?[a-zA-Z%]+$/g.test(bp) ? bp : `${bp}px`;
 }
 
 function up(breakpoint: string, breakpoints: Record<string, string>) {
@@ -50,6 +51,7 @@ function defaultPathToBreakpoint(path: string) {
   const key = path.split('.').pop() as string;
   return key.replaceAll('@', '').replaceAll('_', '').replaceAll('-', '');
 }
+
 export function responsiveExtension({
   filter,
   breakpoints = defaultBreakpoints,
@@ -57,7 +59,6 @@ export function responsiveExtension({
   base = 'xs',
   pathToBreakpoint = defaultPathToBreakpoint,
 }: ResponsiveExtensionOptions): TokensWalkerExtension {
-  console.log('responsiveExtension');
   return {
     name: 'default-responsive-extension',
     filter,

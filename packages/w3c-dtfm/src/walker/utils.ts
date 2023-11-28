@@ -1,11 +1,12 @@
 import { isObject, isRegExp, toArray } from '@design-sync/utils';
+import { SUPPORTED_TYPES } from '../constants';
 import {
   DesignTokenValueByMode,
   DesignTokenValueRecord,
   PathMatcher,
-  ProcessedDesignToken,
-  TokensWalkerExtension,
-  TokensWalkerExtensionFilterObj,
+  TokenFilterObj,
+  TokensFilterParams,
+  TokensWalkerFilter,
 } from './types';
 
 export function isDesignTokenValueRecord(value: unknown): value is DesignTokenValueRecord {
@@ -40,32 +41,35 @@ function isMatchingStringOrRegExp(value: string, predicate: PathMatcher): boolea
   return false;
 }
 
-function isMatchingFilterObject(token: ProcessedDesignToken, predicate: TokensWalkerExtensionFilterObj): boolean {
+function isMatchingFilterObject(params: TokensFilterParams, predicate: TokenFilterObj): boolean {
   const { type, path } = predicate;
-  const typeMatched = typeof type === 'undefined' || toArray(type).some((t) => t === token.type);
-  const pathMatched = typeof path === 'undefined' || toArray(path).some((t) => isMatchingStringOrRegExp(token.path, t));
+  const [tokenPath, { $type }] = params;
+  const typeMatched = typeof type === 'undefined' || toArray(type).some((t) => t === $type);
+  const pathMatched = typeof path === 'undefined' || toArray(path).some((t) => isMatchingStringOrRegExp(tokenPath, t));
   return typeMatched && pathMatched;
 }
 
-export function isMatchTokenExtensionFilter(
-  token: ProcessedDesignToken,
-  target?: TokensWalkerExtension['filter'],
-): boolean {
-  if (!target) {
+export function isMatchingTokensFilter(params: TokensFilterParams, filter?: TokensWalkerFilter): boolean {
+  if (!filter) {
     return false;
   }
-  return toArray(target).some((t) => {
+  const [tokenPath, token] = params;
+  return toArray(filter).some((t) => {
     if (t === '*') {
       return true;
     }
 
     if (typeof t === 'function') {
-      return t(token);
+      return t(params);
     }
 
     if (typeof t === 'object' && !isRegExp(t)) {
-      return isMatchingFilterObject(token, t);
+      return isMatchingFilterObject(params, t);
     }
-    return isMatchingStringOrRegExp(token.path, t) || isMatchingStringOrRegExp(token.type, t);
+    return isMatchingStringOrRegExp(tokenPath, t) || isMatchingStringOrRegExp(token.$type, t);
   });
+}
+
+export function isSupportedTypeFilter(params: TokensFilterParams): boolean {
+  return SUPPORTED_TYPES.includes(params[1].$type);
 }

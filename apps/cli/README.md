@@ -46,6 +46,10 @@ The configuration file is a `design-sync.config.ts` file in the root of your pro
 - `plugins`: (array) plugins to use, see [plugins](#plugins) for more info
 - `schemaExtensions` (array)- schema extensions to use, see [schema extensions](#schema-extensions) for more info
 - `prettify`: (boolean) format the generated files using `prettier`, default: `false`
+- `filter`: (TokensWalkerFilter) filter tokens to process, default: all supported token types
+- `requiredModes`: (array) required modes, default: `[]`
+- `defaultMode`: (string) default mode, default: `default`
+- `disableDefaultExtensions`: (boolean) disable default schema extensions, default: `false`
 
 ## Plugins
 

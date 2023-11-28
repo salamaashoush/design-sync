@@ -26,8 +26,13 @@ import {
 import type { DesignToken, ModesExtension } from '../types';
 import { colorGeneratorsExtension } from './extensions/generators';
 import { colorModifiersExtension } from './extensions/modifiers';
-import type { ProcessedDesignToken, TokensWalkerExtension, TokensWalkerExtensionAction } from './types';
-import { isMatchTokenExtensionFilter } from './utils';
+import type {
+  ProcessedDesignToken,
+  TokensWalkerExtension,
+  TokensWalkerExtensionAction,
+  TokensWalkerFilter,
+} from './types';
+import { isMatchingTokensFilter, isSupportedTypeFilter } from './utils';
 
 export type TokenIterator<T> = (data: ProcessedDesignToken) => T;
 type Walker = (token: DesignToken, path: string) => void;
@@ -40,12 +45,12 @@ interface TokensWalkerOptions {
   normalizeValue?: boolean;
   requiredModes?: string[];
   defaultMode?: string;
+  filter?: TokensWalkerFilter;
 }
 
 export class TokensWalker {
-  private extensions: TokensWalkerExtension[] = [colorModifiersExtension(), colorGeneratorsExtension()];
+  private extensions: TokensWalkerExtension[];
   private _rootKey!: string;
-  private _processed = false;
   private options: Required<TokensWalkerOptions>;
   private tokens: Map<string, ProcessedDesignToken> = new Map();
 
@@ -59,10 +64,12 @@ export class TokensWalker {
       requiredModes: options.requiredModes ?? [],
       defaultMode: options.defaultMode ?? DEFAULT_MODE,
       disabledDefaultExtensions: options.disabledDefaultExtensions ?? false,
+      filter: options.filter ?? isSupportedTypeFilter,
     };
-    if (this.options.disabledDefaultExtensions) {
-      this.extensions = [];
-    }
+    this.extensions = this.options.disabledDefaultExtensions
+      ? []
+      : [colorModifiersExtension(), colorGeneratorsExtension()];
+
     if (this.options.extensions) {
       this.extensions.push(...this.options.extensions);
     }
@@ -250,8 +257,10 @@ export class TokensWalker {
 
   private processTokens() {
     this.walkTokens(this.tokensObj, '', (token, path) => {
-      const processed = this.processToken(token, path, this.options.normalizeValue);
-      this.tokens.set(processed.path, processed);
+      if (isMatchingTokensFilter([path, token], this.options.filter)) {
+        const processed = this.processToken(token, path, this.options.normalizeValue);
+        this.tokens.set(processed.path, processed);
+      }
     });
     for (const token of this.tokens.values()) {
       this.processTokenActions(token);
@@ -289,7 +298,7 @@ export class TokensWalker {
   }
 
   private runTokenExtensions(token: ProcessedDesignToken) {
-    const extensions = this.extensions.filter((e) => isMatchTokenExtensionFilter(token, e.filter));
+    const extensions = this.extensions.filter((e) => isMatchingTokensFilter([token.path, token.original], e.filter));
     if (extensions.length === 0) {
       return [];
     }

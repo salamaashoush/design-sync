@@ -7,7 +7,7 @@ import {
   type ProcessedDesignToken,
   type TokensWalkerExtensionAction,
 } from '../types';
-import { getModeNormalizeValue, isMatchTokenExtensionFilter } from '../utils';
+import { getModeNormalizeValue, isMatchingTokensFilter } from '../utils';
 import { hasGeneratorsExtension } from './generators';
 
 export interface ColorTokenModifiersExtension {
@@ -34,9 +34,7 @@ export function colorModifiersExtension({
 }: ColorModifiersExtensionOptions = {}): TokensWalkerExtension {
   return {
     name: 'default-color-modifiers-extension',
-    filter: (token: ProcessedDesignToken) =>
-      hasGeneratorsExtension(token.original) && isMatchTokenExtensionFilter(token, filter),
-
+    filter: (params) => hasGeneratorsExtension(params[1]) && isMatchingTokensFilter(params, filter),
     run(token: ProcessedDesignToken): TokensWalkerExtensionAction[] {
       const modifiers = token.extensions?.modifiers as ColorTokenModifier[];
       const payload: DesignTokenValueByMode = {};

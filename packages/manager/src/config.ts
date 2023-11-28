@@ -1,18 +1,13 @@
 import { loadConfig } from 'c12';
 import { DesignSyncConfig } from './types';
 
-export const defaultConfig = {
+export const defaultConfig: DesignSyncConfig = {
   uri: '',
   out: 'src/tokens',
-  auth: '',
   cwd: process.cwd(),
   plugins: [],
-  schemaExtensions: [],
-  disableDefaultSchemaExtensions: false,
-  prettify: false,
-  requiredModes: [],
-  defaultMode: '',
 };
+
 export async function resolveConfig(overrides: Partial<DesignSyncConfig> = {}) {
   const configResult = await loadConfig<DesignSyncConfig>({
     name: 'design-sync',
@@ -22,6 +17,6 @@ export async function resolveConfig(overrides: Partial<DesignSyncConfig> = {}) {
   return configResult.config as DesignSyncConfig;
 }
 
-export function defineConfig(config: Partial<DesignSyncConfig>) {
+export function defineConfig(config: DesignSyncConfig) {
   return config;
 }

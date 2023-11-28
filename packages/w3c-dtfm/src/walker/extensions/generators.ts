@@ -7,7 +7,7 @@ import {
   TokensWalkerExtension,
   TokensWalkerExtensionAction,
 } from '../types';
-import { getModeNormalizeValue, isMatchTokenExtensionFilter } from '../utils';
+import { getModeNormalizeValue, isMatchingTokensFilter } from '../utils';
 import { TokensWalker } from '../walker';
 
 export interface TokenGenerator {
@@ -76,9 +76,7 @@ export function colorGeneratorsExtension({
 }: ColorGeneratorsExtensionOptions = {}): TokensWalkerExtension {
   return {
     name: 'default-color-generators-extension',
-    filter: (token: ProcessedDesignToken) =>
-      hasGeneratorsExtension(token.original) && isMatchTokenExtensionFilter(token, filter),
-
+    filter: (params) => hasGeneratorsExtension(params[1]) && isMatchingTokensFilter(params, filter),
     run(token: ProcessedDesignToken, walker: TokensWalker): TokensWalkerExtensionAction[] {
       const generators = token.extensions?.generators as TokenGenerator[];
       const results: TokensWalkerExtensionAction[] = [];

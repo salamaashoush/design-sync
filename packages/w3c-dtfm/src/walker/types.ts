@@ -1,4 +1,4 @@
-import { DerefToken, DesignToken, TokenType } from '../types';
+import { DerefToken, DesignToken, TokenDefinition, TokenType } from '../types';
 import { TokensWalker } from './walker';
 
 export interface DesignTokenValueRecord {
@@ -47,21 +47,22 @@ export type TokensWalkerExtensionAction = TokensWalkerExtensionBaseAction &
   );
 
 export type PathMatcher = string | RegExp;
-export interface TokensWalkerExtensionFilterObj {
+export interface TokenFilterObj {
   type?: TokenType | TokenType[];
   path?: PathMatcher | PathMatcher[];
 }
-
-export type TokensWalkerExtensionFilter =
+export type TokensFilterParams = [string, TokenDefinition<any, any>];
+export type TokensFilter =
   | '*'
   | string
-  | TokensWalkerExtensionFilterObj
-  | ((token: ProcessedDesignToken) => boolean)
+  | TokenFilterObj
+  | ((params: TokensFilterParams) => boolean)
   | RegExp
   | TokenType;
 
+export type TokensWalkerFilter = TokensFilter | TokensFilter[];
 export interface TokensWalkerExtension {
   name: string;
-  filter: TokensWalkerExtensionFilter | TokensWalkerExtensionFilter[];
+  filter: TokensWalkerFilter;
   run(token: ProcessedDesignToken, walker: TokensWalker): TokensWalkerExtensionAction[];
 }
