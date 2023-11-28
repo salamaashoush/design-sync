@@ -28,12 +28,25 @@ bun install @design-sync/w3c-dtfm
 Import:
 
 ```js
-// ESM
-import {} from "@design-sync/w3c-dtfm";
+import { TokensWalker } from "@design-sync/w3c-dtfm";
 
-// CommonJS
-const {} = require("@design-sync/w3c-dtfm");
+const tokens = {
+  "color": {
+    "primary": {
+      "$value": "#000000",
+      "$type": "color"
+    }
+  }
+  ... // rest of tokens
+};
+const walker = new TokensWalker(tokens);
+
+walker.walk((token) => {
+  // do something with token
+  console.log(token);
+});
 ```
+
 
 ## Development
 
