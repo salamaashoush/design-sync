@@ -34,6 +34,8 @@ class VanillaExtractPlugin {
   private styles: string[] = [];
   private tokensContract: Record<string, unknown> = {};
   private config: VanillaExtractPluginConfig & DesignSyncConfig;
+  private docs = new Map<string, string>();
+
   constructor(
     config: VanillaExtractPluginConfig,
     private manager: TokensManager,
@@ -113,11 +115,35 @@ class VanillaExtractPlugin {
     this.styles.push(`export const ${styleName} = style(${serializeObject(finalStyle)})\n`);
   }
 
+  private addTokenDocs(token: ProcessedDesignToken) {
+    const requiredModes = this.walker.getModes().requiredModes;
+    const { rawValue, type, path, valueByMode } = token;
+    const docs = [
+      `/**`,
+      token.description ? ` * @description ${token.description}` : '',
+      token.isGenerated ? ` * @generated` : '',
+      ` * @default ${processPrimitiveValue(tokenValueToCss(rawValue, type))}`,
+    ].filter(Boolean);
+
+    for (const mode of requiredModes) {
+      const rawModeValue = getModeRawValue(valueByMode, mode);
+      if (rawModeValue) {
+        docs.push(` * @${mode} ${processPrimitiveValue(tokenValueToCss(rawModeValue, type))}`);
+      } else {
+        docs.push(` * @${mode} ${processPrimitiveValue(tokenValueToCss(rawValue, type))}`);
+      }
+    }
+    docs.push(` */\n`);
+    this.docs.set(path, docs.join('\n'));
+  }
+
   private addToken(token: ProcessedDesignToken) {
     const { requiredModes, defaultMode } = this.walker.getModes();
     const { rawValue, type, path, valueByMode } = token;
     // add the token to the tokens contract
     set(this.tokensContract, path, '');
+    // add the token docs
+    this.addTokenDocs(token);
     const defaultValue = processPrimitiveValue(tokenValueToCss(rawValue, type), this.wrapWithThemeVar);
     // set the default value in the default mode
     set(this.tokens[defaultMode], path, defaultValue);
@@ -162,7 +188,9 @@ class VanillaExtractPlugin {
     const themeContractFactory = this.config.createGlobalContract ? 'createGlobalThemeContract' : 'createThemeContract';
     const content = [
       `import { ${themeContractFactory} } from '@vanilla-extract/css';\n`,
-      `export const ${this.contractName} = ${themeContractFactory}(${serializeObject(this.tokensContract)});`,
+      `export const ${this.contractName} = ${themeContractFactory}(${serializeObject(this.tokensContract, {
+        docsComment: (path) => this.docs.get(path) || '',
+      })});`,
     ].join('\n');
     return {
       path: 'contract.css.ts',

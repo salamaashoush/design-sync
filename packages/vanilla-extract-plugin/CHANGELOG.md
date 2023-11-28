@@ -1,5 +1,17 @@
 # @design-sync/vanilla-extract-plugin
 
+## 0.4.0
+
+### Minor Changes
+
+- [vanilla-extract] Add js docs for generated theme contract
+
+### Patch Changes
+
+- Updated dependencies
+  - @design-sync/w3c-dtfm@0.7.0
+  - @design-sync/manager@0.4.1
+
 ## 0.3.1
 
 ### Patch Changes

@@ -72,13 +72,15 @@ export function processCSSKey(key: string): string {
 
 interface SerializeObjectOptions {
   processKey?: (key: string) => string;
-  processValue?: (value: string) => string;
+  processValue?: (value: unknown) => string;
   separator?: string;
   wrap?: (entries: string) => string;
   indent?: string;
   filterEmpty?: boolean;
+  docsComment?: (path: string) => string;
 }
-export function serializeObject(obj: object, options: SerializeObjectOptions = {}): string {
+
+function serializeObjectHelper(obj: object, options: SerializeObjectOptions = {}, path = ''): string {
   const {
     indent = '  ',
     processKey = processJSKey,
@@ -86,23 +88,35 @@ export function serializeObject(obj: object, options: SerializeObjectOptions = {
     separator = ',\n',
     wrap = (s) => `{\n${s}\n}`,
     filterEmpty = false,
+    docsComment,
   } = options;
-  const entries = [];
+  const entries: string[] = [];
   for (const [key, value] of Object.entries(obj)) {
-    if (value === undefined || value === null || (filterEmpty && value === '')) {
+    const currentPath = path ? `${path}.${key}` : key;
+    const processedKey = processKey(key);
+    const processedValue =
+      typeof value === 'object' ? serializeObjectHelper(value, options, currentPath) : processValue(value);
+    if (filterEmpty && !processedValue) {
       continue;
     }
-    const processedKey = processKey(key);
-    const processedValue = typeof value === 'object' ? serializeObject(value, options) : processValue(value);
-    entries.push(`${processedKey}: ${processedValue}`);
+    const entry = `${processedKey}: ${processedValue}`;
+    if (docsComment) {
+      entries.push(`${docsComment(currentPath)}${entry}`);
+    } else {
+      entries.push(entry);
+    }
   }
   return wrap(entries.join(separator).replace(/^/gm, indent));
+}
+
+export function serializeObject(obj: object, options: SerializeObjectOptions = {}): string {
+  return serializeObjectHelper(obj, options);
 }
 
 export function serializeObjectToCSS(obj: object, selector: string, mediaQuery?: string): string {
   return serializeObject(obj, {
     processKey: processCSSKey,
-    processValue: (value) => value,
+    processValue: (value) => `${value}`,
     separator: ';\n',
     wrap: (s) => (mediaQuery ? `${mediaQuery} {\n${selector} {\n${s}\n}\n}` : `${selector} {\n${s}\n}`),
   });
