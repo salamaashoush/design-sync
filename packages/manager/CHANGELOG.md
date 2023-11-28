@@ -1,5 +1,12 @@
 # @design-sync/manager
 
+## 0.4.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @design-sync/w3c-dtfm@0.7.0
+
 ## 0.4.0
 
 ### Minor Changes

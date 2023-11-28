@@ -1,5 +1,11 @@
 # @design-sync/w3c-dtfm
 
+## 0.7.0
+
+### Minor Changes
+
+- [vanilla-extract] Add js docs for generated theme contract
+
 ## 0.6.0
 
 ### Minor Changes

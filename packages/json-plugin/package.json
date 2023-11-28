@@ -1,6 +1,6 @@
 {
   "name": "@design-sync/json-plugin",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Transforms design tokens to flat json structure",
   "repository": "salamaashoush/design-sync",
   "license": "MIT",
