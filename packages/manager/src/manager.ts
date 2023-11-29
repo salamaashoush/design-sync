@@ -5,7 +5,7 @@ import { rm } from 'node:fs/promises';
 import { join } from 'node:path';
 import { defaultConfig, resolveConfig } from './config';
 import { fetchTokens } from './fetcher';
-import { logger } from './logger';
+import { logger as defaultLogger } from './logger';
 import { DesignSyncConfig } from './types';
 import { formatAndWriteFile } from './writer';
 
@@ -33,12 +33,14 @@ export class TokensManager {
   private walker = new TokensWalker();
   private config: DesignSyncConfig = defaultConfig;
 
+  constructor(private logger = defaultLogger) {}
+
   getWalker() {
     return this.walker;
   }
 
   getLogger() {
-    return logger;
+    return this.logger;
   }
 
   getConfig() {
@@ -48,32 +50,29 @@ export class TokensManager {
   private async fetch(uri?: string, auth?: string) {
     const r = uri || this.config.uri;
     if (!r) {
-      logger.error('No repo provided');
+      this.logger.error('No repo provided');
     }
     const a = auth || this.config.auth;
     const tokens = await fetchTokens(r, a);
     this.walker.setTokens(tokens);
   }
 
-  private registerPluginsAndExtensions() {
-    this.use(this.config.plugins);
-    if (this.config.disableDefaultSchemaExtensions) {
-      this.walker.disableDefaultExtensions();
-    }
-    if (this.config.schemaExtensions) {
-      this.walker.use(this.config.schemaExtensions);
-    }
-  }
-
-  async run(configOverride?: Partial<DesignSyncConfig>, tokens?: Record<string, unknown>) {
-    logger.start('Processing tokens...');
-    this.config = await resolveConfig(configOverride);
+  private setWalkerOptions() {
     this.walker.setOptions({
       defaultMode: this.config.defaultMode,
       requiredModes: this.config.requiredModes,
+      filter: this.config.filter,
+      disableDefaultSchemaExtensions: this.config.disableDefaultSchemaExtensions,
+      schemaExtensions: this.config.schemaExtensions,
+      overrides: this.config.overrides,
     });
+  }
 
-    this.registerPluginsAndExtensions();
+  async run(configOverride?: Partial<DesignSyncConfig>, tokens?: Record<string, unknown>) {
+    this.logger.start('Processing tokens...');
+    this.config = await resolveConfig(configOverride);
+    this.setWalkerOptions();
+    this.use(this.config.plugins);
     if (!tokens) {
       await this.fetch();
     } else {
@@ -91,13 +90,13 @@ export class TokensManager {
         await Promise.all(
           files.map(async (file) => {
             await formatAndWriteFile(join(this.config.out, file.path), wrapWithBanner(file), this.config.prettify);
-            logger.success(`${plugin.name}: File ${file.path} written`);
+            this.logger.success(`${plugin.name}: File ${file.path} written`);
           }),
         );
       }
-      logger.success('Tokens processed successfully.');
+      this.logger.success('Tokens processed successfully.');
     } catch (e) {
-      logger.error('Failed to build tokens', e);
+      this.logger.error('Failed to build tokens', e);
     }
   }
 
@@ -105,7 +104,7 @@ export class TokensManager {
     const plugins = toArray(plugin);
     for (const plugin of plugins) {
       if (this.plugins.some((p) => p.name === plugin.name)) {
-        logger.warn(`Plugin ${plugin.name} already registered`);
+        this.logger.warn(`Plugin ${plugin.name} already registered`);
         continue;
       }
       this.plugins.push(plugin);

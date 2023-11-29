@@ -4,7 +4,7 @@ import cliPkg from '../package.json';
 
 import { defineCommand, runMain } from 'citty';
 
-logger.wrapConsole();
+logger.wrapAll();
 const main = defineCommand({
   meta: {
     name: cliPkg.name,

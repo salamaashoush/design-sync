@@ -23,12 +23,12 @@ export interface ProcessedDesignToken {
   isGenerated?: boolean;
 }
 
-export interface TokensWalkerExtensionBaseAction {
+export interface TokensWalkerBaseAction {
   extension: string;
   isResponsive?: boolean;
 }
 
-export type TokensWalkerExtensionAction = TokensWalkerExtensionBaseAction &
+export type TokensWalkerAction = TokensWalkerBaseAction &
   (
     | {
         type: 'update';
@@ -61,8 +61,11 @@ export type TokensFilter =
   | TokenType;
 
 export type TokensWalkerFilter = TokensFilter | TokensFilter[];
-export interface TokensWalkerExtension {
+export interface TokensWalkerSchemaExtension {
   name: string;
   filter: TokensWalkerFilter;
-  run(token: ProcessedDesignToken, walker: TokensWalker): TokensWalkerExtensionAction[];
+  run(token: ProcessedDesignToken, walker: TokensWalker): TokensWalkerAction[];
 }
+
+export type TokenOverrideFn = (mode: string) => unknown;
+export type TokenOverrides = Record<string, TokenOverrideFn>;

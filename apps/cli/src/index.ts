@@ -14,5 +14,5 @@ export {
   colorGeneratorsExtension,
   colorModifiersExtension,
   responsiveExtension,
-  type TokensWalkerExtension,
+  type TokensWalkerSchemaExtension as TokensWalkerExtension,
 } from '@design-sync/w3c-dtfm';

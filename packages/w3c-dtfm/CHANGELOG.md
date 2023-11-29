@@ -1,5 +1,11 @@
 # @design-sync/w3c-dtfm
 
+## 0.8.0
+
+### Minor Changes
+
+- Improve validation errors/warnnings and implement token overrides
+
 ## 0.7.0
 
 ### Minor Changes
