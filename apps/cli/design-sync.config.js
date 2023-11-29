@@ -18,7 +18,6 @@ const fontOverride = () => "'Haas Grotesk Display', -apple-system, sans-serif";
 export default defineConfig({
   // uri: 'github:salamaashoush/kda-design-system/tokens#dedupe-tokens',
   uri: 'github:kadena-community/design-system/tokens#main',
-  muteWarnings: true,
   out: 'generated',
   defaultMode: 'light',
   requiredModes: ['light', 'dark'],

@@ -1,5 +1,11 @@
 # @design-sync/w3c-dtfm
 
+## 0.9.0
+
+### Minor Changes
+
+- :ambulance: Fix walker schema extensions config
+
 ## 0.8.0
 
 ### Minor Changes
