@@ -60,7 +60,7 @@ export function responsiveExtension({
   pathToBreakpoint = defaultPathToBreakpoint,
 }: ResponsiveExtensionOptions): TokensWalkerSchemaExtension {
   return {
-    name: 'default-responsive-extension',
+    name: 'responsive-extension',
     filter,
     run(token, walker) {
       const parentPath = token.path.split('.').slice(0, -1).join('.');

@@ -179,6 +179,10 @@ export class TokensWalker {
 
   setOptions(options: TokensWalkerOptions) {
     for (const [key, value] of Object.entries(options)) {
+      if (key === 'schemaExtensions' && value) {
+        this.use(value);
+        continue;
+      }
       (this.options as any)[key] = value || (this.options as any)[key];
     }
   }

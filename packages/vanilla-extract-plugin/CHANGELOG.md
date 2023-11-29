@@ -1,5 +1,13 @@
 # @design-sync/vanilla-extract-plugin
 
+## 0.4.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @design-sync/w3c-dtfm@0.9.0
+  - @design-sync/manager@0.5.1
+
 ## 0.4.1
 
 ### Patch Changes
