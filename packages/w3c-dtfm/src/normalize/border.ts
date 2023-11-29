@@ -9,8 +9,11 @@ export function normalizeBorderValue(value?: unknown) {
   }
 
   if (!isObject(value)) {
-    throw new Error(`Expected object, received ${Array.isArray(value) ? 'array' : typeof value}`);
+    throw new Error(
+      ` ${typeof value} is not a valid DTFM border value (must be an object {color, width, style} or a token alias)`,
+    );
   }
+
   if (!('color' in value)) {
     throw new Error(`Token missing required "color" property`);
   }

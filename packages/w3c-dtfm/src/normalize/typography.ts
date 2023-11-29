@@ -3,10 +3,6 @@ import { FontWeightName, Typography } from '../types';
 import { normalizeDimensionValue } from './dimension';
 
 export function normalizeFontFamilyValue(value: unknown): string | string[] {
-  if (!value) {
-    throw new Error('missing value');
-  }
-
   if (isTokenAlias(value)) {
     return value;
   }
@@ -15,13 +11,11 @@ export function normalizeFontFamilyValue(value: unknown): string | string[] {
     return [value];
   }
 
-  if (Array.isArray(value)) {
-    if (value.every((v) => !!v && typeof v === 'string')) {
-      return value;
-    }
-    throw new Error('expected array of strings');
+  if (Array.isArray(value) && value.every((v) => typeof v === 'string')) {
+    return value;
   }
-  throw new Error(`expected string or array of strings, received ${typeof value}`);
+
+  throw new Error(`${typeof value} is not a valid DTFM font family value (must be a string or an array of strings)`);
 }
 
 const FONT_WEIGHT_ALIASES: Record<FontWeightName, number> = {
@@ -46,10 +40,6 @@ const FONT_WEIGHT_ALIASES: Record<FontWeightName, number> = {
 };
 
 export function normalizeFontWeightValue(value: unknown) {
-  if (!value) {
-    throw new Error('missing value');
-  }
-
   if (isTokenAlias(value)) {
     return value;
   }
@@ -57,6 +47,7 @@ export function normalizeFontWeightValue(value: unknown) {
   if (typeof value === 'number') {
     return value;
   }
+
   if (typeof value === 'string') {
     // try to parse as number
     const parsed = parseFloat(value);
@@ -67,34 +58,40 @@ export function normalizeFontWeightValue(value: unknown) {
     const normalized = value.toLowerCase().replace(/[^a-z0-9]/g, '') as FontWeightName;
     return FONT_WEIGHT_ALIASES[normalized as FontWeightName];
   }
-  throw new Error(`expected number or font weight alias, received ${value} (${typeof value})`);
+
+  throw new Error(
+    `${typeof value} is not a valid DTFM font weight value (must be a number or ${Object.keys(FONT_WEIGHT_ALIASES).join(
+      ', ',
+    )} or a token alias)`,
+  );
 }
 
 export function normalizeTypographyValue(value: unknown) {
-  if (!value) {
-    throw new Error('missing value');
-  }
   if (isTokenAlias(value)) {
     return value;
   }
 
-  if (typeof value !== 'object' || Array.isArray(value)) {
-    throw new Error(`expected object, received ${Array.isArray(value) ? 'array' : typeof value}`);
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    throw new Error(
+      `${typeof value} is not a valid DTFM typography value (must be an object { fontFamily, fontSize, lineHeight, letterSpacing, fontWeight } or a token alias)`,
+    );
   }
 
-  if (!Object.keys(value).length) {
-    throw new Error('must specify at least 1 font property');
+  const entries = Object.entries(value);
+
+  if (!entries.length) {
+    throw new Error(
+      'DTFM typography value must contain at least one property (fontFamily, fontSize, lineHeight, letterSpacing, fontWeight)',
+    );
   }
 
-  const normalized = {} as Typography;
-  for (const [k, v] of Object.entries(value)) {
+  const normalized: Record<string, unknown> = {};
+  for (const [k, v] of entries) {
     if (isTokenAlias(v)) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (normalized as any)[k] = v;
+      normalized[k] = v;
       continue;
     }
     switch (k) {
-      case 'fontName':
       case 'fontFamily': {
         normalized.fontFamily = normalizeFontFamilyValue(v);
         break;
@@ -104,11 +101,10 @@ export function normalizeTypographyValue(value: unknown) {
         break;
       }
       default: {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (normalized as any)[k] = typeof v === 'string' && parseFloat(v) >= 0 ? normalizeDimensionValue(v) : v;
+        normalized[k] = typeof v === 'string' && parseFloat(v) >= 0 ? normalizeDimensionValue(v) : v;
         break;
       }
     }
   }
-  return normalized;
+  return normalized as unknown as Typography;
 }

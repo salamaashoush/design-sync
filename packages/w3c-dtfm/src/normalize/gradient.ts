@@ -3,19 +3,18 @@ import { GradientStop } from '../types';
 import { normalizeColorValue } from './color';
 
 export function normalizeGradientValue(value: unknown) {
-  if (!value) {
-    throw new Error('missing value');
-  }
-
   if (isTokenAlias(value)) {
     return value;
   }
 
-  if (!Array.isArray(value)) {
-    throw new Error(`expected array, received ${typeof value}`);
+  if (!value || !Array.isArray(value)) {
+    throw new Error(
+      `${typeof value} is not a valid DTFM gradient value (must be an array of object {color, position} or a token alias)`,
+    );
   }
+
   if (value.some((v) => !v || !v.color)) {
-    throw new Error('all gradient stops must have color');
+    throw new Error('DTFM gradient stops must be color values');
   }
   return value.map((v: GradientStop) => ({
     color: normalizeColorValue(v.color),
