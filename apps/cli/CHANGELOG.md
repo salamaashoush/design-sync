@@ -1,5 +1,17 @@
 # @design-sync/sync
 
+## 0.9.0
+
+### Minor Changes
+
+- Improve validation errors/warnnings and implement token overrides
+
+### Patch Changes
+
+- Updated dependencies
+  - @design-sync/w3c-dtfm@0.8.0
+  - @design-sync/manager@0.5.0
+
 ## 0.8.1
 
 ### Patch Changes

@@ -28,28 +28,63 @@ import { colorGeneratorsExtension } from './extensions/generators';
 import { colorModifiersExtension } from './extensions/modifiers';
 import type {
   ProcessedDesignToken,
-  TokensWalkerExtension,
-  TokensWalkerExtensionAction,
+  TokenOverrideFn,
+  TokenOverrides,
+  TokensWalkerAction,
   TokensWalkerFilter,
+  TokensWalkerSchemaExtension,
 } from './types';
-import { isMatchingTokensFilter, isSupportedTypeFilter } from './utils';
+import { getModeNormalizeValue, getModeRawValue, isMatchingTokensFilter, isSupportedTypeFilter } from './utils';
 
 export type TokenIterator<T> = (data: ProcessedDesignToken) => T;
 type Walker = (token: DesignToken, path: string) => void;
 
 export const DEFAULT_MODE = 'default';
 
-interface TokensWalkerOptions {
-  disabledDefaultExtensions?: boolean;
-  extensions?: TokensWalkerExtension[];
-  normalizeValue?: boolean;
+/**
+ * options for the tokens walker
+ */
+export interface TokensWalkerOptions {
+  /**
+   * schema extensions to be applied to the tokens walker on top of the default schema extensions
+   * @default []
+   */
+  schemaExtensions?: TokensWalkerSchemaExtension[];
+  /**
+   * disable default schema default extensions (color modifiers, color generators, etc..)
+   * @default false
+   */
+  disableDefaultSchemaExtensions?: boolean;
+  /**
+   * dereference and normalize token values
+   * @default true
+   */
+  normalizeTokenValue?: boolean;
+  /**
+   * required modes to be generated and processed by the plugins, if no provided, we generate only `defaultMode` mode
+   * and modes schema extensions will be ignored
+   * @default []
+   */
   requiredModes?: string[];
+  /**
+   * which mode to use for the default token value, it will be used for naming the generated files
+   * @default 'default'
+   */
   defaultMode?: string;
+  /**
+   * filter tokens before they are processed by the plugins
+   * @default isSupportedTypeFilter (only tokens with a supported type are processed)
+   */
   filter?: TokensWalkerFilter;
+  /**
+   * override tokens by path during the build process, overrides are applied for all plugins, values are a function accepting the mode and returning the override value
+   * @default undefined
+   */
+  overrides?: TokenOverrides;
 }
 
 export class TokensWalker {
-  private extensions: TokensWalkerExtension[];
+  private schemaExtensions: TokensWalkerSchemaExtension[];
   private _rootKey!: string;
   private options: Required<TokensWalkerOptions>;
   private tokens: Map<string, ProcessedDesignToken> = new Map();
@@ -59,19 +94,20 @@ export class TokensWalker {
     options: TokensWalkerOptions = {},
   ) {
     this.options = {
-      extensions: options.extensions ?? [],
-      normalizeValue: options.normalizeValue ?? true,
+      schemaExtensions: options.schemaExtensions ?? [],
+      normalizeTokenValue: options.normalizeTokenValue ?? true,
       requiredModes: options.requiredModes ?? [],
       defaultMode: options.defaultMode ?? DEFAULT_MODE,
-      disabledDefaultExtensions: options.disabledDefaultExtensions ?? false,
+      disableDefaultSchemaExtensions: options.disableDefaultSchemaExtensions ?? false,
       filter: options.filter ?? isSupportedTypeFilter,
+      overrides: options.overrides ?? {},
     };
-    this.extensions = this.options.disabledDefaultExtensions
+    this.schemaExtensions = this.options.disableDefaultSchemaExtensions
       ? []
       : [colorModifiersExtension(), colorGeneratorsExtension()];
 
-    if (this.options.extensions) {
-      this.extensions.push(...this.options.extensions);
+    if (this.options.schemaExtensions.length > 0) {
+      this.use(this.options.schemaExtensions);
     }
     this.processTokens();
   }
@@ -80,14 +116,14 @@ export class TokensWalker {
     return this.tokens.values();
   }
 
-  use(extension: TokensWalkerExtension | TokensWalkerExtension[]) {
+  use(extension: TokensWalkerSchemaExtension | TokensWalkerSchemaExtension[]) {
     const extensions = toArray(extension);
     for (const extension of extensions) {
-      if (this.extensions.some((e) => e.name === extension.name)) {
+      if (this.schemaExtensions.some((e) => e.name === extension.name)) {
         console.warn(`Extension ${extension.name} already registered`);
         continue;
       }
-      this.extensions.push(extension);
+      this.schemaExtensions.push(extension);
     }
   }
 
@@ -142,15 +178,16 @@ export class TokensWalker {
   }
 
   setOptions(options: TokensWalkerOptions) {
-    this.options = {
-      ...this.options,
-      ...options,
-    };
+    for (const [key, value] of Object.entries(options)) {
+      (this.options as any)[key] = value || (this.options as any)[key];
+    }
   }
 
-  disableDefaultExtensions() {
-    this.options.disabledDefaultExtensions = true;
-    this.extensions = this.extensions.filter((e) => e.name.startsWith('default-') === false) as TokensWalkerExtension[];
+  disableDefaultSchemaExtensions() {
+    this.options.disableDefaultSchemaExtensions = true;
+    this.schemaExtensions = this.schemaExtensions.filter(
+      (e) => e.name.startsWith('default-') === false,
+    ) as TokensWalkerSchemaExtension[];
   }
 
   getModes(): Required<ModesExtension['modes']> {
@@ -195,7 +232,7 @@ export class TokensWalker {
     return '';
   }
 
-  get(path: string) {
+  getTokenByPath(path: string) {
     return get(this.tokensObj, path);
   }
 
@@ -206,7 +243,7 @@ export class TokensWalker {
 
     if (isTokenAlias(tokenValue)) {
       const tokenPath = normalizeTokenAlias(tokenValue);
-      const token = this.get(tokenPath);
+      const token = this.getTokenByPath(tokenPath);
       return this.derefTokenValue(token.$value);
     }
 
@@ -258,7 +295,7 @@ export class TokensWalker {
   private processTokens() {
     this.walkTokens(this.tokensObj, '', (token, path) => {
       if (isMatchingTokensFilter([path, token], this.options.filter)) {
-        const processed = this.processToken(token, path, this.options.normalizeValue);
+        const processed = this.processToken(token, path, this.options.normalizeTokenValue);
         this.tokens.set(processed.path, processed);
       }
     });
@@ -298,30 +335,38 @@ export class TokensWalker {
   }
 
   private runTokenExtensions(token: ProcessedDesignToken) {
-    const extensions = this.extensions.filter((e) => isMatchingTokensFilter([token.path, token.original], e.filter));
+    const extensions = this.schemaExtensions.filter((e) =>
+      isMatchingTokensFilter([token.path, token.original], e.filter),
+    );
     if (extensions.length === 0) {
       return [];
     }
-    const actions = [] as TokensWalkerExtensionAction[];
+    const actions = [] as TokensWalkerAction[];
     for (const extension of extensions) {
       actions.push(...extension.run(token, this));
     }
     return actions;
   }
 
-  private buildTokenValueByMode(token: DesignToken, normalize: boolean) {
+  private buildTokenValueByMode(
+    token: DesignToken,
+    override?: TokenOverrideFn,
+    normalize: boolean = this.options.normalizeTokenValue,
+  ) {
     const { requiredModes, defaultMode } = this.getModes();
+    const defaultValue = typeof override === 'function' ? override(defaultMode) : token.$value;
     const valueByMode: ProcessedDesignToken['valueByMode'] = {
       [defaultMode]: normalize
         ? {
-            normalized: this.normalizeTokenValue(token.$value),
-            raw: token.$value,
+            normalized: this.normalizeTokenValue(defaultValue),
+            raw: defaultValue,
           }
-        : token.$value,
+        : defaultValue,
     };
-    for (const mode of requiredModes) {
-      if (hasModeExtension(token)) {
-        const modeValue = token.$extensions.mode[mode] || token.$value;
+    if (hasModeExtension(token)) {
+      for (const mode of requiredModes) {
+        const modeValue =
+          typeof override === 'function' ? override(mode) : token.$extensions.mode[mode] || defaultValue;
         valueByMode[mode] = normalize
           ? {
               normalized: this.normalizeTokenValue(modeValue),
@@ -333,16 +378,21 @@ export class TokensWalker {
     return valueByMode;
   }
 
-  private processToken(original: DesignToken, path: string, normalize = this.options.normalizeValue) {
+  private processToken(original: DesignToken, path: string, normalize = this.options.normalizeTokenValue) {
+    const { defaultMode } = this.getModes();
+    const override = this.options.overrides[path];
+    const valueByMode = this.buildTokenValueByMode(original, override, normalize);
+    const normalizedValue = getModeNormalizeValue(valueByMode, defaultMode);
+    const rawValue = getModeRawValue(valueByMode, defaultMode);
     return {
       original,
       path,
-      normalizedValue: normalize ? this.normalizeTokenValue(original.$value) : undefined,
+      normalizedValue,
+      rawValue,
+      valueByMode,
       type: original.$type,
-      rawValue: original.$value,
       description: original.$description,
       extensions: original.$extensions,
-      valueByMode: this.buildTokenValueByMode(original, normalize),
     };
   }
 

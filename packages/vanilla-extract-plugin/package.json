@@ -1,6 +1,6 @@
 {
   "name": "@design-sync/vanilla-extract-plugin",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Transforms design tokens to vanilla extract themes and styles",
   "repository": "salamaashoush/design-sync",
   "license": "MIT",

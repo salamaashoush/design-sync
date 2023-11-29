@@ -1,5 +1,5 @@
 import { isTokenAlias } from '../../guards';
-import { DesignTokenValueByMode, TokensWalkerExtension } from '../types';
+import { DesignTokenValueByMode, TokensWalkerSchemaExtension } from '../types';
 
 type ResponsiveModifier = 'up' | 'down' | 'between' | 'only';
 
@@ -40,7 +40,7 @@ function only(breakpoint: string, breakpoints: Record<string, string>) {
 }
 
 export interface ResponsiveExtensionOptions {
-  filter: TokensWalkerExtension['filter'];
+  filter: TokensWalkerSchemaExtension['filter'];
   breakpoints?: Record<string, string>;
   pathToBreakpoint?: (path: string) => string;
   type?: ResponsiveModifier;
@@ -58,7 +58,7 @@ export function responsiveExtension({
   type = 'up',
   base = 'xs',
   pathToBreakpoint = defaultPathToBreakpoint,
-}: ResponsiveExtensionOptions): TokensWalkerExtension {
+}: ResponsiveExtensionOptions): TokensWalkerSchemaExtension {
   return {
     name: 'default-responsive-extension',
     filter,

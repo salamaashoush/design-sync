@@ -4,8 +4,8 @@ import type { ColorModifier, WithExtension } from '../../types';
 import {
   DesignTokenValueByMode,
   ProcessedDesignToken,
-  TokensWalkerExtension,
-  TokensWalkerExtensionAction,
+  TokensWalkerAction,
+  TokensWalkerSchemaExtension,
 } from '../types';
 import { getModeNormalizeValue, isMatchingTokensFilter } from '../utils';
 import { TokensWalker } from '../walker';
@@ -38,7 +38,7 @@ function runGenerator(
   generator: TokenGenerator,
   token: ProcessedDesignToken,
   walker: TokensWalker,
-  results: TokensWalkerExtensionAction[] = [],
+  results: TokensWalkerAction[] = [],
 ) {
   const modes = Object.keys(token.valueByMode);
   for (const [key, value] of Object.entries(generator.value)) {
@@ -65,7 +65,7 @@ function runGenerator(
 }
 
 interface ColorGeneratorsExtensionOptions {
-  filter?: TokensWalkerExtension['filter'];
+  filter?: TokensWalkerSchemaExtension['filter'];
 }
 
 const defaultFilter = {
@@ -73,13 +73,13 @@ const defaultFilter = {
 } as const;
 export function colorGeneratorsExtension({
   filter = defaultFilter,
-}: ColorGeneratorsExtensionOptions = {}): TokensWalkerExtension {
+}: ColorGeneratorsExtensionOptions = {}): TokensWalkerSchemaExtension {
   return {
     name: 'default-color-generators-extension',
     filter: (params) => hasGeneratorsExtension(params[1]) && isMatchingTokensFilter(params, filter),
-    run(token: ProcessedDesignToken, walker: TokensWalker): TokensWalkerExtensionAction[] {
+    run(token: ProcessedDesignToken, walker: TokensWalker): TokensWalkerAction[] {
       const generators = token.extensions?.generators as TokenGenerator[];
-      const results: TokensWalkerExtensionAction[] = [];
+      const results: TokensWalkerAction[] = [];
       for (const generator of generators) {
         runGenerator(generator, token, walker, results);
       }

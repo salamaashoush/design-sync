@@ -2,10 +2,10 @@ import { hasTokenExtensions } from '../../guards';
 import { normalizeColorValue } from '../../normalize';
 import { ColorTokenModifier, WithExtension } from '../../types';
 import {
-  TokensWalkerExtension,
+  TokensWalkerSchemaExtension,
   type DesignTokenValueByMode,
   type ProcessedDesignToken,
-  type TokensWalkerExtensionAction,
+  type TokensWalkerAction,
 } from '../types';
 import { getModeNormalizeValue, isMatchingTokensFilter } from '../utils';
 import { hasGeneratorsExtension } from './generators';
@@ -26,16 +26,16 @@ const defaultFilter = {
   type: 'color',
 } as const;
 export interface ColorModifiersExtensionOptions {
-  filter?: TokensWalkerExtension['filter'];
+  filter?: TokensWalkerSchemaExtension['filter'];
 }
 
 export function colorModifiersExtension({
   filter = defaultFilter,
-}: ColorModifiersExtensionOptions = {}): TokensWalkerExtension {
+}: ColorModifiersExtensionOptions = {}): TokensWalkerSchemaExtension {
   return {
     name: 'default-color-modifiers-extension',
     filter: (params) => hasGeneratorsExtension(params[1]) && isMatchingTokensFilter(params, filter),
-    run(token: ProcessedDesignToken): TokensWalkerExtensionAction[] {
+    run(token: ProcessedDesignToken): TokensWalkerAction[] {
       const modifiers = token.extensions?.modifiers as ColorTokenModifier[];
       const payload: DesignTokenValueByMode = {};
       for (const mode of Object.keys(token.valueByMode)) {
