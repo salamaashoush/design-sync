@@ -1,8 +1,10 @@
 #!/usr/bin/env -S npx tsx
+import { logger } from '@design-sync/manager';
 import cliPkg from '../package.json';
 
 import { defineCommand, runMain } from 'citty';
 
+logger.wrapConsole();
 const main = defineCommand({
   meta: {
     name: cliPkg.name,

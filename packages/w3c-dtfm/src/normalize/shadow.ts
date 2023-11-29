@@ -5,29 +5,27 @@ import { normalizeDimensionValue } from './dimension';
 
 const keys = ['offsetX', 'offsetY', 'blur', 'spread', 'color'];
 export function normalizeShadowValue(value: unknown) {
-  if (!value) {
-    throw new Error('missing value');
-  }
-
   if (isTokenAlias(value)) {
     return value;
   }
 
-  if (typeof value !== 'object' && !Array.isArray(value)) {
-    throw new Error(`expected object or array of objects, got ${typeof value}`);
+  if (!value || (typeof value !== 'object' && !Array.isArray(value))) {
+    throw new Error(
+      `${typeof value} is not a valid DTFM shadow value  (must be an object {offsetX, offsetY, blur, spread, color} or an array of objects, or a token alias )}`,
+    );
   }
 
   const v = Array.isArray(value) ? value : [value];
   const shadows: Shadow[] = [];
   for (const [i, shadow] of v.entries()) {
     for (const k of keys) {
-      const errorPrefix = v.length > 1 ? `shadow #${i + 1}: ` : ''; // in error message, show shadow number, but only if there are multiple shadows
+      const errorPrefix = v.length > 1 ? `shadow ${i + 1}:` : '';
       if (typeof shadow[k] === 'number' && shadow[k] > 0) {
-        throw new Error(`${errorPrefix}${k} missing units`);
+        throw new Error(`${errorPrefix}${k} must be a string or 0`);
       }
       if (k === 'offsetX' || k === 'offsetY') {
         if (typeof shadow[k] !== 'string' && shadow[k] !== 0) {
-          throw new Error(`${errorPrefix}missing ${k}`);
+          throw new Error(`${errorPrefix}${k} must be a string or 0`);
         }
       }
     }

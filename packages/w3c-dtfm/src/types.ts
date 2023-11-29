@@ -1,8 +1,10 @@
+import type { TokenTypes } from './constants';
+
 export type Number = number;
 export type Color = `#${string}`;
 export type CubicBezier = [number, number, number, number];
 export type Duration = `${number}ms`;
-export type Dimension = '0' | `${number}px` | `${number}rem` | `${number}em` | `${number}%`;
+export type Dimension = `${number}px` | `${number}rem`;
 export type FontWeightName =
   | 'thin'
   | 'hairline'
@@ -100,8 +102,8 @@ export interface Tokens {
   link: string;
   other: unknown;
 }
-export type TokenType = keyof Tokens;
-export type TokenAlias = `{${string}}` | `$${string}`;
+export type TokenType = (typeof TokenTypes)[keyof typeof TokenTypes];
+export type TokenAlias = `{${string}}`;
 export interface TokenDefinition<T extends TokenType, V = Tokens[T]> {
   $value: V | TokenAlias;
   $type: T;
