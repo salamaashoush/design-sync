@@ -2,7 +2,7 @@ import { logger } from '@design-sync/manager';
 import { camelCase } from '@design-sync/utils';
 import { defineCommand } from 'citty';
 import { existsSync } from 'fs';
-import { writeFile } from 'fs/promises';
+import { readFile, writeFile } from 'fs/promises';
 import { addDevDependency, detectPackageManager } from 'nypm';
 import { join } from 'path';
 export interface ConfigTemplateOptions {
@@ -48,6 +48,15 @@ export function generateConfigTemplate(options: ConfigTemplateOptions, isCJS: bo
   return isCJS ? generateCJSConfigTemplate(options) : generateESMConfigTemplate(options);
 }
 
+// Function to add a script to package.json
+async function addPackageJsonScript(packageJsonPath: string, scriptName: string, scriptCommand: string) {
+  const content = await readFile(packageJsonPath, 'utf8');
+  const packageJson = JSON.parse(content);
+  packageJson.scripts = packageJson.scripts || {};
+  packageJson.scripts[scriptName] = scriptCommand;
+  const updatedPackageJson = JSON.stringify(packageJson, null, 2);
+  await writeFile(packageJsonPath, updatedPackageJson, 'utf8');
+}
 async function configPrompt() {
   const uri = await logger.prompt('What is the uri of your tokens git repo?', {
     type: 'text',
@@ -130,5 +139,12 @@ export default defineCommand({
     const configPath = isTypescript ? 'design-sync.config.ts' : 'design-sync.config.js';
     await writeFile(join(args.cwd, configPath), template);
     logger.success(`Config file created at ${configPath}`);
+    const pkgJsonPath = join(args.cwd, 'package.json');
+    try {
+      await addPackageJsonScript(pkgJsonPath, 'tokens:sync', 'dsync sync');
+    } catch (e) {
+      logger.warn(`Failed to add tokens:sync script to package.json at ${pkgJsonPath}, please add manually`);
+    }
+    logger.box(`You can now run \`${packageManager?.command} run tokens:sync\``);
   },
 });
