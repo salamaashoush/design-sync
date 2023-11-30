@@ -31,6 +31,7 @@ export default defineConfig({
     cssPlugin(),
     vanillaExtractPlugin({
       contractName: 'tokens',
+      // onlyValues: true,
     }),
     jsonPlugin(),
   ],
