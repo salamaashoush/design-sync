@@ -14,8 +14,9 @@ import {
 interface VanillaExtractPluginConfig {
   contractName?: string;
   outDir?: string;
+  onlyValues?: boolean;
   themeSelector?: string | Record<string, string>;
-  createGlobalThemes?: boolean;
+  globalThemes?: boolean | 'default' | string[];
   createGlobalContract?: boolean;
 }
 
@@ -174,12 +175,12 @@ class VanillaExtractPlugin {
 
     // 2. emit the tokens theme files
     for (const mode of requiredModes) {
-      files.push(this.createThemeFile(mode, this.tokens[mode], mode === defaultMode));
+      files.push(this.createThemeFile(mode, this.tokens[mode]));
     }
 
     // 3. emit the default theme file if it's not already written
     if (!requiredModes.includes(defaultMode)) {
-      files.push(this.createThemeFile(defaultMode, this.tokens[defaultMode], true));
+      files.push(this.createThemeFile(defaultMode, this.tokens[defaultMode]));
     }
     return files;
   }
@@ -198,25 +199,31 @@ class VanillaExtractPlugin {
     };
   }
 
-  private createThemeFile(mode: string, tokens: object, isDefault = false) {
-    const { themeSelector = ':root', createGlobalThemes } = this.config;
-    const isGlobal = createGlobalThemes || isDefault;
+  private createThemeFile(mode: string, tokens: object) {
+    const { defaultMode } = this.walker.getModes();
+    const { themeSelector = ':root', globalThemes } = this.config;
+    const isGlobal =
+      globalThemes === true ||
+      (globalThemes === 'default' && mode === defaultMode) ||
+      (Array.isArray(globalThemes) && globalThemes.includes(mode));
     const themeFactory = isGlobal ? 'createGlobalTheme' : 'createTheme';
     const selector = isGlobal ? `"${themeSelector}"` : undefined;
-
     const themeValues = serializeObject(tokens);
     const factoryArgs = [selector, this.contractName, `${mode}ThemeValues`].filter(Boolean).join(', ');
     const factoryCall = `${themeFactory}(${factoryArgs});`;
 
     const content = [
-      `import { ${themeFactory} } from '@vanilla-extract/css';\n`,
+      this.config.onlyValues ? undefined : `import { ${themeFactory} } from '@vanilla-extract/css';\n`,
       this.contractImport,
       `export const ${mode}ThemeValues = ${themeValues};\n`,
-      isGlobal ? factoryCall : `export const ${mode}Theme = ${factoryCall}`,
-    ].join('\n');
+      this.config.onlyValues ? undefined : isGlobal ? factoryCall : `export const ${mode}Theme = ${factoryCall}`,
+    ]
+      .filter(Boolean)
+      .join('\n');
+
     return {
       path: `${mode}.css.ts`,
-      content,
+      content: content,
     };
   }
 
@@ -241,8 +248,9 @@ export function vanillaExtractPlugin(config: VanillaExtractPluginConfig = {}): T
         {
           contractName: 'vars',
           themeSelector: ':root',
-          createGlobalThemes: false,
+          globalThemes: false,
           createGlobalContract: false,
+          onlyValues: false,
           outDir: '',
           ...config,
         },

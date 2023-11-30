@@ -1,5 +1,11 @@
 # @design-sync/vanilla-extract-plugin
 
+## 0.5.0
+
+### Minor Changes
+
+- Add `onlyValues` option to vanilla-extract
+
 ## 0.4.3
 
 ### Patch Changes
