@@ -358,7 +358,7 @@ export class TokensWalker {
     normalize: boolean = this.options.normalizeTokenValue,
   ) {
     const { requiredModes, defaultMode } = this.getModes();
-    const defaultValue = typeof override === 'function' ? override(defaultMode) : token.$value;
+    const defaultValue = typeof override === 'function' ? override(defaultMode, token) : token.$value;
     const valueByMode: ProcessedDesignToken['valueByMode'] = {
       [defaultMode]: normalize
         ? {
@@ -370,7 +370,7 @@ export class TokensWalker {
     if (hasModeExtension(token)) {
       for (const mode of requiredModes) {
         const modeValue =
-          typeof override === 'function' ? override(mode) : token.$extensions.mode[mode] || defaultValue;
+          typeof override === 'function' ? override(mode, token) : token.$extensions.mode[mode] || defaultValue;
         valueByMode[mode] = normalize
           ? {
               normalized: this.normalizeTokenValue(modeValue),
@@ -382,7 +382,11 @@ export class TokensWalker {
     return valueByMode;
   }
 
-  private processToken(original: DesignToken, path: string, normalize = this.options.normalizeTokenValue) {
+  private processToken(
+    original: DesignToken,
+    path: string,
+    normalize = this.options.normalizeTokenValue,
+  ): ProcessedDesignToken {
     const { defaultMode } = this.getModes();
     const override = this.options.overrides[path];
     const valueByMode = this.buildTokenValueByMode(original, override, normalize);

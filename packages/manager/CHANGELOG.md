@@ -1,5 +1,13 @@
 # @design-sync/manager
 
+## 0.5.2
+
+### Patch Changes
+
+- Improve vanilla extract plugin and enhance logs
+- Updated dependencies
+  - @design-sync/w3c-dtfm@0.9.1
+
 ## 0.5.1
 
 ### Patch Changes

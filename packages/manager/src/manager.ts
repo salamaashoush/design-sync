@@ -69,6 +69,7 @@ export class TokensManager {
   }
 
   async run(configOverride?: Partial<DesignSyncConfig>, tokens?: Record<string, unknown>) {
+    const startTime = performance.now();
     this.logger.start('Processing tokens...');
     this.config = await resolveConfig(configOverride);
     this.setWalkerOptions();
@@ -89,12 +90,13 @@ export class TokensManager {
         const files = await plugin.build(this);
         await Promise.all(
           files.map(async (file) => {
-            await formatAndWriteFile(join(this.config.out, file.path), wrapWithBanner(file), this.config.prettify);
-            this.logger.success(`${plugin.name}: File ${file.path} written`);
+            const path = join(this.config.out, file.path);
+            await formatAndWriteFile(path, wrapWithBanner(file), this.config.prettify);
+            this.logger.withTag(plugin.name).success(`File ${path} created successfully`);
           }),
         );
       }
-      this.logger.success('Tokens processed successfully.');
+      this.logger.info(`Done in ${((performance.now() - startTime) / 1000).toFixed(2)}s`);
     } catch (e) {
       this.logger.error('Failed to build tokens', e);
     }
