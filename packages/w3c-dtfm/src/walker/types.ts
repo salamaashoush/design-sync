@@ -67,5 +67,5 @@ export interface TokensWalkerSchemaExtension {
   run(token: ProcessedDesignToken, walker: TokensWalker): TokensWalkerAction[];
 }
 
-export type TokenOverrideFn = (mode: string) => unknown;
+export type TokenOverrideFn = (mode: string, token: DesignToken) => unknown;
 export type TokenOverrides = Record<string, TokenOverrideFn>;

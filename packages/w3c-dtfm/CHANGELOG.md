@@ -1,5 +1,11 @@
 # @design-sync/w3c-dtfm
 
+## 0.9.1
+
+### Patch Changes
+
+- Improve vanilla extract plugin and enhance logs
+
 ## 0.9.0
 
 ### Minor Changes

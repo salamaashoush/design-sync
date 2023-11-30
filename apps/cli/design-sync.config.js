@@ -27,7 +27,13 @@ export default defineConfig({
     'kda.foundation.typography.family.primaryFont': fontOverride,
     'kda.foundation.typography.family.headingFont': fontOverride,
   },
-  plugins: [cssPlugin(), vanillaExtractPlugin(), jsonPlugin()],
+  plugins: [
+    cssPlugin(),
+    vanillaExtractPlugin({
+      contractName: 'tokens',
+    }),
+    jsonPlugin(),
+  ],
   schemaExtensions: [
     responsiveExtension({
       breakpoints,
