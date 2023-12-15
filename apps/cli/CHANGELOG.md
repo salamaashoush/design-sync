@@ -1,5 +1,11 @@
 # @design-sync/sync
 
+## 0.11.0
+
+### Minor Changes
+
+- Fix cli bin file
+
 ## 0.10.0
 
 ### Minor Changes
