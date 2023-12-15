@@ -1,5 +1,11 @@
 # @design-sync/w3c-dtfm
 
+## 0.11.0
+
+### Minor Changes
+
+- Fix tokens filter
+
 ## 0.10.0
 
 ### Minor Changes

@@ -310,7 +310,9 @@ export class TokensWalker {
   private processTokens() {
     this.tokens.clear();
     this.walkTokens(this.tokensObj, '', (token, path) => {
-      this.tokens.set(path, this.createToken(token, path));
+      if (isMatchingTokensFilter([path, token], this.options.filter)) {
+        this.tokens.set(path, this.createToken(token, path));
+      }
     });
 
     for (const token of this.tokens.values()) {
