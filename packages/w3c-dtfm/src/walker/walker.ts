@@ -23,20 +23,20 @@ import {
   normalizeTransitionValue,
   normalizeTypographyValue,
 } from '../normalize';
-import type { DesignToken, ModesExtension } from '../types';
+import type { DesignToken, ModesExtension, TokenType } from '../types';
 import { colorGeneratorsExtension } from './extensions/generators';
 import { colorModifiersExtension } from './extensions/modifiers';
+import { WalkerDesignToken } from './token';
 import type {
-  ProcessedDesignToken,
-  TokenOverrideFn,
+  DesignTokenValueByMode,
   TokenOverrides,
   TokensWalkerAction,
   TokensWalkerFilter,
   TokensWalkerSchemaExtension,
 } from './types';
-import { getModeNormalizeValue, getModeRawValue, isMatchingTokensFilter, isSupportedTypeFilter } from './utils';
+import { getModeRawValue, isMatchingTokensFilter, isSupportedTypeFilter } from './utils';
 
-export type TokenIterator<T> = (data: ProcessedDesignToken) => T;
+export type TokenIterator<T> = (token: WalkerDesignToken) => T;
 type Walker = (token: DesignToken, path: string) => void;
 
 export const DEFAULT_MODE = 'default';
@@ -87,7 +87,7 @@ export class TokensWalker {
   private schemaExtensions: TokensWalkerSchemaExtension[];
   private _rootKey!: string;
   private options: Required<TokensWalkerOptions>;
-  private tokens: Map<string, ProcessedDesignToken> = new Map();
+  private tokens: Map<string, WalkerDesignToken> = new Map();
 
   constructor(
     private tokensObj: Record<string, unknown> = {},
@@ -142,7 +142,7 @@ export class TokensWalker {
   }
 
   filter(iterator: TokenIterator<boolean>) {
-    const results = [] as ProcessedDesignToken[];
+    const results = [] as WalkerDesignToken[];
     for (const token of this.tokens.values()) {
       if (iterator(token)) {
         results.push(token);
@@ -151,7 +151,7 @@ export class TokensWalker {
     return results;
   }
 
-  reduce<T>(iterator: (acc: T, token: ProcessedDesignToken) => T, initialValue: T) {
+  reduce<T>(iterator: (acc: T, token: WalkerDesignToken) => T, initialValue: T) {
     let result = initialValue;
     for (const token of this.tokens.values()) {
       result = iterator(result, token);
@@ -237,25 +237,36 @@ export class TokensWalker {
   }
 
   getTokenByPath(path: string) {
-    return get(this.tokensObj, path);
+    return this.tokens.get(path)?.raw ?? get(this.tokensObj, path);
   }
 
-  derefTokenValue(tokenValue: unknown): unknown {
+  derefTokenValue(tokenValue: unknown) {
+    return this.derefTokenValueHelper(tokenValue);
+  }
+
+  private derefTokenValueHelper(tokenValue: unknown, visitedTokens: Set<unknown> = new Set()): unknown {
     if (!tokenValue) {
       return tokenValue;
     }
 
     if (isTokenAlias(tokenValue)) {
+      if (visitedTokens.has(tokenValue)) {
+        throw new Error(`Circular dependency detected for token alias ${tokenValue} - ${[...visitedTokens]}`);
+      }
+      visitedTokens.add(tokenValue);
       const tokenPath = normalizeTokenAlias(tokenValue);
       const token = this.getTokenByPath(tokenPath);
-      return this.derefTokenValue(token.$value);
+      if (!token) {
+        throw new Error(`Token alias ${tokenValue} not found`);
+      }
+      return this.derefTokenValueHelper(token.$value, visitedTokens);
     }
 
-    // for composite tokens, we need to deref the values of the subtokens
+    // for composite tokens, we need to dereference the values of the sub tokens
     if (isObject(tokenValue) && !Array.isArray(tokenValue)) {
       return Object.entries(tokenValue).reduce(
         (acc, [key, value]) => {
-          acc[key] = this.derefTokenValue(value);
+          acc[key] = this.derefTokenValueHelper(value, visitedTokens);
           return acc;
         },
         {} as Record<string, unknown>,
@@ -297,38 +308,59 @@ export class TokensWalker {
   }
 
   private processTokens() {
+    this.tokens.clear();
     this.walkTokens(this.tokensObj, '', (token, path) => {
-      if (isMatchingTokensFilter([path, token], this.options.filter)) {
-        const processed = this.processToken(token, path, this.options.normalizeTokenValue);
-        this.tokens.set(processed.path, processed);
-      }
+      this.tokens.set(path, this.createToken(token, path));
     });
+
     for (const token of this.tokens.values()) {
-      this.processTokenActions(token);
+      if (token.hasSchemaExtensions()) {
+        this.processTokenActions(token);
+      }
     }
   }
 
-  private processTokenActions(token: ProcessedDesignToken) {
+  private createRawTokenFromAction(action: TokensWalkerAction, parent: WalkerDesignToken) {
+    if (action.type === 'remove') {
+      return undefined;
+    }
+    const { defaultMode, requiredModes } = this.getModes();
+    return {
+      $value: getModeRawValue(action.payload, defaultMode),
+      $type: parent.type as TokenType,
+      $description: parent.description,
+      $extensions: requiredModes.reduce(
+        (acc, mode) => {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          //@ts-ignore
+          acc.mode[mode] = getModeRawValue(action.payload, mode);
+          return acc;
+        },
+        {
+          mode: {},
+        },
+      ),
+    } as DesignToken;
+  }
+  private processTokenActions(token: WalkerDesignToken) {
     const actions = this.runTokenExtensions(token);
     for (const action of actions) {
       switch (action.type) {
-        case 'add':
-          this.tokens.set(action.path, {
-            ...token,
-            path: action.path,
-            valueByMode: action.payload,
-            isResponsive: action.isResponsive,
-            isGenerated: true,
-          });
+        case 'add': {
+          const raw = this.createRawTokenFromAction(action, token);
+          const newToken = this.createToken(raw!, action.path);
+          newToken.applyTokenAction(action);
+          this.tokens.set(action.path, newToken);
           break;
-        case 'update':
-          this.tokens.set(action.path, {
-            ...this.tokens.get(action.path)!,
-            valueByMode: action.payload,
-            isResponsive: action.isResponsive,
-            isGenerated: true,
-          });
+        }
+
+        case 'update': {
+          const existingToken = this.tokens.get(action.path);
+          if (existingToken) {
+            existingToken.applyTokenAction(action);
+          }
           break;
+        }
         case 'remove':
           toArray(action.path).forEach((path) => {
             this.tokens.delete(path);
@@ -338,28 +370,15 @@ export class TokensWalker {
     }
   }
 
-  private runTokenExtensions(token: ProcessedDesignToken) {
-    const extensions = this.schemaExtensions.filter((e) =>
-      isMatchingTokensFilter([token.path, token.original], e.filter),
-    );
-    if (extensions.length === 0) {
-      return [];
-    }
-    const actions = [] as TokensWalkerAction[];
-    for (const extension of extensions) {
-      actions.push(...extension.run(token, this));
-    }
-    return actions;
+  hasSchemaExtensions(path: string, token: DesignToken) {
+    return this.schemaExtensions.some((e) => isMatchingTokensFilter([path, token], e.filter));
   }
 
-  private buildTokenValueByMode(
-    token: DesignToken,
-    override?: TokenOverrideFn,
-    normalize: boolean = this.options.normalizeTokenValue,
-  ) {
+  buildTokenValueByMode(token: DesignToken, path: string, normalize: boolean = this.options.normalizeTokenValue) {
+    const override = this.options.overrides[path];
     const { requiredModes, defaultMode } = this.getModes();
     const defaultValue = typeof override === 'function' ? override(defaultMode, token) : token.$value;
-    const valueByMode: ProcessedDesignToken['valueByMode'] = {
+    const valueByMode: DesignTokenValueByMode = {
       [defaultMode]: normalize
         ? {
             normalized: this.normalizeTokenValue(defaultValue),
@@ -382,31 +401,40 @@ export class TokensWalker {
     return valueByMode;
   }
 
-  private processToken(
-    original: DesignToken,
-    path: string,
-    normalize = this.options.normalizeTokenValue,
-  ): ProcessedDesignToken {
-    const { defaultMode } = this.getModes();
-    const override = this.options.overrides[path];
-    const valueByMode = this.buildTokenValueByMode(original, override, normalize);
-    const normalizedValue = getModeNormalizeValue(valueByMode, defaultMode);
-    const rawValue = getModeRawValue(valueByMode, defaultMode);
+  private runTokenExtensions(token: WalkerDesignToken) {
+    const extensions = this.schemaExtensions.filter((e) => isMatchingTokensFilter([token.path, token.raw], e.filter));
+    if (extensions.length === 0) {
+      return [];
+    }
+    const actions = [] as TokensWalkerAction[];
+    for (const extension of extensions) {
+      actions.push(...extension.run(token, this));
+    }
+    return actions;
+  }
+
+  private createToken(raw: DesignToken, path: string): WalkerDesignToken {
+    return new WalkerDesignToken(path, raw, this);
+  }
+
+  private createRawToken(
+    $value: unknown,
+    $type: TokenType,
+    $description: string,
+    tokenLike: Partial<DesignToken>,
+  ): DesignToken {
     return {
-      original,
-      path,
-      normalizedValue,
-      rawValue,
-      valueByMode,
-      type: original.$type,
-      description: original.$description,
-      extensions: original.$extensions,
-    };
+      $value,
+      $type,
+      $description,
+      ...tokenLike,
+    } as DesignToken;
   }
 
   private walkTokens(tokens: object, path = '', walker: Walker) {
     for (const [key, token] of Object.entries(tokens)) {
       const currentPath = path ? `${path}.${key}` : key;
+      const parentDescription = (token as any).$description;
       if (isDesignTokenGroup(token)) {
         const groupType = token.$type;
         // Remove the $type key to avoid processing it as a child token
@@ -416,17 +444,14 @@ export class TokensWalker {
           if (!isObject(groupToken)) {
             continue;
           }
-          const groupTokenWithType = {
-            $type: groupType,
-            ...groupToken,
-          };
-          if (isDesignTokenLike(groupTokenWithType)) {
-            walker(groupTokenWithType as DesignToken, `${currentPath}.${groupKey}`);
+          const constructedToken = this.createRawToken(groupToken.$value, groupType, parentDescription, groupToken);
+          if (isDesignTokenLike(constructedToken)) {
+            walker(constructedToken, `${currentPath}.${groupKey}`);
           } else {
             // If the group token doesn't have a $value, treat it as another group or single token
             this.walkTokens(
               {
-                [groupKey]: groupTokenWithType,
+                [groupKey]: constructedToken,
               },
               currentPath,
               walker,
@@ -434,7 +459,7 @@ export class TokensWalker {
           }
         }
       } else if (isDesignToken(token)) {
-        walker(token, currentPath);
+        walker(this.createRawToken(token.$value, token.$type, parentDescription, token), currentPath);
       } else if (isObject(token)) {
         // If the token isn't recognized as a group or single token, recurse into it to check its children
         this.walkTokens(token, currentPath, walker);

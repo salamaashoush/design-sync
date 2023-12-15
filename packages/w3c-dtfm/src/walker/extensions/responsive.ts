@@ -19,7 +19,6 @@ function normalizeBp(bp: string) {
 
 function up(breakpoint: string, breakpoints: Record<string, string>) {
   const bp = breakpoints[breakpoint];
-  bp.replace('px', '');
   return `@media (width >= ${bp})`;
 }
 
@@ -64,7 +63,7 @@ export function responsiveExtension({
     filter,
     run(token, walker) {
       const parentPath = token.path.split('.').slice(0, -1).join('.');
-      const breakpointTokens = walker.filter(({ path }) => path.startsWith(parentPath));
+      const breakpointTokens = walker.filter((token) => token.path.startsWith(parentPath));
       const breaks = {} as Record<string, string>;
       // normalize breakpoints
       for (const [key, value] of Object.entries(breakpoints)) {

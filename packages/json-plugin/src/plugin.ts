@@ -1,6 +1,5 @@
 import { TokensManagerPlugin } from '@design-sync/manager';
 import { set } from '@design-sync/utils';
-import { getModeNormalizeValue } from '@design-sync/w3c-dtfm';
 import { join } from 'node:path';
 
 interface JSONPluginConfig {
@@ -19,10 +18,10 @@ export function jsonPlugin(config: JSONPluginConfig = { outDir: '' }): TokensMan
         tokens[mode] = {};
       }
       walker.walk((token) => {
-        const { normalizedValue, path, valueByMode } = token;
+        const { normalizedValue, path } = token;
         set(tokens[defaultMode], path, normalizedValue);
         for (const mode of requiredModes) {
-          const normalizedModeValue = getModeNormalizeValue(valueByMode, mode);
+          const normalizedModeValue = token.getNormalizeValueByMode(mode);
           if (normalizedModeValue) {
             set(tokens[mode], path, normalizedModeValue);
           } else {

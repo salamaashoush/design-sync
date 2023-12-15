@@ -1,5 +1,6 @@
-import { DerefToken, DesignToken, TokenDefinition, TokenType } from '../types';
-import { TokensWalker } from './walker';
+import type { DerefToken, DesignToken, TokenDefinition, TokenType } from '../types';
+import type { WalkerDesignToken } from './token';
+import type { TokensWalker } from './walker';
 
 export interface DesignTokenValueRecord {
   normalized: DerefToken<DesignToken>['$value'];
@@ -9,19 +10,6 @@ export type DesignTokenValueByMode = Record<
   string,
   DerefToken<DesignToken>['$value'] | DesignToken['$value'] | DesignTokenValueRecord
 >;
-
-export interface ProcessedDesignToken {
-  normalizedValue?: DerefToken<DesignToken>['$value'];
-  type: TokenType;
-  rawValue: DesignToken['$value'];
-  extensions?: Record<string, unknown>;
-  description?: string;
-  path: string;
-  valueByMode: DesignTokenValueByMode;
-  original: DesignToken;
-  isResponsive?: boolean;
-  isGenerated?: boolean;
-}
 
 export interface TokensWalkerBaseAction {
   extension: string;
@@ -64,7 +52,7 @@ export type TokensWalkerFilter = TokensFilter | TokensFilter[];
 export interface TokensWalkerSchemaExtension {
   name: string;
   filter: TokensWalkerFilter;
-  run(token: ProcessedDesignToken, walker: TokensWalker): TokensWalkerAction[];
+  run(token: WalkerDesignToken, walker: TokensWalker): TokensWalkerAction[];
 }
 
 export type TokenOverrideFn = (mode: string, token: DesignToken) => unknown;

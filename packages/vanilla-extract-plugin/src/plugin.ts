@@ -1,15 +1,17 @@
-import { DesignSyncConfig, TokensManager, TokensManagerPlugin, TokensManagerPluginFile } from '@design-sync/manager';
-import { camelCase, deepMerge, set } from '@design-sync/utils';
+import { TokensManager, TokensManagerPlugin, TokensManagerPluginFile } from '@design-sync/manager';
+import { deepMerge, set } from '@design-sync/utils';
 import {
   DesignTokenValueByMode,
-  ProcessedDesignToken,
+  WalkerDesignToken,
   getModeRawValue,
   isTokenAlias,
+  pathToStyleName,
   processPrimitiveValue,
   serializeObject,
   tokenValueToCss,
   typographyToCssStyle,
 } from '@design-sync/w3c-dtfm';
+import { join } from 'path';
 
 interface VanillaExtractPluginConfig {
   contractName?: string;
@@ -20,31 +22,16 @@ interface VanillaExtractPluginConfig {
   createGlobalContract?: boolean;
 }
 
-function getStyleName(path: string) {
-  const parts = path.split('.');
-  return camelCase(
-    parts
-      .slice(parts.length - 3)
-      .join('-')
-      .replace('-@', '-'),
-  );
-}
-
 class VanillaExtractPlugin {
   private tokens: Record<string, Record<string, unknown>> = {};
   private styles: string[] = [];
   private tokensContract: Record<string, unknown> = {};
-  private config: VanillaExtractPluginConfig & DesignSyncConfig;
   private docs = new Map<string, string>();
 
   constructor(
-    config: VanillaExtractPluginConfig,
+    private config: Required<VanillaExtractPluginConfig>,
     private manager: TokensManager,
   ) {
-    this.config = {
-      ...config,
-      ...manager.getConfig(),
-    };
     const { defaultMode, requiredModes } = this.walker.getModes();
     this.tokens[defaultMode] = {};
     for (const mode of requiredModes) {
@@ -66,6 +53,7 @@ class VanillaExtractPlugin {
 
   private wrapWithThemeVar = (path: string, isSinglePath: boolean) =>
     isSinglePath ? `${this.contractName}.${path}` : '${' + this.contractName + '.' + path + '}';
+  private wrapWithThemeContract = (path: string) => `${this.contractName}.${path}`;
 
   private processCssStyleObject(style: Record<string, string | number>) {
     for (const [key, value] of Object.entries(style)) {
@@ -73,7 +61,8 @@ class VanillaExtractPlugin {
     }
     return style;
   }
-  private addTypographyStyle(token: ProcessedDesignToken) {
+
+  private addTypographyStyle(token: WalkerDesignToken) {
     const { defaultMode } = this.walker.getModes();
     const { rawValue, path, isResponsive, valueByMode } = token;
     let finalStyle = {};
@@ -112,35 +101,43 @@ class VanillaExtractPlugin {
       finalStyle = this.processCssStyleObject(style);
     }
     // use the last part of the path as the style name
-    const styleName = getStyleName(path);
-    this.styles.push(`export const ${styleName} = style(${serializeObject(finalStyle)})\n`);
+    const styleName = pathToStyleName(path, true);
+    const docs = token.description ? `/**\n * ${token.description}\n */\n` : '';
+    this.styles.push(`${docs}export const ${styleName} = style(${serializeObject(finalStyle)})\n`);
   }
 
-  private addTokenDocs(token: ProcessedDesignToken) {
-    const requiredModes = this.walker.getModes().requiredModes;
+  private addTokenDocs(token: WalkerDesignToken) {
+    const requiredModes = token.requiredModes;
     const { rawValue, type, path, valueByMode } = token;
     const docs = [
       `/**`,
-      token.description ? ` * @description ${token.description}` : '',
-      token.isGenerated ? ` * @generated` : '',
-      ` * @default ${processPrimitiveValue(tokenValueToCss(rawValue, type))}`,
+      token.description ? ` * ${token.description}` : '',
+      token.isGenerated ? ` * [generated] ` : '',
     ].filter(Boolean);
 
     for (const mode of requiredModes) {
       const rawModeValue = getModeRawValue(valueByMode, mode);
       if (rawModeValue) {
-        docs.push(` * @${mode} ${processPrimitiveValue(tokenValueToCss(rawModeValue, type))}`);
+        const value = processPrimitiveValue(tokenValueToCss(rawModeValue, type), this.wrapWithThemeContract);
+        if (typeof value === 'string' && isTokenAlias(rawModeValue)) {
+          docs.push(` * @${mode}  @link {${value}}`);
+        } else {
+          docs.push(
+            ` * @${mode}  \`"${processPrimitiveValue(tokenValueToCss(rawValue, type), this.wrapWithThemeVar)}"\``,
+          );
+        }
       } else {
-        docs.push(` * @${mode} ${processPrimitiveValue(tokenValueToCss(rawValue, type))}`);
+        docs.push(
+          ` * @${mode}  \`"${processPrimitiveValue(tokenValueToCss(rawValue, type), this.wrapWithThemeVar)}"\``,
+        );
       }
     }
     docs.push(` */\n`);
     this.docs.set(path, docs.join('\n'));
   }
 
-  private addToken(token: ProcessedDesignToken) {
-    const { requiredModes, defaultMode } = this.walker.getModes();
-    const { rawValue, type, path, valueByMode } = token;
+  private addToken(token: WalkerDesignToken) {
+    const { rawValue, type, path, valueByMode, requiredModes, defaultMode } = token;
     // add the token to the tokens contract
     set(this.tokensContract, path, '');
     // add the token docs
@@ -194,7 +191,7 @@ class VanillaExtractPlugin {
       })});`,
     ].join('\n');
     return {
-      path: 'contract.css.ts',
+      path: join(this.config.outDir, 'contract.css.ts'),
       content,
     };
   }
@@ -222,7 +219,7 @@ class VanillaExtractPlugin {
       .join('\n');
 
     return {
-      path: `${mode}.css.ts`,
+      path: join(this.config.outDir, `${mode}.css.ts`),
       content: content,
     };
   }
@@ -234,7 +231,7 @@ class VanillaExtractPlugin {
       typography.join('\n'),
     ].join('\n');
     return {
-      path: 'styles.css.ts',
+      path: join(this.config.outDir, 'styles.css.ts'),
       content,
     };
   }

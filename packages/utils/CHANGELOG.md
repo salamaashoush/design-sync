@@ -1,5 +1,11 @@
 ## 0.1.0
 
+## 0.5.0
+
+### Minor Changes
+
+- Improve the walker and make it lazy and add example apps
+
 ## 0.4.0
 
 ### Minor Changes

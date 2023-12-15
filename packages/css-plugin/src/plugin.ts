@@ -2,12 +2,13 @@ import { TokensManager, TokensManagerPlugin, TokensManagerPluginFile } from '@de
 import { kebabCase, set } from '@design-sync/utils';
 import {
   DesignTokenValueByMode,
-  ProcessedDesignToken,
+  WalkerDesignToken,
   getModeRawValue,
   isTokenAlias,
+  pathToCssVarName,
   processCssVarRef,
   serializeObjectToCSS,
-  tokenAliasToCssVarName,
+  tokenPathToStyleName,
   tokenValueToCss,
   typographyToCssStyle,
 } from '@design-sync/w3c-dtfm';
@@ -18,16 +19,6 @@ interface CSSPluginConfig {
   typographyAsFontProperty?: boolean;
   extractAsStyle?: string[];
   outDir?: string;
-}
-
-function getClassName(path: string) {
-  const parts = path.split('.');
-  return kebabCase(
-    parts
-      .slice(parts.length - 3)
-      .join('-')
-      .replace('-@', '-'),
-  );
 }
 
 class CSSPlugin {
@@ -49,11 +40,11 @@ class CSSPlugin {
     return this.manager.getWalker();
   }
 
-  private createCssVar(token: ProcessedDesignToken) {
+  private createCssVar(token: WalkerDesignToken) {
     const { defaultMode, requiredModes } = this.walker.getModes();
     const { rawValue, type, path, valueByMode } = token;
 
-    const varName = tokenAliasToCssVarName(path);
+    const varName = pathToCssVarName(path);
     // add the token to the tokens contract
     const defaultValue = processCssVarRef(tokenValueToCss(rawValue, type));
     // set the default value in the default mode
@@ -72,10 +63,10 @@ class CSSPlugin {
     }
     return style;
   }
-  private createCssClass(token: ProcessedDesignToken) {
+  private createCssClass(token: WalkerDesignToken) {
     const { defaultMode } = this.walker.getModes();
     const { rawValue, path, isResponsive, valueByMode } = token;
-    const selector = `.${getClassName(path)}`;
+    const selector = `.${tokenPathToStyleName(path, kebabCase)}`;
     let baseStyle = {};
     if (isResponsive) {
       baseStyle = typographyToCssStyle(getModeRawValue(valueByMode.base as DesignTokenValueByMode, defaultMode));
@@ -174,13 +165,13 @@ class CSSPlugin {
     const generateClassFor = (this.config.extractAsStyle ?? ['typography']).filter((type) =>
       this.config.typographyAsFontProperty ? type !== 'typography' : true,
     );
-    this.walker.walk((token) => {
+    for (const token of this.walker.getTokens()) {
       if (generateClassFor.includes(token.type)) {
         this.createCssClass(token);
       } else {
         this.createCssVar(token);
       }
-    });
+    }
     return this.getFiles();
   }
 }

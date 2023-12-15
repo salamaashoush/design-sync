@@ -141,7 +141,7 @@ export default defineCommand({
     logger.success(`Config file created at ${configPath}`);
     const pkgJsonPath = join(args.cwd, 'package.json');
     try {
-      await addPackageJsonScript(pkgJsonPath, 'tokens:sync', 'dsync sync');
+      await addPackageJsonScript(pkgJsonPath, 'tokens:sync', 'design-sync sync');
     } catch (e) {
       logger.warn(`Failed to add tokens:sync script to package.json at ${pkgJsonPath}, please add manually`);
     }

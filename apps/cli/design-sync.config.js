@@ -1,9 +1,7 @@
 import { cssPlugin } from '@design-sync/css-plugin';
 import { jsonPlugin } from '@design-sync/json-plugin';
 import { vanillaExtractPlugin } from '@design-sync/vanilla-extract-plugin';
-
 import { defineConfig, responsiveExtension } from '.';
-console.log('dedupe-tokens config');
 
 const breakpoints = {
   xs: '{kda.foundation.breakpoint.xs}',
@@ -14,26 +12,25 @@ const breakpoints = {
   xxl: '{kda.foundation.breakpoint.xxl}',
 };
 const breakpointKeys = Object.keys(breakpoints);
-const fontOverride = () => "'Haas Grotesk Display', -apple-system, sans-serif";
 export default defineConfig({
   // uri: 'github:salamaashoush/kda-design-system/tokens#dedupe-tokens',
-  uri: 'github:kadena-community/design-system/tokens#main',
+  uri: 'github:kadena-community/design-system/tokens#font-weight-tag',
   out: 'generated',
   defaultMode: 'light',
   requiredModes: ['light', 'dark'],
   prettify: true,
-  overrides: {
-    'kda.foundation.typography.family.bodyFont': fontOverride,
-    'kda.foundation.typography.family.primaryFont': fontOverride,
-    'kda.foundation.typography.family.headingFont': fontOverride,
-  },
   plugins: [
-    cssPlugin(),
+    cssPlugin({
+      outDir: 'css',
+    }),
     vanillaExtractPlugin({
+      outDir: 've',
       contractName: 'tokens',
       // onlyValues: true,
     }),
-    jsonPlugin(),
+    jsonPlugin({
+      outDir: 'json',
+    }),
   ],
   schemaExtensions: [
     responsiveExtension({
