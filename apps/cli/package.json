@@ -1,7 +1,7 @@
 {
   "name": "@design-sync/cli",
   "description": "CLI for Design Sync",
-  "version": "0.10.0",
+  "version": "0.11.0",
   "repository": "salamaashoush/design-sync",
   "license": "MIT",
   "sideEffects": false,
@@ -9,7 +9,8 @@
   "type": "module",
   "main": "src/index.ts",
   "files": [
-    "dist"
+    "dist",
+    "bin"
   ],
   "bin": {
     "design-sync": "./src/cli.ts"
