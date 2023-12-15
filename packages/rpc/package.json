@@ -1,6 +1,6 @@
 {
   "name": "@design-sync/rpc",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "RPC for Tokenize",
   "main": "src/index.ts",
   "private": true,
@@ -17,8 +17,8 @@
   "devDependencies": {
     "@design-sync/eslint-config": "workspace:*",
     "@design-sync/tsconfig": "workspace:*",
-    "eslint": "^8.54.0",
-    "lint-staged": "^15.1.0",
-    "typescript": "^5.3.2"
+    "eslint": "^8.55.0",
+    "lint-staged": "^15.2.0",
+    "typescript": "^5.3.3"
   }
 }

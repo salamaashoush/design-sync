@@ -1,6 +1,6 @@
 {
   "name": "@design-sync/manager",
-  "version": "0.5.2",
+  "version": "0.6.0",
   "description": "Plugable design tokens manager",
   "repository": "salamaashoush/design-sync",
   "license": "MIT",
@@ -36,13 +36,13 @@
   "devDependencies": {
     "@design-sync/eslint-config": "workspace:*",
     "@design-sync/tsconfig": "workspace:*",
-    "@types/node": "^20.9.3",
-    "@vitest/coverage-v8": "^0.34.6",
-    "eslint": "^8.54.0",
-    "lint-staged": "^15.1.0",
-    "typescript": "^5.3.2",
+    "@types/node": "^20.10.4",
+    "@vitest/coverage-v8": "^1.0.4",
+    "eslint": "^8.55.0",
+    "lint-staged": "^15.2.0",
+    "typescript": "^5.3.3",
     "unbuild": "^2.0.0",
-    "vitest": "^0.34.6"
+    "vitest": "^1.0.4"
   },
   "publishConfig": {
     "access": "public",

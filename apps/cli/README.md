@@ -25,7 +25,7 @@ add a `sync` script to your `package.json` file
 ```json
 {
   "scripts": {
-    "sync": "dsync sync"
+    "sync": "design-sync sync"
   }
 }
 ```

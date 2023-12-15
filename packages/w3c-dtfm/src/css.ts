@@ -1,3 +1,4 @@
+import { camelCase } from '@design-sync/utils';
 import { normalizeTokenAlias } from './alias';
 import { isTokenAlias } from './guards';
 import { normalizeDimensionValue } from './normalize';
@@ -11,16 +12,26 @@ import { normalizeFontFamilyValue, normalizeFontWeightValue, normalizeTypography
 import { processPrimitiveValue } from './serialize';
 import { DesignToken, TokenDefinition } from './types';
 
-export function tokenAliasToCssVarName(path: string, prefix?: string) {
-  return `--${prefix ?? ''}${path.replace(/\./g, '-').replace('-@', '-')}`;
+export function pathToStyleName(path: string, camel: boolean = true, count: number = 3) {
+  const parts = (isTokenAlias(path) ? normalizeTokenAlias(path) : path).replace(/[^a-zA-Z0-9-_.]/g, '').split('.');
+  const name = parts.slice(parts.length - count).join('-');
+  return camel ? camelCase(name) : name;
+}
+
+export function pathToCssVarName(path: string, prefix?: string) {
+  return `--${prefix ?? ''}${path.replace('@', '\\@').replace(/\./g, '-')}`;
 }
 
 export function processCssVarRef(tokenValue: string | number, prefix?: string, defaultValue?: string) {
   return processPrimitiveValue(tokenValue, (path) =>
-    defaultValue
-      ? `var(${tokenAliasToCssVarName(path, prefix)}, ${defaultValue})`
-      : `var(${tokenAliasToCssVarName(path, prefix)})`,
+    defaultValue ? `var(${pathToCssVarName(path, prefix)}, ${defaultValue})` : `var(${pathToCssVarName(path, prefix)})`,
   );
+}
+
+export function tokenPathToStyleName(path: string, textTransform = camelCase, count: number = 3) {
+  const parts = (isTokenAlias(path) ? normalizeTokenAlias(path) : path).replace(/[^a-zA-Z0-9-_.]/g, '').split('.');
+  const name = parts.slice(parts.length - count).join('-');
+  return textTransform(name);
 }
 
 export function tokenValueToCssValue(tokenValue: unknown) {

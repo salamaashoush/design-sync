@@ -1,12 +1,8 @@
 import { hasTokenExtensions } from '../../guards';
-import { normalizeColorValue } from '../../normalize';
+import { normalizeColorValue } from '../../normalize/color';
 import type { ColorModifier, WithExtension } from '../../types';
-import {
-  DesignTokenValueByMode,
-  ProcessedDesignToken,
-  TokensWalkerAction,
-  TokensWalkerSchemaExtension,
-} from '../types';
+import { WalkerDesignToken } from '../token';
+import { DesignTokenValueByMode, TokensWalkerAction, TokensWalkerSchemaExtension } from '../types';
 import { getModeNormalizeValue, isMatchingTokensFilter } from '../utils';
 import { TokensWalker } from '../walker';
 
@@ -36,7 +32,7 @@ export function hasGeneratorsExtension(value: unknown): value is WithExtension<T
 
 function runGenerator(
   generator: TokenGenerator,
-  token: ProcessedDesignToken,
+  token: WalkerDesignToken,
   walker: TokensWalker,
   results: TokensWalkerAction[] = [],
 ) {
@@ -45,9 +41,9 @@ function runGenerator(
     const path = `${token.path}${key}`;
     const payload = {} as DesignTokenValueByMode;
     for (const mode of modes) {
+      const normalizedValue = getModeNormalizeValue(token.valueByMode, mode);
       const baseColor =
-        typeof value === 'number' ? getModeNormalizeValue(token.valueByMode, mode) : walker.derefTokenValue(value.base);
-
+        typeof value === 'number' ? normalizedValue : value.base ? walker.derefTokenValue(value.base) : normalizedValue;
       const amount = typeof value === 'number' ? value : value.value;
       payload[mode] = normalizeColorValue(baseColor, {
         type: generator.type,
@@ -77,7 +73,7 @@ export function colorGeneratorsExtension({
   return {
     name: 'default-color-generators-extension',
     filter: (params) => hasGeneratorsExtension(params[1]) && isMatchingTokensFilter(params, filter),
-    run(token: ProcessedDesignToken, walker: TokensWalker): TokensWalkerAction[] {
+    run(token, walker): TokensWalkerAction[] {
       const generators = token.extensions?.generators as TokenGenerator[];
       const results: TokensWalkerAction[] = [];
       for (const generator of generators) {

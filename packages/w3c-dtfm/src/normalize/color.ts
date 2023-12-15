@@ -19,6 +19,7 @@ export function normalizeColorValue(value: unknown, modifiers?: ColorTokenModifi
     return formatColor(color);
   }
 
+  // console.log('DEBUG_INFO', JSON.stringify(getDebugInfo(), null, 2));
   throw new Error(
     `${value} is not a valid DTFM color value (must be a valid CSS color string eg "#fff", "rgba(0,0,0,0.5)", "white", etc or a token alias)`,
   );

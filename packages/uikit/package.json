@@ -25,9 +25,9 @@
   "devDependencies": {
     "@design-sync/eslint-config": "workspace:*",
     "@design-sync/tsconfig": "workspace:*",
-    "eslint": "^8.54.0",
-    "lint-staged": "^15.1.0",
-    "solid-js": "^1.8.5",
-    "typescript": "^5.3.2"
+    "eslint": "^8.55.0",
+    "lint-staged": "^15.2.0",
+    "solid-js": "^1.8.7",
+    "typescript": "^5.3.3"
   }
 }

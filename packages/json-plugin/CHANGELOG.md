@@ -1,5 +1,18 @@
 # @design-sync/json-plugin
 
+## 0.3.0
+
+### Minor Changes
+
+- Improve the walker and make it lazy and add example apps
+
+### Patch Changes
+
+- Updated dependencies
+  - @design-sync/w3c-dtfm@0.10.0
+  - @design-sync/manager@0.6.0
+  - @design-sync/utils@0.5.0
+
 ## 0.2.7
 
 ### Patch Changes

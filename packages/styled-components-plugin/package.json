@@ -1,0 +1,60 @@
+{
+  "name": "@design-sync/styled-components-plugin",
+  "version": "0.0.1",
+  "description": "Transforms design tokens to styled components themes and styles",
+  "repository": "salamaashoush/design-sync",
+  "license": "MIT",
+  "sideEffects": false,
+  "type": "module",
+  "private": true,
+  "main": "src/index.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "unbuild",
+    "dev": "npm run build -- --watch",
+    "lint": "eslint --cache --ext .ts,.js,.mjs,.cjs . && prettier -c src test",
+    "lint:fix": "eslint --cache --ext .ts,.js,.mjs,.cjs . --fix && prettier -c src test -w",
+    "prepack": "pnpm run build",
+    "release": "pnpm test && pnpm publish",
+    "test": "pnpm lint && pnpm test:types && vitest run --coverage",
+    "test:types": "tsc --noEmit --skipLibCheck",
+    "precommit": "lint-staged"
+  },
+  "dependencies": {
+    "@design-sync/manager": "workspace:*",
+    "@design-sync/utils": "workspace:*",
+    "@design-sync/w3c-dtfm": "workspace:*"
+  },
+  "devDependencies": {
+    "@design-sync/eslint-config": "workspace:*",
+    "@design-sync/tsconfig": "workspace:*",
+    "@types/node": "^20.10.4",
+    "@vitest/coverage-v8": "^1.0.4",
+    "eslint": "^8.55.0",
+    "lint-staged": "^15.2.0",
+    "typescript": "^5.3.3",
+    "unbuild": "^2.0.0",
+    "vitest": "^1.0.4"
+  },
+  "publishConfig": {
+    "access": "public",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": {
+          "types": "./dist/index.d.mts",
+          "default": "./dist/index.mjs"
+        },
+        "require": {
+          "types": "./dist/index.d.cts",
+          "default": "./dist/index.cjs"
+        }
+      }
+    },
+    "main": "./dist/index.cjs",
+    "module": "./dist/index.mjs",
+    "types": "./dist/index.d.ts"
+  }
+}

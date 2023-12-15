@@ -1,6 +1,6 @@
 {
   "name": "@design-sync/figma-plugin",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Tokenize Figma Plugin",
   "private": true,
   "scripts": {
@@ -20,22 +20,22 @@
   "devDependencies": {
     "@design-sync/eslint-config": "workspace:*",
     "@design-sync/tsconfig": "workspace:*",
-    "@figma/plugin-typings": "^1.81.0",
+    "@figma/plugin-typings": "^1.82.0",
     "@types/tinycolor2": "^1.4.6",
-    "@unocss/reset": "0.57.5",
+    "@unocss/reset": "^0.58.0",
     "@vanilla-extract/css": "^1.14.0",
     "@vanilla-extract/recipes": "^0.5.1",
     "@vanilla-extract/sprinkles": "^1.6.1",
-    "@vanilla-extract/vite-plugin": "^3.9.2",
+    "@vanilla-extract/vite-plugin": "^3.9.3",
     "concurrently": "^8.2.2",
-    "esbuild": "^0.19.7",
-    "eslint": "^8.54.0",
-    "lint-staged": "^15.1.0",
-    "typescript": "^5.3.2",
-    "vite": "^5.0.2",
-    "vite-plugin-mkcert": "1.16.0",
-    "vite-plugin-solid": "^2.7.2",
-    "vite-plugin-static-copy": "^0.17.1"
+    "esbuild": "^0.19.9",
+    "eslint": "^8.55.0",
+    "lint-staged": "^15.2.0",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.9",
+    "vite-plugin-mkcert": "^1.17.1",
+    "vite-plugin-solid": "^2.8.0",
+    "vite-plugin-static-copy": "^1.0.0"
   },
   "dependencies": {
     "@design-sync/design-tokens": "workspace:*",
@@ -45,7 +45,7 @@
     "@design-sync/uikit": "workspace:*",
     "@design-sync/utils": "workspace:*",
     "mitt": "^3.0.1",
-    "solid-js": "^1.8.5",
+    "solid-js": "^1.8.7",
     "tinycolor2": "^1.6.0"
   }
 }

@@ -27,24 +27,26 @@ export function processJSKey(key: string): string {
   return isValidJsObjectKey(key) ? key : JSON.stringify(key);
 }
 
-export function correctJSObjectKey(path: string): string {
+export function correctJSObjectPath(path: string): string {
   // Regular expression to match valid JavaScript identifiers
   const validIdentifier = /^[a-zA-Z_$][a-zA-Z0-9_$]*$/;
 
-  return path
-    .split('.')
-    .map((part) => {
-      // Check if the part is a valid identifier
-      if (validIdentifier.test(part)) {
-        return part;
-      } else {
-        // If not, enclose it in brackets and quotes
-        return `['${part}']`;
-      }
-    })
-    .join('.')
-    .replace(/\.\[/g, '['); // Replace ".[" with "["
+  // Split the path into parts
+  const parts = path.split('.');
+
+  // Process each part
+  for (let i = 0; i < parts.length; i++) {
+    // Check if the part is a valid identifier
+    if (!validIdentifier.test(parts[i])) {
+      // If not, enclose it in brackets and quotes
+      parts[i] = `['${parts[i]}']`;
+    }
+  }
+
+  // Join the parts back together
+  return parts.join('.').replace(/\.\[/g, '['); // Replace ".[" with "["
 }
+
 export function processJSValue(value: unknown) {
   if (typeof value === 'undefined' || value === null) {
     return value;
@@ -55,12 +57,12 @@ export function processJSValue(value: unknown) {
   }
 
   if (hasTemplateString(value)) {
-    const processed = value.replace(TEMPLATE_STRING_REGEX, (_, match) => `\${${correctJSObjectKey(match)}\}`);
+    const processed = value.replace(TEMPLATE_STRING_REGEX, (_, match) => `\${${correctJSObjectPath(match)}\}`);
     return `\`${processed}\``;
   }
 
   if (isObjectPath(value)) {
-    return value;
+    return correctJSObjectPath(value);
   }
 
   return JSON.stringify(value);
