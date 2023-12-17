@@ -6,6 +6,7 @@
   "scripts": {
     "test:types": "tsc --noEmit --skipLibCheck",
     "watch": "build-figma-plugin --watch",
+    "build": "build-figma-plugin --minify",
     "precommit": "lint-staged"
   },
   "dependencies": {
