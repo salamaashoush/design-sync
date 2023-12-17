@@ -1,14 +1,11 @@
 import { isObject, memoize } from '@design-sync/utils';
 import {
-  Color,
   DesignToken,
   Dimension,
   FontWeight,
-  formatColor,
   isFontFamilyToken,
   isFontWeightToken,
   isTypographyToken,
-  parseColorToRgba,
 } from '@design-sync/w3c-dtfm';
 
 export function isTextNode(node: SceneNode): node is TextNode {
@@ -36,7 +33,7 @@ export const deserializeColor = memoize((color: string): RGBA | RGB => {
     console.warn('gradient color is not supported');
     return { r: 0, g: 0, b: 0, a: 0 };
   }
-  return parseColorToRgba(color);
+  return figma.util.rgba(color);
 });
 
 export const convertFontWeight = memoize((fontWeight: FontWeight) => {
@@ -142,7 +139,10 @@ export function numberToHex(value: number) {
 }
 
 export function serializeColor(color: RGB | RGBA) {
-  return formatColor(color) as Color;
+  const c = `#${numberToHex(color.r)}${numberToHex(color.g)}${numberToHex(color.b)}`;
+  if (isRGBA(color)) {
+    return `${c}${color.a}`;
+  }
 }
 
 export function serializeLineHeight(lineHeight: LineHeight, refValue = 16): number {
@@ -159,7 +159,7 @@ export function serializeLineHeight(lineHeight: LineHeight, refValue = 16): numb
 
 export function serializeLetterSpacing(letterSpacing: LetterSpacing): Dimension {
   if (letterSpacing.unit === 'PERCENT') {
-    return `${letterSpacing.value}%`;
+    return `${letterSpacing.value}rem`;
   }
 
   return `${letterSpacing?.value}px`;

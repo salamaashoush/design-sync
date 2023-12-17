@@ -32,7 +32,7 @@
     "@design-sync/tsconfig": "workspace:*",
     "@types/node": "^20.10.4",
     "@vitest/coverage-v8": "^1.0.4",
-    "eslint": "^8.55.0",
+    "eslint": "^8.56.0",
     "lint-staged": "^15.2.0",
     "typescript": "^5.3.3",
     "unbuild": "^2.0.0",
