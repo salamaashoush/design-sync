@@ -1,5 +1,11 @@
 # @design-sync/vanilla-extract-plugin
 
+## 0.7.0
+
+### Minor Changes
+
+- Fix vanilla extract plugin docs
+
 ## 0.6.1
 
 ### Patch Changes

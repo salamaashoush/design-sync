@@ -116,20 +116,12 @@ class VanillaExtractPlugin {
     ].filter(Boolean);
 
     for (const mode of requiredModes) {
-      const rawModeValue = getModeRawValue(valueByMode, mode);
-      if (rawModeValue) {
-        const value = processPrimitiveValue(tokenValueToCss(rawModeValue, type), this.wrapWithThemeContract);
-        if (typeof value === 'string' && isTokenAlias(rawModeValue)) {
-          docs.push(` * @${mode}  @link {${value}}`);
-        } else {
-          docs.push(
-            ` * @${mode}  \`"${processPrimitiveValue(tokenValueToCss(rawValue, type), this.wrapWithThemeVar)}"\``,
-          );
-        }
+      const raw = getModeRawValue(valueByMode, mode) ?? rawValue;
+      const value = processPrimitiveValue(tokenValueToCss(raw, type), this.wrapWithThemeContract);
+      if (typeof value === 'string' && isTokenAlias(raw)) {
+        docs.push(` * @${mode} {@link ${value}}`);
       } else {
-        docs.push(
-          ` * @${mode}  \`"${processPrimitiveValue(tokenValueToCss(rawValue, type), this.wrapWithThemeVar)}"\``,
-        );
+        docs.push(` * @${mode}  \`"${value}"\``);
       }
     }
     docs.push(` */\n`);
