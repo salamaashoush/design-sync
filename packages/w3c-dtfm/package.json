@@ -4,9 +4,7 @@
   "description": "Design tokens module format (DTFM) utils and types",
   "repository": "salamaashoush/design-sync",
   "license": "MIT",
-  "sideEffects": [
-    "src/culori.ts"
-  ],
+  "sideEffects": false,
   "type": "module",
   "private": false,
   "main": "src/index.ts",
@@ -26,11 +24,13 @@
   },
   "dependencies": {
     "@design-sync/utils": "workspace:*",
-    "culori": "^3.3.0"
+    "culori": "^3.3.0",
+    "tinycolor2": "^1.6.0"
   },
   "devDependencies": {
     "@design-sync/eslint-config": "workspace:*",
     "@design-sync/tsconfig": "workspace:*",
+    "@types/tinycolor2": "^1.4.6",
     "@types/culori": "^2.0.4",
     "@types/node": "^20.10.4",
     "@vitest/coverage-v8": "^1.0.4",

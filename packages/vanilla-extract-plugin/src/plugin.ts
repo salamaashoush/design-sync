@@ -83,7 +83,9 @@ class VanillaExtractPlugin {
 
         this.processCssStyleObject(style);
         // filter all keys that are with the same value as the base
-        const filteredEntries = Object.entries(style).filter(([key, value]) => (baseStyle as any)[key] !== value);
+        const filteredEntries = Object.entries(style).filter(
+          ([key, value]) => (baseStyle as Record<string, unknown>)[key] !== value,
+        );
         if (filteredEntries.length === 0) {
           continue;
         }

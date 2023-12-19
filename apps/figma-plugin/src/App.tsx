@@ -1,6 +1,6 @@
 import { LoadingIndicator, Tabs, TabsOption } from '@create-figma-plugin/ui';
 import { useSignal } from '@preact/signals';
-import { Fragment, JSX, h } from 'preact';
+import { Fragment, JSX } from 'preact';
 import { useCallback } from 'preact/hooks';
 import { Box } from './components/Box';
 import { useRpcQuery } from './hooks/useRpcCall';

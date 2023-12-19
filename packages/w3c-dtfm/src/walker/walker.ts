@@ -87,7 +87,7 @@ export class TokensWalker {
   private schemaExtensions: TokensWalkerSchemaExtension[];
   private _rootKey!: string;
   private options: Required<TokensWalkerOptions>;
-  private tokens: Map<string, WalkerDesignToken> = new Map();
+  private tokens = new Map<string, WalkerDesignToken>();
 
   constructor(
     private tokensObj: Record<string, unknown> = {},
@@ -244,7 +244,7 @@ export class TokensWalker {
     return this.derefTokenValueHelper(tokenValue);
   }
 
-  private derefTokenValueHelper(tokenValue: unknown, visitedTokens: Set<unknown> = new Set()): unknown {
+  private derefTokenValueHelper(tokenValue: unknown, visitedTokens = new Set<unknown>()): unknown {
     if (!tokenValue) {
       return tokenValue;
     }

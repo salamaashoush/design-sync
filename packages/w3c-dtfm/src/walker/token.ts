@@ -8,8 +8,8 @@ export class WalkerDesignToken {
   #normalizedValue?: DerefToken<DesignToken>['$value'];
   #rawValue?: DesignToken['$value'];
 
-  public isResponsive: boolean = false;
-  public isGenerated: boolean = false;
+  public isResponsive = false;
+  public isGenerated = false;
   public defaultMode: string;
   public requiredModes: string[];
 

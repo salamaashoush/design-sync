@@ -12,7 +12,7 @@ import { normalizeFontFamilyValue, normalizeFontWeightValue, normalizeTypography
 import { processPrimitiveValue } from './serialize';
 import { DesignToken, TokenDefinition } from './types';
 
-export function pathToStyleName(path: string, camel: boolean = true, count: number = 3) {
+export function pathToStyleName(path: string, camel = true, count = 3) {
   const parts = (isTokenAlias(path) ? normalizeTokenAlias(path) : path).replace(/[^a-zA-Z0-9-_.]/g, '').split('.');
   const name = parts.slice(parts.length - count).join('-');
   return camel ? camelCase(name) : name;
@@ -28,7 +28,7 @@ export function processCssVarRef(tokenValue: string | number, prefix?: string, d
   );
 }
 
-export function tokenPathToStyleName(path: string, textTransform = camelCase, count: number = 3) {
+export function tokenPathToStyleName(path: string, textTransform = camelCase, count = 3) {
   const parts = (isTokenAlias(path) ? normalizeTokenAlias(path) : path).replace(/[^a-zA-Z0-9-_.]/g, '').split('.');
   const name = parts.slice(parts.length - count).join('-');
   return textTransform(name);

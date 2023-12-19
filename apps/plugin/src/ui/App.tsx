@@ -21,7 +21,7 @@ const App: Component = () => {
   };
 
   onMount(() => {
-    client.on('selectionchange', ({}) => {
+    client.on('selectionchange', () => {
       // setSelectedSets(selection);
     });
 

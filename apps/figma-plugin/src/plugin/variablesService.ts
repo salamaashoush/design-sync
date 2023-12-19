@@ -1,5 +1,5 @@
 import { camelCase, set } from '@design-sync/utils';
-import { DEFAULT_MODE, TokensWalker, getModeRawValue, isTokenAlias, normalizeTokenAlias } from '@design-sync/w3c-dtfm';
+import { DEFAULT_MODE, TokensWalker, isTokenAlias, normalizeTokenAlias } from '@design-sync/w3c-dtfm';
 import { convertValue, deserializeColor, isColorVariableValue, isVariableAlias, serializeColor } from './utils';
 import { designTokenTypeToVariableType, guessTokenTypeFromScopes } from './variables';
 
@@ -143,17 +143,16 @@ export class VariablesService {
     this.aliasesToProcess = {};
   }
 
-  import(tokens: Record<string, unknown>) {
+  fromJSON(tokens: Record<string, unknown>) {
     const walker = new TokensWalker(tokens);
     const { requiredModes, defaultMode } = walker.getModes();
     const name = walker.getName();
     const collection = this.getCollection(name, requiredModes, defaultMode);
     walker.walk((token) => {
-      const { valueByMode, fullPath, type, raw } = token;
-      const figmaType = designTokenTypeToVariableType(type);
-      const name = fullPath.trim().replace(/\./g, '/');
-      for (const mode of Object.keys(valueByMode)) {
-        const modeValue = getModeRawValue(valueByMode, mode) as string;
+      const figmaType = designTokenTypeToVariableType(token.type);
+      const name = token.path.trim().replace(/\./g, '/');
+      for (const mode of Object.keys(token.requiredModes)) {
+        const modeValue = token.getRawValueByMode(mode) as string;
         if (isTokenAlias(modeValue)) {
           const refName = normalizeTokenAlias(modeValue).trim().replace(/\./g, '/');
           if (this.variablesStore.has(refName)) {
@@ -161,7 +160,7 @@ export class VariablesService {
           } else {
             this.aliasesToProcess[name] = {
               name,
-              type,
+              type: token.type,
               mode,
               refName,
             };
@@ -220,7 +219,7 @@ export class VariablesService {
     return hasModes ? tokens : tokens.default;
   }
 
-  async exportToDesignTokens(collectionIds: string[], singleFile = false) {
+  async toJSON(collectionIds: string[], singleFile = false) {
     const collections = this.getLocalCollections(collectionIds);
     const files = [];
     if (singleFile) {

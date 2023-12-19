@@ -876,6 +876,9 @@ importers:
       culori:
         specifier: ^3.3.0
         version: 3.3.0
+      tinycolor2:
+        specifier: ^1.6.0
+        version: 1.6.0
     devDependencies:
       '@design-sync/eslint-config':
         specifier: workspace:*
@@ -889,6 +892,9 @@ importers:
       '@types/node':
         specifier: ^20.10.4
         version: 20.10.4
+      '@types/tinycolor2':
+        specifier: ^1.4.6
+        version: 1.4.6
       '@vitest/coverage-v8':
         specifier: ^1.0.4
         version: 1.0.4(vitest@1.0.4)

@@ -7,7 +7,10 @@ export interface JsonRpcRequest<Method extends string, Params extends JsonRpcDat
   params: Params;
 }
 
-export type JsonRpcResponse<Results extends JsonRpcData = JsonRpcData, ErrorData extends JsonRpcData = JsonRpcData> = {
+export interface JsonRpcResponse<
+  Results extends JsonRpcData = JsonRpcData,
+  ErrorData extends JsonRpcData = JsonRpcData,
+> {
   jsonrpc: '2.0';
   id: number;
   result?: Results;
@@ -16,7 +19,7 @@ export type JsonRpcResponse<Results extends JsonRpcData = JsonRpcData, ErrorData
     message: string;
     data?: ErrorData;
   };
-};
+}
 
 export interface JsonRpcCall<
   Method extends string,

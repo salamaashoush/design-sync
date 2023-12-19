@@ -57,7 +57,7 @@ export function processJSValue(value: unknown) {
   }
 
   if (hasTemplateString(value)) {
-    const processed = value.replace(TEMPLATE_STRING_REGEX, (_, match) => `\${${correctJSObjectPath(match)}\}`);
+    const processed = value.replace(TEMPLATE_STRING_REGEX, (_, match) => `\${${correctJSObjectPath(match)}}`);
     return `\`${processed}\``;
   }
 

@@ -52,7 +52,9 @@ type ConfigVariants<T extends ComponentSchema> = {
 type ConfigVariantsMulti<T extends ComponentSchema> = {
   [Variant in keyof T]?: StringToBoolean<keyof T[Variant]> | StringToBoolean<keyof T[Variant]>[];
 };
-type ApplyComposition = { apply: Partial<Composition> };
+interface ApplyComposition {
+  apply: Partial<Composition>;
+}
 interface Component<T extends ComponentSchema> {
   base?: Partial<Composition>;
   variants?: T;

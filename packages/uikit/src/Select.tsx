@@ -7,7 +7,7 @@ interface SelectContextType {
 }
 const SelectContext = createContext<SelectContextType>();
 
-function useSelectContext() {
+export function useSelectContext() {
   const context = useContext(SelectContext);
   if (!context) {
     throw new Error('SelectContext must be used within a Select');

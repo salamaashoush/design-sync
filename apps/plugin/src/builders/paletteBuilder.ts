@@ -126,6 +126,7 @@ export class PaletteBuilder {
     let L_025 = (L_050 - this.paperWhite) / 2 + this.paperWhite;
     // if *L value not equal to paperWhite, make slightly lighter
     if (L_025 + 2 >= this.paperWhite) {
+      // eslint-disable-next-line no-self-assign
       L_025 = L_025;
     } else {
       L_025 = L_025 + 1;
