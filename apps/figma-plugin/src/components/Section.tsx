@@ -1,5 +1,5 @@
 import { Bold, Text } from '@create-figma-plugin/ui';
-import { JSX, RenderableProps, h } from 'preact';
+import { JSX, RenderableProps } from 'preact';
 import { Box } from './Box';
 
 interface SectionProps {

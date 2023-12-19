@@ -1,8 +1,3 @@
-/**
- *
- * @type {import('eslint').Linter.Config}
- */
-
 module.exports = {
   parser: '@typescript-eslint/parser',
   parserOptions: {
@@ -23,4 +18,5 @@ module.exports = {
     '@typescript-eslint/no-unused-vars': ['warn', { ignoreRestSiblings: true, argsIgnorePattern: '^_' }], // Allow unused variables starting with _ (e.g. _foo)
     '@typescript-eslint/no-explicit-any': 'warn',
   },
+  ignorePatterns: ['*.d.ts'],
 };

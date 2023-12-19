@@ -1,5 +1,4 @@
 import { Dropdown, DropdownOption, Text } from '@create-figma-plugin/ui';
-import { h } from 'preact';
 import { FormField } from './FormField.tsx';
 import { errorStyle } from './formField.css.ts';
 

@@ -1,12 +1,19 @@
-/**
- *
- * @type {import('eslint').Linter.Config}
- */
-
 module.exports = {
-  extends: ['./base.js', 'preact'],
+  extends: ['./base.js'],
   env: {
     browser: true,
+    es2021: true,
   },
-  plugins: ['solid'],
+  parserOptions: {
+    ecmaFeatures: {
+      jsx: true,
+    },
+    ecmaVersion: 'latest',
+    sourceType: 'module',
+  },
+  settings: {
+    jest: {
+      version: 27,
+    },
+  },
 };

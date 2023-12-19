@@ -1,6 +1,6 @@
 import { Text, Textbox } from '@create-figma-plugin/ui';
 import { ReadonlySignal } from '@preact/signals';
-import { JSX, Ref, h } from 'preact';
+import { JSX, Ref } from 'preact';
 import { forwardRef } from 'preact/compat';
 import { FormField } from './FormField.tsx';
 import { errorStyle } from './formField.css.ts';

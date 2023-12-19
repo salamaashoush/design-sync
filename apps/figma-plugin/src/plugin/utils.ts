@@ -1,5 +1,6 @@
 import { isObject, memoize } from '@design-sync/utils';
 import {
+  Color,
   formatColor,
   isFontFamilyToken,
   isFontWeightToken,
@@ -142,7 +143,7 @@ export function numberToHex(value: number) {
 }
 
 export function serializeColor(color: RGB | RGBA) {
-  return formatColor(color);
+  return formatColor(color) as Color;
 }
 
 export function serializeLineHeight(lineHeight: LineHeight, refValue = 16): number {
@@ -200,6 +201,7 @@ export function stringToUint8Array(str: string) {
 
 export function uint8ArrayToString(array: Uint8Array) {
   let str = '';
+  // eslint-disable-next-line @typescript-eslint/prefer-for-of
   for (let i = 0; i < array.length; i++) {
     str += String.fromCharCode(array[i]);
   }

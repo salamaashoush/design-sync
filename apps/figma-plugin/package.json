@@ -3,12 +3,13 @@
   "version": "0.0.5",
   "description": "Tokenize Figma Plugin",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "build-figma-plugin --watch",
     "build": "build-figma-plugin --minify",
-    "lint": "eslint --cache --ext .ts,.js,.mjs,.cjs . && prettier -c src test",
-    "lint:fix": "eslint --cache --ext .ts,.js,.mjs,.cjs . --fix && prettier -c src test -w",
-    "test": "pnpm lint && pnpm test:types && vitest run --coverage",
+    "lint": "eslint --cache --ext .ts,.tsx,.js,.jsx src && prettier -c src",
+    "lint:fix": "eslint --cache --ext .ts,.tsx,.js,.jsx src --fix && prettier -c src -w",
+    "test": "pnpm lint && pnpm test:types && vitest run --coverage --passWithNoTests",
     "test:types": "tsc --noEmit --skipLibCheck",
     "precommit": "lint-staged"
   },
@@ -19,6 +20,7 @@
     "@design-sync/json-rpc-utils": "workspace:*",
     "@design-sync/storage": "workspace:*",
     "@design-sync/utils": "workspace:*",
+    "@design-sync/w3c-dtfm": "workspace:*",
     "@dessert-box/react": "^0.7.5",
     "@modular-forms/preact": "^0.7.0",
     "@preact/signals": "^1.2.2",
@@ -33,9 +35,8 @@
   "devDependencies": {
     "@create-figma-plugin/build": "^3.1.0",
     "@create-figma-plugin/tsconfig": "^3.1.0",
+    "@design-sync/eslint-config": "workspace:*",
     "@design-sync/tsconfig": "workspace:*",
-    "@design-sync/utils": "workspace:*",
-    "@design-sync/w3c-dtfm": "workspace:*",
     "@figma/plugin-typings": "^1.82.0",
     "@hyrious/esbuild-plugin-style": "^0.3.5",
     "@vanilla-extract/esbuild-plugin": "^2.3.1",
@@ -43,9 +44,12 @@
     "@vitest/coverage-v8": "^1.1.0",
     "esbuild": "^0.19.10",
     "eslint": "^8.56.0",
+    "happy-dom": "^12.10.3",
     "lint-staged": "^15.2.0",
     "typescript": "^5.3.3",
-    "vitest": "^1.1.0"
+    "vitest": "^1.1.0",
+    "vitest-dom": "^0.1.1",
+    "@preact/preset-vite": "^2.7.0"
   },
   "figma-plugin": {
     "editorType": [

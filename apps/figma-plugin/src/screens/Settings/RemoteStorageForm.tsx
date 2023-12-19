@@ -1,6 +1,5 @@
 import { Button } from '@create-figma-plugin/ui';
 import { useComputed, useSignal } from '@preact/signals';
-import { h } from 'preact';
 import { useCallback } from 'preact/hooks';
 import { Box } from '../../components/Box';
 import { TextInput } from '../../components/TextInput';

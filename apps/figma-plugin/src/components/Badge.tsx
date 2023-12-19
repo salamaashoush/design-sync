@@ -1,4 +1,4 @@
-import { RenderableProps, h } from 'preact';
+import { RenderableProps } from 'preact';
 import { badgeStyle } from './badge.css.ts';
 export interface BadgeProps {
   color?: string;

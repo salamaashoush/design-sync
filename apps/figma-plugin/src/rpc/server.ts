@@ -37,7 +37,7 @@ export function setupRpcServerHandlers() {
     const shadows = figma.getLocalEffectStyles().flatMap((s) =>
       s.effects
         .filter((e) => e.type === 'DROP_SHADOW' || e.type === 'INNER_SHADOW')
-        .map((e) => ({
+        .map(() => ({
           id: s.id,
           name: s.name,
         })),

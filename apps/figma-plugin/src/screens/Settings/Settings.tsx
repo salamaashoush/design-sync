@@ -1,5 +1,4 @@
 import { IconButton, IconPlus32, Modal } from '@create-figma-plugin/ui';
-import { h } from 'preact';
 import { useCallback, useState } from 'preact/hooks';
 import { Box } from '../../components/Box';
 import { Section } from '../../components/Section';

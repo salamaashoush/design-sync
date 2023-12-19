@@ -5,7 +5,7 @@ import { RemoteStorage, RemoteStorageWithoutId } from '../types';
 import { createGitStorageForFigma, localStorage } from './storage';
 
 export class SyncService {
-  private remoteStorages: Map<string, RemoteStorage> = new Map();
+  private remoteStorages = new Map<string, RemoteStorage>();
   private storageService: GitStorage | null = null;
   private tokens = new Map<string, object>();
   private activeStorageId: string | undefined;

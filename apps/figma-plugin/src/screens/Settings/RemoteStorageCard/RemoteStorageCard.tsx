@@ -1,5 +1,4 @@
 import { Bold, IconAdjust32, IconButton, IconTrash32, Text } from '@create-figma-plugin/ui';
-import { h } from 'preact';
 import { Box } from '../../../components/Box.tsx';
 import { remoteStorageCard } from './remoteStorageCard.css.ts';
 

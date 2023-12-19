@@ -1,5 +1,4 @@
 import { Checkbox, Text } from '@create-figma-plugin/ui';
-import { h } from 'preact';
 
 interface CollectionListItemProps {
   label: string;

@@ -1,4 +1,4 @@
-import { Fragment, h } from 'preact';
+import { Fragment } from 'preact';
 import { Box } from '../../components/Box';
 import { Section } from '../../components/Section';
 import { useRpcQuery } from '../../hooks/useRpcCall';

@@ -1,5 +1,5 @@
 import { Bold, Text } from '@create-figma-plugin/ui';
-import { RenderableProps, h } from 'preact';
+import { RenderableProps } from 'preact';
 import { Box } from './Box.tsx';
 import { errorStyle } from './formField.css.ts';
 

@@ -2,3 +2,6 @@ node_modules
 coverage
 dist
 .eslintrc.cjs
+build-figma-plugin.ui.js
+build-figma-plugin.main.js
+vanilla-extract-plugin.js

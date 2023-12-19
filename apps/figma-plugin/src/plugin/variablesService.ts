@@ -4,7 +4,7 @@ import { convertValue, deserializeColor, isColorVariableValue, isVariableAlias, 
 import { designTokenTypeToVariableType, guessTokenTypeFromScopes } from './variables';
 
 export class VariablesStore {
-  private store: Map<string, Variable> = new Map();
+  private store = new Map<string, Variable>();
   constructor() {
     const collections = figma.variables.getLocalVariableCollections();
     for (const collection of collections) {
