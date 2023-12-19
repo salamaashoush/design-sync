@@ -1,4 +1,4 @@
-# @design-sync/rpc
+# @design-sync/json-rpc-utils
 
 ## 0.0.6
 

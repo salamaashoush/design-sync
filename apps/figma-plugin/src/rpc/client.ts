@@ -1,4 +1,4 @@
-import { RpcClient } from '@design-sync/rpc';
+import { RpcClient } from '@design-sync/json-rpc-utils';
 
 export const client = new RpcClient({
   postMessage: (message) =>

@@ -1,4 +1,4 @@
-import { RpcServer } from '@design-sync/rpc';
+import { RpcServer } from '@design-sync/json-rpc-utils';
 import { syncService } from '../plugin/syncService';
 import { variablesService } from '../plugin/variablesService';
 import { RemoteStorage, RemoteStorageWithoutId } from '../types';

@@ -7,13 +7,31 @@
   "sideEffects": false,
   "type": "module",
   "private": false,
-  "main": "src/index.ts",
+  "publishConfig": {
+    "access": "public"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    }
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "unbuild",
-    "dev": "npm run build -- --watch",
+    "build": "tsup",
+    "dev": "tsup --watch",
     "lint": "eslint --cache --ext .ts,.js,.mjs,.cjs . && prettier -c src test",
     "lint:fix": "eslint --cache --ext .ts,.js,.mjs,.cjs . --fix && prettier -c src test -w",
     "prepack": "pnpm run build",
@@ -36,31 +54,12 @@
   "devDependencies": {
     "@design-sync/eslint-config": "workspace:*",
     "@design-sync/tsconfig": "workspace:*",
-    "@types/node": "^20.10.4",
-    "@vitest/coverage-v8": "^1.0.4",
+    "@types/node": "^20.10.5",
+    "@vitest/coverage-v8": "^1.1.0",
     "eslint": "^8.56.0",
     "lint-staged": "^15.2.0",
     "typescript": "^5.3.3",
-    "unbuild": "^2.0.0",
-    "vitest": "^1.0.4"
-  },
-  "publishConfig": {
-    "access": "public",
-    "exports": {
-      ".": {
-        "types": "./dist/index.d.ts",
-        "import": {
-          "types": "./dist/index.d.mts",
-          "default": "./dist/index.mjs"
-        },
-        "require": {
-          "types": "./dist/index.d.cts",
-          "default": "./dist/index.cjs"
-        }
-      }
-    },
-    "main": "./dist/index.cjs",
-    "module": "./dist/index.mjs",
-    "types": "./dist/index.d.ts"
+    "tsup": "^8.0.1",
+    "vitest": "^1.1.0"
   }
 }

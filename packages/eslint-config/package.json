@@ -5,8 +5,8 @@
   "main": "base.js",
   "private": true,
   "dependencies": {
-    "@typescript-eslint/eslint-plugin": "^6.14.0",
-    "@typescript-eslint/parser": "^6.14.0",
+    "@typescript-eslint/eslint-plugin": "^6.15.0",
+    "@typescript-eslint/parser": "^6.15.0",
     "eslint": "^8.56.0",
     "eslint-config-preact": "^1.3.0",
     "eslint-config-prettier": "^9.1.0",

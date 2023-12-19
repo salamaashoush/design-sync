@@ -5,6 +5,11 @@
       "dependsOn": ["^build"],
       "outputs": ["dist/**"]
     },
+    "dev": {
+      "dependsOn": ["^dev"],
+      "cache": false
+      // "persistent": true
+    },
     "lint": {},
     "lint:fix": {},
     "test": {
@@ -12,7 +17,6 @@
     },
     "format": {},
     "test:types": {},
-    "dev": {},
     "precommit": {}
   }
 }

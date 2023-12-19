@@ -1,5 +1,5 @@
 {
-  "name": "@design-sync/figma-plugin",
+  "name": "@design-sync/legacy-figma-plugin",
   "version": "0.0.5",
   "description": "Tokenize Figma Plugin",
   "private": true,
@@ -28,7 +28,7 @@
     "@vanilla-extract/sprinkles": "^1.6.1",
     "@vanilla-extract/vite-plugin": "^3.9.3",
     "concurrently": "^8.2.2",
-    "esbuild": "^0.19.9",
+    "esbuild": "^0.19.10",
     "eslint": "^8.56.0",
     "lint-staged": "^15.2.0",
     "typescript": "^5.3.3",
@@ -40,7 +40,7 @@
   "dependencies": {
     "@design-sync/design-tokens": "workspace:*",
     "@design-sync/figma-icons": "workspace:*",
-    "@design-sync/rpc": "workspace:*",
+    "@design-sync/json-rpc-utils": "workspace:*",
     "@design-sync/storage": "workspace:*",
     "@design-sync/uikit": "workspace:*",
     "@design-sync/utils": "workspace:*",

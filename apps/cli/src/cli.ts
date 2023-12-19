@@ -1,4 +1,3 @@
-#!/usr/bin/env -S npx tsx
 import { logger } from '@design-sync/manager';
 import cliPkg from '../package.json';
 

@@ -1,21 +1,50 @@
 {
   "name": "@design-sync/storage",
   "version": "0.1.0",
-  "description": "Tokenize storage",
-  "main": "src/index.ts",
+  "description": "File storage utils and clients",
+  "repository": "salamaashoush/design-sync",
+  "license": "MIT",
+  "sideEffects": false,
+  "type": "module",
   "private": true,
+  "publishConfig": {
+    "access": "public"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    }
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
     "lint": "eslint ./src --ext .ts,.tsx,.js,.jsx",
     "lint:fix": "pnpm run lint --fix",
     "test:types": "tsc --noEmit --skipLibCheck",
     "precommit": "lint-staged"
   },
+  "dependencies": {},
   "devDependencies": {
     "@design-sync/eslint-config": "workspace:*",
     "@design-sync/tsconfig": "workspace:*",
     "@figma/plugin-typings": "^1.82.0",
     "eslint": "^8.56.0",
     "lint-staged": "^15.2.0",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "tsup": "^8.0.1"
   }
 }

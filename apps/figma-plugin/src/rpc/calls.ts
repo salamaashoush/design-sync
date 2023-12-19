@@ -1,4 +1,4 @@
-import { JsonRpcCall } from '@design-sync/rpc';
+import { JsonRpcCall } from '@design-sync/json-rpc-utils';
 import { RemoteStorage, RemoteStorageWithoutId } from '../types';
 
 export interface UIItem {

@@ -1,4 +1,4 @@
-import { RpcCallParams, RpcCallResult } from '@design-sync/rpc';
+import { RpcCallParams, RpcCallResult } from '@design-sync/json-rpc-utils';
 import { UseMutationOptions, UseQueryOptions, useMutation, useQuery } from '@tanstack/react-query';
 import { client } from '../rpc/client';
 

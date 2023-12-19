@@ -1,23 +1,28 @@
 {
-  "name": "@design-sync/figma-plugin-2",
+  "name": "@design-sync/figma-plugin",
   "version": "0.0.5",
   "description": "Tokenize Figma Plugin",
   "private": true,
   "scripts": {
-    "test:types": "tsc --noEmit --skipLibCheck",
-    "watch": "build-figma-plugin --watch",
+    "dev": "build-figma-plugin --watch",
     "build": "build-figma-plugin --minify",
+    "lint": "eslint --cache --ext .ts,.js,.mjs,.cjs . && prettier -c src test",
+    "lint:fix": "eslint --cache --ext .ts,.js,.mjs,.cjs . --fix && prettier -c src test -w",
+    "test": "pnpm lint && pnpm test:types && vitest run --coverage",
+    "test:types": "tsc --noEmit --skipLibCheck",
     "precommit": "lint-staged"
   },
   "dependencies": {
     "@create-figma-plugin/ui": "^3.1.0",
     "@create-figma-plugin/utilities": "^3.1.0",
+    "@design-sync/design-tokens": "workspace:*",
+    "@design-sync/json-rpc-utils": "workspace:*",
     "@design-sync/storage": "workspace:*",
     "@design-sync/utils": "workspace:*",
     "@dessert-box/react": "^0.7.5",
     "@modular-forms/preact": "^0.7.0",
     "@preact/signals": "^1.2.2",
-    "@tanstack/react-query": "^5.14.0",
+    "@tanstack/react-query": "^5.14.1",
     "@vanilla-extract/css": "^1.14.0",
     "@vanilla-extract/recipes": "^0.5.1",
     "@vanilla-extract/sprinkles": "^1.6.1",
@@ -28,8 +33,6 @@
   "devDependencies": {
     "@create-figma-plugin/build": "^3.1.0",
     "@create-figma-plugin/tsconfig": "^3.1.0",
-    "@design-sync/design-tokens": "workspace:*",
-    "@design-sync/rpc": "workspace:*",
     "@design-sync/tsconfig": "workspace:*",
     "@design-sync/utils": "workspace:*",
     "@design-sync/w3c-dtfm": "workspace:*",
@@ -37,10 +40,12 @@
     "@hyrious/esbuild-plugin-style": "^0.3.5",
     "@vanilla-extract/esbuild-plugin": "^2.3.1",
     "@vanilla-extract/integration": "^6.2.4",
-    "esbuild": "^0.19.9",
+    "@vitest/coverage-v8": "^1.1.0",
+    "esbuild": "^0.19.10",
     "eslint": "^8.56.0",
     "lint-staged": "^15.2.0",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "vitest": "^1.1.0"
   },
   "figma-plugin": {
     "editorType": [
