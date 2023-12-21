@@ -7,32 +7,37 @@
   "sideEffects": false,
   "private": false,
   "type": "module",
-  "files": [
-    "dist",
-    "bin"
-  ],
+  "main": "./src/index.ts",
   "bin": {
-    "design-sync": "./bin/design-sync.mjs"
+    "design-sync": "./src/cli.ts"
   },
   "publishConfig": {
-    "access": "public"
-  },
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": {
+    "access": "public",
+    "exports": {
+      ".": {
         "types": "./dist/index.d.ts",
-        "default": "./dist/index.js"
-      },
-      "require": {
-        "types": "./dist/index.d.cts",
-        "default": "./dist/index.cjs"
+        "import": {
+          "types": "./dist/index.d.ts",
+          "default": "./dist/index.js"
+        },
+        "require": {
+          "types": "./dist/index.d.cts",
+          "default": "./dist/index.cjs"
+        }
       }
+    },
+    "main": "./dist/index.cjs",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "files": [
+      "dist",
+      "bin",
+      "src"
+    ],
+    "bin": {
+      "design-sync": "./bin/design-sync.mjs"
     }
   },
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
   "scripts": {
     "cli": "tsx src/cli.ts",
     "build": "tsup",

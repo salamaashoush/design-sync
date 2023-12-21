@@ -1,7 +1,7 @@
 // build-figma-plugin.ui.js
-const { vanillaExtractPlugin } = require('./vanilla-extract-plugin');
+import { vanillaExtractPlugin } from './vanilla-extract-plugin.js';
 
-module.exports = function (buildOptions) {
+export default function (buildOptions) {
   return {
     ...buildOptions,
     plugins: [
@@ -11,4 +11,4 @@ module.exports = function (buildOptions) {
       }),
     ],
   };
-};
+}

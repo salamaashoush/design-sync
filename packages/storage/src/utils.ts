@@ -25,13 +25,19 @@ export function parseGitURI(input: string): GitInfo {
   };
 }
 
-export function createGitStorage(infoOrUri: string | GitInfo, accessToken: string, base64?: Base64Encoder) {
+export function createGitStorage(
+  infoOrUri: string | GitInfo,
+  accessToken: string,
+  lastSha = '',
+  base64?: Base64Encoder,
+) {
   const info = typeof infoOrUri === 'string' ? parseGitURI(infoOrUri) : infoOrUri;
   switch (info.provider) {
     case 'github':
       return new GithubStorage(
         {
           ...info,
+          lastSha,
           accessToken,
         },
         base64,
@@ -40,6 +46,7 @@ export function createGitStorage(infoOrUri: string | GitInfo, accessToken: strin
       return new GitlabStorage(
         {
           ...info,
+          lastSha,
           accessToken,
         },
         base64,
@@ -48,6 +55,7 @@ export function createGitStorage(infoOrUri: string | GitInfo, accessToken: strin
       return new BitbucketStorage(
         {
           ...info,
+          lastSha,
           accessToken,
         },
         base64,
@@ -56,6 +64,7 @@ export function createGitStorage(infoOrUri: string | GitInfo, accessToken: strin
       return new AzureDevOpsStorage(
         {
           ...info,
+          lastSha,
           accessToken,
         },
         base64,

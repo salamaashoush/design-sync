@@ -1,6 +1,7 @@
+import { deepMerge } from '@design-sync/utils';
 import { GitStorage, SaveFileOptions } from './git';
 interface GithubFile {
-  type: 'file';
+  type: 'file' | 'dir';
   encoding: 'base64';
   size: number;
   name: string;
@@ -12,16 +13,28 @@ interface GithubFile {
   html_url: string;
   download_url: string;
 }
+
+function isSourceDir(data: unknown): data is GithubFile[] {
+  return (
+    Array.isArray(data) &&
+    data.every((f) => typeof f.path === 'string' && typeof f.sha === 'string' && typeof f.type === 'string')
+  );
+}
 // Github using the fetch api
 export class GithubStorage extends GitStorage {
-  private async getSha(path: string) {
-    const data = await this.fetchContent(path);
-    if (Array.isArray(data)) {
-      const parentPath = path.split('/').slice(0, -1).join('/');
-      const parent = await this.fetchContent(parentPath);
-      return Array.isArray(parent) ? parent.find((f) => f.path === path)?.sha : parent.sha;
-    }
-    return data.sha;
+  async getSha(path = this.path): Promise<string> {
+    const res = await fetch(`https://api.github.com/repos/${this.repo}/git/trees/${this.ref}?recursive=1`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/vnd.github.raw',
+        Authorization: `token ${this.accessToken}`,
+        'X-GitHub-Api-Version': '2022-11-28',
+      },
+    });
+    const data = await res.json();
+    console.log(data);
+    return data.tree.find((f) => f.path === path)?.sha ?? '';
   }
 
   private async fetchContent(path: string): Promise<GithubFile> {
@@ -41,8 +54,8 @@ export class GithubStorage extends GitStorage {
     return response.json();
   }
 
-  async save(tokens: any, { commitMessage, filePath }: SaveFileOptions): Promise<void> {
-    const sha = await this.getSha(filePath);
+  async save(tokens: object, { commitMessage, filePath }: SaveFileOptions): Promise<void> {
+    const sha = this.lastSha ?? (await this.getSha(filePath));
     const response = await fetch(`https://api.github.com/repos/${this.repo}/contents/${filePath}`, {
       method: 'PUT',
       headers: {
@@ -62,15 +75,34 @@ export class GithubStorage extends GitStorage {
       }),
     });
     if (!response.ok) {
-      throw new Error('Failed to save tokens');
+      throw new Error('Failed to save tokens to github');
     }
+    const data = await response.json();
+    this.lastSha = data.commit.sha;
   }
 
-  async load(filePath?: string): Promise<any> {
-    const data = await this.fetchContent(filePath ?? this.path);
-    console.log(data);
-    if (Array.isArray(data)) {
-      return Promise.all(data.map((path) => this.load(path.path)));
+  async load(path?: string): Promise<[string, any]> {
+    const sha = await this.getSha(path);
+    const data = await this.loadHelper(path ?? this.path);
+    return [sha, data];
+  }
+
+  async loadHelper(path?: string): Promise<any> {
+    const data = await this.fetchContent(path ?? this.path);
+    if (isSourceDir(data)) {
+      let files = [];
+      for (const file of data) {
+        // only fetch json files and directories
+        if ((file.type === 'file' && file.path.endsWith('.json')) || file.type === 'dir') {
+          files.push(this.loadHelper(file.path));
+        }
+      }
+      files = await Promise.all(files);
+      let tokens = {};
+      for (const file of files) {
+        tokens = deepMerge(tokens, file);
+      }
+      return tokens;
     }
     return data;
   }

@@ -1,11 +1,9 @@
 import { isObject, memoize } from '@design-sync/utils';
 import {
   Color,
-  formatColor,
   isFontFamilyToken,
   isFontWeightToken,
   isTypographyToken,
-  parseColor,
   type DesignToken,
   type Dimension,
   type FontWeight,
@@ -36,8 +34,7 @@ export const deserializeColor = memoize((color: string): RGBA | RGB => {
     console.warn('gradient color is not supported');
     return { r: 0, g: 0, b: 0, a: 0 };
   }
-  const parsed = parseColor(color);
-  return parsed.toRgb();
+  return figma.util.rgba(color);
 });
 
 export const convertFontWeight = memoize((fontWeight: FontWeight) => {
@@ -142,8 +139,12 @@ export function numberToHex(value: number) {
   return hex.length === 1 ? '0' + hex : hex;
 }
 
-export function serializeColor(color: RGB | RGBA) {
-  return formatColor(color) as Color;
+export function serializeColor(color: RGB | RGBA): Color {
+  const c = `#${numberToHex(color.r)}${numberToHex(color.g)}${numberToHex(color.b)}` as Color;
+  if (isRGBA(color)) {
+    return `${c}${color.a}`;
+  }
+  return c;
 }
 
 export function serializeLineHeight(lineHeight: LineHeight, refValue = 16): number {

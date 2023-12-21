@@ -2,6 +2,9 @@ import { GitStorage, SaveFileOptions } from './git';
 
 // Gitlab using the fetch api
 export class GitlabStorage extends GitStorage {
+  getSha(path?: string | undefined, force?: boolean | undefined): Promise<string> {
+    throw new Error('Method not implemented.');
+  }
   async exists(filePath: string): Promise<boolean> {
     return this.load(filePath)
       .then(() => true)

@@ -1,14 +1,15 @@
-const { dirname, join } = require('path');
+import { dirname, join } from 'path';
 
-const {
+import {
   compile,
   cssFileFilter,
   getSourceFromVirtualCssFile,
   processVanillaFile,
   vanillaExtractTransformPlugin,
   virtualCssFileFilter,
-} = require('@vanilla-extract/integration');
-const crypto = require('crypto');
+} from '@vanilla-extract/integration';
+
+import crypto from 'crypto';
 const vanillaCssNamespace = 'vanilla-extract-css-ns';
 
 async function hashString(str) {
@@ -32,7 +33,7 @@ async function hashString(str) {
  * @param {VanillaExtractPluginOptions} options
  *
  */
-function vanillaExtractPlugin({
+export function vanillaExtractPlugin({
   outputCss,
   externals = [],
   runtime = false,
@@ -131,5 +132,3 @@ function vanillaExtractPlugin({
     },
   };
 }
-
-module.exports = { vanillaExtractPlugin };

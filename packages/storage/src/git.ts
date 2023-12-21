@@ -9,6 +9,7 @@ export interface GitInfo {
   repo: string;
   path: string;
   ref: string;
+  lastSha?: string;
 }
 
 export interface GitStorageOptions extends Omit<GitInfo, 'provider'> {
@@ -33,6 +34,7 @@ export abstract class GitStorage<T extends GitStorageOptions = GitStorageOptions
   public repo: string;
   public path: string;
   public ref = 'main';
+  protected lastSha?: string;
 
   constructor(
     info: T,
@@ -42,7 +44,9 @@ export abstract class GitStorage<T extends GitStorageOptions = GitStorageOptions
     this.repo = info.repo;
     this.path = info.path;
     this.ref = info.ref;
+    this.lastSha = info.lastSha;
   }
-  abstract save(tokens: any, options: SaveFileOptions): Promise<void>;
-  abstract load<D = any>(path?: string): Promise<D>;
+  abstract save(tokens: object, options: SaveFileOptions): Promise<void>;
+  abstract load<D = object>(path?: string): Promise<[string, D]>;
+  abstract getSha(path?: string, force?: boolean): Promise<string>;
 }

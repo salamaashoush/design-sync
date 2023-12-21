@@ -7,37 +7,40 @@
   "sideEffects": false,
   "type": "module",
   "private": true,
+  "main": "src/index.ts",
   "publishConfig": {
-    "access": "public"
-  },
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": {
+    "access": "public",
+    "exports": {
+      ".": {
         "types": "./dist/index.d.ts",
-        "default": "./dist/index.js"
-      },
-      "require": {
-        "types": "./dist/index.d.cts",
-        "default": "./dist/index.cjs"
+        "import": {
+          "types": "./dist/index.d.ts",
+          "default": "./dist/index.js"
+        },
+        "require": {
+          "types": "./dist/index.d.cts",
+          "default": "./dist/index.cjs"
+        }
       }
-    }
+    },
+    "main": "./dist/index.cjs",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts"
   },
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
   "files": [
-    "dist"
+    "dist",
+    "src"
   ],
   "scripts": {
     "build": "tsup",
-    "dev": "tsup --watch",
     "lint": "eslint ./src --ext .ts,.tsx,.js,.jsx",
     "lint:fix": "pnpm run lint --fix",
     "test:types": "tsc --noEmit --skipLibCheck",
     "precommit": "lint-staged"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@design-sync/utils": "workspace:*"
+  },
   "devDependencies": {
     "@design-sync/eslint-config": "workspace:*",
     "@design-sync/tsconfig": "workspace:*",

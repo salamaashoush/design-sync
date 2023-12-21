@@ -4,11 +4,21 @@ import { isTokenAlias, normalizeTokenAlias, type DesignToken, type TokenAlias } 
 import { RemoteStorage, RemoteStorageWithoutId } from '../types';
 import { createGitStorageForFigma, localStorage } from './storage';
 
+interface SyncServiceCache {
+  lastSync: number;
+  tokens: Record<string, unknown>;
+  sha: string;
+}
 export class SyncService {
   private remoteStorages = new Map<string, RemoteStorage>();
   private storageService: GitStorage | null = null;
-  private tokens = new Map<string, object>();
+  private tokens = new Map<string, Record<string, unknown>>();
   private activeStorageId: string | undefined;
+  private lastSha = '';
+
+  get storagePath() {
+    return this.storageService?.path ?? '';
+  }
 
   async init() {
     const remoteStorages = (await localStorage.get<RemoteStorage[]>('remoteStorages')) ?? [];
@@ -21,26 +31,79 @@ export class SyncService {
     if (this.activeStorageId) {
       const activeStorageRemoteStorage = this.remoteStorages.get(this.activeStorageId);
       if (activeStorageRemoteStorage) {
-        this.storageService = createGitStorageForFigma(activeStorageRemoteStorage);
+        this.storageService = createGitStorageForFigma(activeStorageRemoteStorage, this.lastSha);
       }
     }
+    await this.loadCache();
+    console.log('init');
     return true;
   }
 
-  async loadTokens() {
-    const filePath = this.storageService?.path ?? 'tokens.json';
-    const tokens = await this.storageService?.load<object>(filePath);
-
-    if (tokens) {
-      this.tokens.set(filePath, tokens);
+  private async loadCache() {
+    const id = this.activeStorageId;
+    if (!id) {
+      return;
     }
-    console.log('loaded tokens', tokens);
-    return tokens;
+    const cache = await localStorage.get<SyncServiceCache>(id);
+    console.log('loaded cache', cache, id);
+    if (cache) {
+      const path = this.storagePath;
+      if (cache.tokens) {
+        this.tokens.set(path, cache.tokens);
+      }
+      this.lastSha = cache.sha;
+    }
   }
 
-  async saveTokens(tokens: object) {
-    const filePath = this.storageService?.path ?? 'tokens.json';
-    console.log('saving tokens', tokens);
+  private async saveCache() {
+    const id = this.activeStorageId;
+    if (!id) {
+      return;
+    }
+    const path = this.storagePath;
+    const cache: SyncServiceCache = {
+      lastSync: Date.now(),
+      tokens: this.tokens.get(path) ?? {},
+      sha: this.lastSha,
+    };
+    console.log('save cache', cache, id);
+    await localStorage.set(id, cache);
+  }
+
+  async isOutdated() {
+    if (!this.lastSha) {
+      return true;
+    }
+
+    if (this.tokens.size === 0) {
+      return true;
+    }
+    const sha = await this.storageService?.getSha();
+    return sha !== this.lastSha;
+  }
+
+  private async loadRemoteTokens() {
+    const [sha, tokens] = (await this.storageService?.load<Record<string, unknown>>()) ?? [];
+    this.lastSha = sha ?? '';
+    if (tokens) {
+      this.tokens.set(this.storagePath, tokens);
+      await this.saveCache();
+    }
+    console.log('loaded remote tokens', tokens);
+    return tokens ?? {};
+  }
+
+  async loadTokens(forceRemote = false) {
+    const isOutdated = forceRemote || (await this.isOutdated());
+    console.log('isOutdated', isOutdated, this.lastSha);
+    if (isOutdated) {
+      await this.loadRemoteTokens();
+    }
+    return this.tokens.get(this.storagePath) ?? {};
+  }
+
+  async saveTokens(tokens: Record<string, unknown>) {
+    const filePath = this.storagePath;
     await this.storageService?.save(tokens, {
       commitMessage: `Update tokens.json`,
       filePath,
@@ -63,16 +126,26 @@ export class SyncService {
       id,
     });
     localStorage.set('remoteStorages', Array.from(this.remoteStorages.values()));
+    if (!this.activeStorageId) {
+      this.activateRemoteStorage(id);
+    }
   }
 
   removeRemoteStorage(id: string) {
     this.remoteStorages.delete(id);
     localStorage.set('remoteStorages', Array.from(this.remoteStorages.values()));
+    if (this.activeStorageId === id) {
+      this.activeStorageId = undefined;
+      localStorage.set('activeStorage', undefined);
+    }
   }
 
   updateRemoteStorage(storage: RemoteStorage) {
     this.remoteStorages.set(storage.id, storage);
     localStorage.set('remoteStorages', Array.from(this.remoteStorages.values()));
+    if (storage.id === this.activeStorageId) {
+      this.activateRemoteStorage(storage.id);
+    }
   }
 
   async activateRemoteStorage(id: string) {

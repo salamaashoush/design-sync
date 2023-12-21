@@ -80,9 +80,13 @@ export function setupRpcServerHandlers() {
     //   },
     //   collections: collections.length > 0 ? await variablesService.exportToDesignTokens(collections, true) : [],
     // };
-    await syncService.loadTokens();
-    // await syncService.saveTokens(tokens);
-    // console.log('exported collections', tokens);
+    try {
+      const tokens = await syncService.loadTokens();
+      variablesService.fromJSON(tokens);
+    } catch (e) {
+      console.error(e);
+    }
+    console.log('synced tokens');
   });
 
   server.handle('remoteStorages/all', async () => syncService.getRemoteStorages());

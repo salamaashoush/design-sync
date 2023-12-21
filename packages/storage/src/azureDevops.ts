@@ -1,6 +1,9 @@
 import { GitStorage, SaveFileOptions } from './git';
 
 export class AzureDevOpsStorage extends GitStorage {
+  getSha(path?: string | undefined, force?: boolean | undefined): Promise<string> {
+    throw new Error('Method not implemented.');
+  }
   async exists(filePath: string): Promise<boolean> {
     return this.load(filePath)
       .then(() => true)

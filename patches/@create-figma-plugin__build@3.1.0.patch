@@ -1,0 +1,12 @@
+diff --git a/lib/watch-async/watch-ignore-regex.js b/lib/watch-async/watch-ignore-regex.js
+index c5d40e180403cf2df4847debad58140c2ede31a8..582bbe83b3bc77b3d0dc985e9a96f8deb18e01f4 100644
+--- a/lib/watch-async/watch-ignore-regex.js
++++ b/lib/watch-async/watch-ignore-regex.js
+@@ -1,6 +1,6 @@
+ import { constants } from '@create-figma-plugin/common';
+ export const watchIgnoreRegex = new RegExp([
+-    '^node_modules',
++    '^node_modules\/(?!@design-sync).*',
+     '^manifest.json$',
+     '^package-lock.json$',
+     '.css.d.ts$',

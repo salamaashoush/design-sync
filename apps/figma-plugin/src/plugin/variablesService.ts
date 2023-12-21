@@ -75,9 +75,12 @@ export class VariablesService {
     return all.filter((c) => ids.includes(c.key));
   }
 
+  getCollectionByName(name: string) {
+    return this.getLocalCollections().find((c) => c.name === name);
+  }
+
   private getCollection(name: string, modes: string[] = [], defaultMode = 'Value') {
-    const collection =
-      this.getLocalCollections().find((c) => c.name === name) ?? figma.variables.createVariableCollection(name);
+    const collection = this.getCollectionByName(name) ?? figma.variables.createVariableCollection(name);
     if (modes.length > 0) {
       collection.renameMode(collection.defaultModeId, defaultMode === DEFAULT_MODE ? 'Value' : defaultMode);
     }
@@ -97,6 +100,7 @@ export class VariablesService {
     value: VariableValue,
     collection: VariableCollection,
   ) {
+    console.log('createOrUpdateVariable', mode, type, name, value);
     const modeId =
       collection.modes.find((m) => m.name === mode || m.modeId === mode)?.modeId ?? collection.defaultModeId;
     const variable =
@@ -108,13 +112,13 @@ export class VariablesService {
   }
 
   private createVariableAlias(name: string, mode: string, ref: string, collection: VariableCollection) {
+    console.log('createVariableAlias', name, mode, ref);
     const refVariable = this.variablesStore.getByName(ref);
     if (!refVariable) {
       throw new Error(`Variable ${ref} not found`);
     }
     const modeId =
       collection.modes.find((m) => m.name === mode || m.modeId === mode)?.modeId ?? collection.defaultModeId;
-    console.log('createVariableAlias', refVariable, name, this.aliasesToProcess);
     return this.createOrUpdateVariable(
       modeId,
       refVariable.resolvedType,
@@ -144,10 +148,11 @@ export class VariablesService {
   }
 
   fromJSON(tokens: Record<string, unknown>) {
-    const walker = new TokensWalker(tokens);
+    const walker = new TokensWalker(tokens, { defaultMode: 'light', requiredModes: ['light', 'dark'] });
     const { requiredModes, defaultMode } = walker.getModes();
     const name = walker.getName();
     const collection = this.getCollection(name, requiredModes, defaultMode);
+    console.log('collection', collection.name);
     walker.walk((token) => {
       const figmaType = designTokenTypeToVariableType(token.type);
       const name = token.path.trim().replace(/\./g, '/');
