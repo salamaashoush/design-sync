@@ -5,7 +5,6 @@ import { GithubStorage } from './github';
 import { GitlabStorage } from './gitlab';
 
 const inputRegex = /^(?<provider>[\w-.]+):(?<repo>[\w.-]+\/[\w.-]+)(?<path>[^#]+)?#?(?<ref>[\w./-]+)?/;
-
 const providerShortcuts: Record<string, string> = {
   gh: 'github',
   gl: 'gitlab',
@@ -16,7 +15,6 @@ const providerShortcuts: Record<string, string> = {
 export function parseGitURI(input: string): GitInfo {
   const m = input.match(inputRegex)?.groups || {};
   const provider = m.provider || 'github';
-  console.log('M', m, input);
   return {
     provider: (providerShortcuts[provider] || provider) as GitInfo['provider'],
     repo: m.repo,

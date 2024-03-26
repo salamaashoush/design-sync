@@ -5,7 +5,6 @@ import {
   WalkerDesignToken,
   getModeRawValue,
   isTokenAlias,
-  pathToStyleName,
   processPrimitiveValue,
   serializeObject,
   tokenValueToCss,
@@ -103,7 +102,7 @@ class VanillaExtractPlugin {
       finalStyle = this.processCssStyleObject(style);
     }
     // use the last part of the path as the style name
-    const styleName = pathToStyleName(path, true);
+    const styleName = token.getStyleName();
     const docs = token.description ? `/**\n * ${token.description}\n */\n` : '';
     this.styles.push(`${docs}export const ${styleName} = style(${serializeObject(finalStyle)})\n`);
   }

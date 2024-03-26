@@ -12,12 +12,6 @@ import { normalizeFontFamilyValue, normalizeFontWeightValue, normalizeTypography
 import { processPrimitiveValue } from './serialize';
 import { DesignToken, TokenDefinition } from './types';
 
-export function pathToStyleName(path: string, camel = true, count = 3) {
-  const parts = (isTokenAlias(path) ? normalizeTokenAlias(path) : path).replace(/[^a-zA-Z0-9-_.]/g, '').split('.');
-  const name = parts.slice(parts.length - count).join('-');
-  return camel ? camelCase(name) : name;
-}
-
 export function pathToCssVarName(path: string, prefix?: string) {
   return `--${prefix ?? ''}${path.replace('@', '\\@').replace(/\./g, '-')}`;
 }
@@ -28,9 +22,13 @@ export function processCssVarRef(tokenValue: string | number, prefix?: string, d
   );
 }
 
-export function tokenPathToStyleName(path: string, textTransform = camelCase, count = 3) {
+export function tokenPathToStyleName(
+  path: string,
+  pathSegments = 3,
+  textTransform: (str: string) => string = camelCase,
+) {
   const parts = (isTokenAlias(path) ? normalizeTokenAlias(path) : path).replace(/[^a-zA-Z0-9-_.]/g, '').split('.');
-  const name = parts.slice(parts.length - count).join('-');
+  const name = parts.slice(parts.length - pathSegments).join('-');
   return textTransform(name);
 }
 

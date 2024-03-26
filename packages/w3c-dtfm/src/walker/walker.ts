@@ -331,6 +331,8 @@ export class TokensWalker {
       $value: getModeRawValue(action.payload, defaultMode),
       $type: parent.type as TokenType,
       $description: parent.description,
+      $name: parent.raw.$name,
+      $title: parent.raw.$title,
       $extensions: requiredModes.reduce(
         (acc, mode) => {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -422,13 +424,13 @@ export class TokensWalker {
   private createRawToken(
     $value: unknown,
     $type: TokenType,
-    $description: string,
+    groupMeta: Record<string, unknown>,
     tokenLike: Partial<DesignToken>,
   ): DesignToken {
     return {
       $value,
       $type,
-      $description,
+      ...groupMeta,
       ...tokenLike,
     } as DesignToken;
   }
@@ -436,7 +438,16 @@ export class TokensWalker {
   private walkTokens(tokens: object, path = '', walker: Walker) {
     for (const [key, token] of Object.entries(tokens)) {
       const currentPath = path ? `${path}.${key}` : key;
-      const parentDescription = (token as any).$description;
+      // find all keys that starts with $ and are not $type or $value
+      const meta = Object.entries(token).reduce(
+        (acc, [key, value]) => {
+          if (key.startsWith('$') && !['$type', '$value'].includes(key)) {
+            acc[key] = value;
+          }
+          return acc;
+        },
+        {} as Record<string, unknown>,
+      );
       if (isDesignTokenGroup(token)) {
         const groupType = token.$type;
         // Remove the $type key to avoid processing it as a child token
@@ -446,7 +457,7 @@ export class TokensWalker {
           if (!isObject(groupToken)) {
             continue;
           }
-          const constructedToken = this.createRawToken(groupToken.$value, groupType, parentDescription, groupToken);
+          const constructedToken = this.createRawToken(groupToken.$value, groupType, meta, groupToken);
           if (isDesignTokenLike(constructedToken)) {
             walker(constructedToken, `${currentPath}.${groupKey}`);
           } else {
@@ -461,7 +472,7 @@ export class TokensWalker {
           }
         }
       } else if (isDesignToken(token)) {
-        walker(this.createRawToken(token.$value, token.$type, parentDescription, token), currentPath);
+        walker(this.createRawToken(token.$value, token.$type, meta, token), currentPath);
       } else if (isObject(token)) {
         // If the token isn't recognized as a group or single token, recurse into it to check its children
         this.walkTokens(token, currentPath, walker);

@@ -1,3 +1,5 @@
+import { camelCase } from '@design-sync/utils';
+import { tokenPathToStyleName } from '../css';
 import type { DerefToken, DesignToken, TokenType } from '../types';
 import type { DesignTokenValueByMode, TokensWalkerAction } from './types';
 import { getModeNormalizeValue, getModeRawValue } from './utils';
@@ -12,7 +14,7 @@ export class WalkerDesignToken {
   public isGenerated = false;
   public defaultMode: string;
   public requiredModes: string[];
-
+  public parentPath: string;
   constructor(
     public path: string,
     public raw: DesignToken,
@@ -21,6 +23,11 @@ export class WalkerDesignToken {
     const { defaultMode, requiredModes } = walker.getModes();
     this.defaultMode = defaultMode;
     this.requiredModes = requiredModes;
+    this.parentPath = path.split('.').slice(0, -1).join('.');
+  }
+
+  get name() {
+    return this.raw.$name || this.raw.$title;
   }
 
   get type(): TokenType {
@@ -54,6 +61,11 @@ export class WalkerDesignToken {
       this.#normalizedValue = getModeNormalizeValue(this.valueByMode, this.defaultMode);
     }
     return this.#normalizedValue;
+  }
+
+  getStyleName(transform = camelCase, count?: number): string {
+    const name = this.name ?? tokenPathToStyleName(this.path, count, transform);
+    return typeof transform === 'function' ? transform(name) : name;
   }
 
   getRawValueByMode(mode: string): DerefToken<DesignToken>['$value'] {

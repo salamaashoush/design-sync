@@ -62,7 +62,7 @@ export function responsiveExtension({
     name: 'responsive-extension',
     filter,
     run(token, walker) {
-      const parentPath = token.path.split('.').slice(0, -1).join('.');
+      const parentPath = token.parentPath;
       const breakpointTokens = walker.filter((token) => token.path.startsWith(parentPath));
       const breaks = {} as Record<string, string>;
       // normalize breakpoints

@@ -14,7 +14,7 @@ const breakpoints = {
 const breakpointKeys = Object.keys(breakpoints);
 export default defineConfig({
   // uri: 'github:salamaashoush/kda-design-system/tokens#dedupe-tokens',
-  uri: 'github:kadena-community/design-system/tokens#font-weight-tag',
+  uri: 'github:kadena-community/design-system/tokens#main',
   out: 'generated',
   defaultMode: 'light',
   requiredModes: ['light', 'dark'],

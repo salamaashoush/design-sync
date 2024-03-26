@@ -104,7 +104,12 @@ export interface Tokens {
 }
 export type TokenType = (typeof TokenTypes)[keyof typeof TokenTypes];
 export type TokenAlias = `{${string}}`;
-export interface TokenDefinition<T extends TokenType, V = Tokens[T]> {
+
+export interface AdditionalLabelingMeta {
+  $name?: string;
+  $title?: string;
+}
+export interface TokenDefinition<T extends TokenType, V = Tokens[T]> extends AdditionalLabelingMeta {
   $value: V | TokenAlias;
   $type: T;
   $description?: string;

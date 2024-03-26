@@ -1,10 +1,10 @@
 import { logger } from '@design-sync/manager';
 import { camelCase } from '@design-sync/utils';
 import { defineCommand } from 'citty';
-import { existsSync } from 'fs';
-import { readFile, writeFile } from 'fs/promises';
+import { writeFile } from 'fs/promises';
 import { addDevDependency, detectPackageManager } from 'nypm';
 import { join } from 'path';
+import { PackageJson, readPackageJSON, resolvePackageJSON, resolveTSConfig, writePackageJSON } from 'pkg-types';
 export interface ConfigTemplateOptions {
   out: string;
   uri: string;
@@ -49,13 +49,9 @@ export function generateConfigTemplate(options: ConfigTemplateOptions, isCJS: bo
 }
 
 // Function to add a script to package.json
-async function addPackageJsonScript(packageJsonPath: string, scriptName: string, scriptCommand: string) {
-  const content = await readFile(packageJsonPath, 'utf8');
-  const packageJson = JSON.parse(content);
+async function addPackageJsonScript(packageJson: PackageJson, scriptName: string, scriptCommand: string) {
   packageJson.scripts = packageJson.scripts || {};
   packageJson.scripts[scriptName] = scriptCommand;
-  const updatedPackageJson = JSON.stringify(packageJson, null, 2);
-  await writeFile(packageJsonPath, updatedPackageJson, 'utf8');
 }
 async function configPrompt() {
   const uri = await logger.prompt('What is the uri of your tokens git repo?', {
@@ -123,8 +119,10 @@ export default defineCommand({
     if (!args.default) {
       config = await configPrompt();
     }
-    const isCJS = typeof require !== 'undefined';
-    const isTypescript = existsSync(`${args.cwd}/tsconfig.json`);
+    const packageJsonPath = await resolvePackageJSON();
+    const packageJson = await readPackageJSON(packageJsonPath);
+    const isCJS = packageJson.type !== 'module';
+    const isTypescript = await resolveTSConfig();
     const template = generateConfigTemplate(config, isCJS);
 
     const deps = ['@design-sync/cli', ...config.plugins.map((plugin) => `@design-sync/${plugin}-plugin`)];
@@ -139,11 +137,11 @@ export default defineCommand({
     const configPath = isTypescript ? 'design-sync.config.ts' : 'design-sync.config.js';
     await writeFile(join(args.cwd, configPath), template);
     logger.success(`Config file created at ${configPath}`);
-    const pkgJsonPath = join(args.cwd, 'package.json');
     try {
-      await addPackageJsonScript(pkgJsonPath, 'tokens:sync', 'design-sync sync');
+      await addPackageJsonScript(packageJson, 'tokens:sync', 'design-sync sync');
+      await writePackageJSON(packageJsonPath, packageJson);
     } catch (e) {
-      logger.warn(`Failed to add tokens:sync script to package.json at ${pkgJsonPath}, please add manually`);
+      logger.warn(`Failed to add tokens:sync script to package.json at ${packageJsonPath}, please add manually`);
     }
     logger.box(`You can now run \`${packageManager?.command} run tokens:sync\``);
   },

@@ -1,5 +1,5 @@
 import { toArray } from '@design-sync/utils';
-import { TokensWalker } from '@design-sync/w3c-dtfm';
+import { TokensWalker, TokensWalkerFilter } from '@design-sync/w3c-dtfm';
 import { existsSync } from 'node:fs';
 import { rm } from 'node:fs/promises';
 import { join } from 'node:path';
@@ -16,6 +16,7 @@ export interface TokensManagerPluginFile {
 }
 export interface TokensManagerPlugin {
   name: string;
+  filter?: TokensWalkerFilter;
   build: (walker: TokensManager) => Promise<TokensManagerPluginFile[]>;
 }
 

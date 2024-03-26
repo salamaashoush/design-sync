@@ -1,12 +1,11 @@
 import { TokensManager, TokensManagerPlugin, TokensManagerPluginFile } from '@design-sync/manager';
-import { deepMerge, set } from '@design-sync/utils';
+import { camelCase, deepMerge, set } from '@design-sync/utils';
 import {
   DesignTokenValueByMode,
   WalkerDesignToken,
   getModeRawValue,
   isTokenAlias,
   pathToCssVarName,
-  pathToStyleName,
   processCssVarRef,
   processPrimitiveValue,
   serializeObject,
@@ -89,7 +88,7 @@ class StyledComponentsPlugin {
       finalStyle = this.processCssStyleObject(style);
     }
     // use the last part of the path as the style name
-    const styleName = pathToStyleName(path);
+    const styleName = token.getStyleName(camelCase);
     this.styles.push(`export const ${styleName} = style(${serializeObject(finalStyle)})\n`);
   }
 

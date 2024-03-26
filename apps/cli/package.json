@@ -54,8 +54,9 @@
     "@design-sync/manager": "workspace:*",
     "@design-sync/utils": "workspace:*",
     "@design-sync/w3c-dtfm": "workspace:*",
-    "citty": "^0.1.5",
-    "nypm": "^0.3.3"
+    "citty": "^0.1.6",
+    "nypm": "^0.3.8",
+    "pkg-types": "^1.0.3"
   },
   "devDependencies": {
     "@design-sync/css-plugin": "workspace:*",
@@ -64,13 +65,13 @@
     "@design-sync/styled-components-plugin": "workspace:*",
     "@design-sync/tsconfig": "workspace:*",
     "@design-sync/vanilla-extract-plugin": "workspace:*",
-    "@types/node": "^20.10.5",
-    "@vitest/coverage-v8": "^1.1.0",
-    "eslint": "^8.56.0",
-    "prettier": "^3.1.1",
-    "tsx": "^4.6.2",
-    "typescript": "^5.3.3",
-    "tsup": "^8.0.1",
-    "vitest": "^1.1.0"
+    "@types/node": "^20.11.30",
+    "@vitest/coverage-v8": "^1.4.0",
+    "eslint": "^8.57.0",
+    "prettier": "^3.2.5",
+    "tsup": "^8.0.2",
+    "tsx": "^4.7.1",
+    "typescript": "^5.4.3",
+    "vitest": "^1.4.0"
   }
 }

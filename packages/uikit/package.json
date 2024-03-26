@@ -13,10 +13,10 @@
   "dependencies": {
     "@design-sync/design-tokens": "workspace:*",
     "@design-sync/figma-icons": "workspace:*",
-    "@kobalte/core": "^0.11.2",
+    "@kobalte/core": "^0.12.6",
     "@kobalte/vanilla-extract": "^0.5.0",
-    "@vanilla-extract/css": "^1.14.0",
-    "@vanilla-extract/recipes": "^0.5.1",
+    "@vanilla-extract/css": "^1.14.1",
+    "@vanilla-extract/recipes": "^0.5.2",
     "@vanilla-extract/sprinkles": "^1.6.1"
   },
   "peerDependencies": {
@@ -25,9 +25,9 @@
   "devDependencies": {
     "@design-sync/eslint-config": "workspace:*",
     "@design-sync/tsconfig": "workspace:*",
-    "eslint": "^8.56.0",
-    "lint-staged": "^15.2.0",
-    "solid-js": "^1.8.7",
-    "typescript": "^5.3.3"
+    "eslint": "^8.57.0",
+    "lint-staged": "^15.2.2",
+    "solid-js": "^1.8.16",
+    "typescript": "^5.4.3"
   }
 }

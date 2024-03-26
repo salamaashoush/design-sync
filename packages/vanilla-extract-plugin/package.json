@@ -7,7 +7,7 @@
   "sideEffects": false,
   "type": "module",
   "private": false,
- "main": "src/index.ts",
+  "main": "src/index.ts",
   "publishConfig": {
     "access": "public",
     "exports": {
@@ -50,12 +50,12 @@
   "devDependencies": {
     "@design-sync/eslint-config": "workspace:*",
     "@design-sync/tsconfig": "workspace:*",
-    "@types/node": "^20.10.5",
-    "@vitest/coverage-v8": "^1.1.0",
-    "eslint": "^8.56.0",
-    "lint-staged": "^15.2.0",
-    "typescript": "^5.3.3",
-    "tsup": "^8.0.1",
-    "vitest": "^1.1.0"
+    "@types/node": "^20.11.30",
+    "@vitest/coverage-v8": "^1.4.0",
+    "eslint": "^8.57.0",
+    "lint-staged": "^15.2.2",
+    "tsup": "^8.0.2",
+    "typescript": "^5.4.3",
+    "vitest": "^1.4.0"
   }
 }

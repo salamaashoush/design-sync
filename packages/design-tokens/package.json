@@ -40,17 +40,17 @@
     "precommit": "lint-staged"
   },
   "dependencies": {
-    "@vanilla-extract/css": "^1.14.0",
-    "@vanilla-extract/recipes": "^0.5.1",
+    "@vanilla-extract/css": "^1.14.1",
+    "@vanilla-extract/recipes": "^0.5.2",
     "@vanilla-extract/sprinkles": "^1.6.1"
   },
   "devDependencies": {
     "@design-sync/eslint-config": "workspace:*",
     "@design-sync/tsconfig": "workspace:*",
-    "eslint": "^8.56.0",
-    "lint-staged": "^15.2.0",
-    "typescript": "^5.3.3",
-    "tsup": "^8.0.1",
-    "@vanilla-extract/esbuild-plugin": "^2.3.1"
+    "@vanilla-extract/esbuild-plugin": "^2.3.5",
+    "eslint": "^8.57.0",
+    "lint-staged": "^15.2.2",
+    "tsup": "^8.0.2",
+    "typescript": "^5.4.3"
   }
 }

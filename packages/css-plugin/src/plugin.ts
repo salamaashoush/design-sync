@@ -8,7 +8,6 @@ import {
   pathToCssVarName,
   processCssVarRef,
   serializeObjectToCSS,
-  tokenPathToStyleName,
   tokenValueToCss,
   typographyToCssStyle,
 } from '@design-sync/w3c-dtfm';
@@ -65,8 +64,8 @@ class CSSPlugin {
   }
   private createCssClass(token: WalkerDesignToken) {
     const { defaultMode } = this.walker.getModes();
-    const { rawValue, path, isResponsive, valueByMode } = token;
-    const selector = `.${tokenPathToStyleName(path, kebabCase)}`;
+    const { rawValue, isResponsive, valueByMode } = token;
+    const selector = `.${token.getStyleName(kebabCase)}`;
     let baseStyle = {};
     if (isResponsive) {
       baseStyle = typographyToCssStyle(getModeRawValue(valueByMode.base as DesignTokenValueByMode, defaultMode));
