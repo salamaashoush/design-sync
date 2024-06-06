@@ -1,3 +1,4 @@
+import { isObject } from '@design-sync/utils';
 import { COMPOSITE_TYPES, EXACT_TOKEN_ALIAS_REGEX, TOKEN_ALIAS_REGEX } from './constants';
 import {
   DesignToken,
@@ -10,14 +11,6 @@ import {
   TokenType,
   WithExtension,
 } from './types';
-
-export function isString(value: unknown): value is string {
-  return typeof value === 'string';
-}
-
-export function isObject(value: unknown): value is object {
-  return typeof value === 'object' && value !== null;
-}
 
 export function isDesignTokenGroup(value: unknown): value is TokenGroupDefinition<TokenType> {
   return isObject(value) && '$type' in value && !('$value' in value);
