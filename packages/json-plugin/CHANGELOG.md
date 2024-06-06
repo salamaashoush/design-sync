@@ -1,5 +1,15 @@
 # @design-sync/json-plugin
 
+## 0.3.2
+
+### Patch Changes
+
+- ede2061: Allow custom pathToStyleName to be used
+- Updated dependencies [ede2061]
+  - @design-sync/utils@0.5.1
+  - @design-sync/w3c-dtfm@0.11.1
+  - @design-sync/manager@0.6.2
+
 ## 0.3.1
 
 ### Patch Changes

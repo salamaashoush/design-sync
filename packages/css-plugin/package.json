@@ -1,6 +1,6 @@
 {
   "name": "@design-sync/css-plugin",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Transforms design tokens to css variables and classes",
   "repository": "salamaashoush/design-sync",
   "license": "MIT",

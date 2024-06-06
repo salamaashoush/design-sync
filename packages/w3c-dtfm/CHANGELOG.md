@@ -1,5 +1,13 @@
 # @design-sync/w3c-dtfm
 
+## 0.11.1
+
+### Patch Changes
+
+- ede2061: Allow custom pathToStyleName to be used
+- Updated dependencies [ede2061]
+  - @design-sync/utils@0.5.1
+
 ## 0.11.0
 
 ### Minor Changes
