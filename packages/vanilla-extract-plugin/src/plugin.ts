@@ -2,6 +2,7 @@ import { TokensManager, TokensManagerPlugin, TokensManagerPluginFile } from '@de
 import { deepMerge, set } from '@design-sync/utils';
 import {
   DesignTokenValueByMode,
+  TokensWalker,
   WalkerDesignToken,
   getModeRawValue,
   isTokenAlias,
@@ -20,7 +21,7 @@ interface VanillaExtractPluginConfig {
   themeSelector?: string | Record<string, string>;
   globalThemes?: boolean | 'default' | string[];
   createGlobalContract?: boolean;
-  pathToStyleName?: (path: string) => string;
+  styleName?: (token: WalkerDesignToken, walker: TokensWalker) => string;
 }
 
 class VanillaExtractPlugin {
@@ -30,7 +31,7 @@ class VanillaExtractPlugin {
   private docs = new Map<string, string>();
 
   constructor(
-    private config: Required<VanillaExtractPluginConfig>,
+    private config: VanillaExtractPluginConfig,
     private manager: TokensManager,
   ) {
     const { defaultMode, requiredModes } = this.walker.getModes();
@@ -40,6 +41,9 @@ class VanillaExtractPlugin {
     }
   }
 
+  get outDir() {
+    return this.config.outDir ?? '';
+  }
   private get walker() {
     return this.manager.getWalker();
   }
@@ -63,7 +67,7 @@ class VanillaExtractPlugin {
     return style;
   }
 
-  private addTypographyStyle(token: WalkerDesignToken) {
+  private addStyle(token: WalkerDesignToken) {
     const { defaultMode } = this.walker.getModes();
     const { rawValue, path, isResponsive, valueByMode } = token;
     let finalStyle = {};
@@ -102,7 +106,7 @@ class VanillaExtractPlugin {
       finalStyle = this.processCssStyleObject(style);
     }
     // use the last part of the path as the style name
-    const styleName = this.config.pathToStyleName(path);
+    const styleName = this.config.styleName ? this.config.styleName(token, this.walker) : pathToStyleName(path);
     const docs = token.description ? `/**\n * ${token.description}\n */\n` : '';
     this.styles.push(`${docs}export const ${styleName} = style(${serializeObject(finalStyle)})\n`);
   }
@@ -150,7 +154,7 @@ class VanillaExtractPlugin {
   async run() {
     for (const token of this.walker.getTokens()) {
       if (token.type === 'typography') {
-        this.addTypographyStyle(token);
+        this.addStyle(token);
       } else {
         this.addToken(token);
       }
@@ -184,7 +188,7 @@ class VanillaExtractPlugin {
       })});`,
     ].join('\n');
     return {
-      path: join(this.config.outDir, 'contract.css.ts'),
+      path: join(this.outDir, 'contract.css.ts'),
       content,
     };
   }
@@ -212,7 +216,7 @@ class VanillaExtractPlugin {
       .join('\n');
 
     return {
-      path: join(this.config.outDir, `${mode}.css.ts`),
+      path: join(this.outDir, `${mode}.css.ts`),
       content: content,
     };
   }
@@ -224,7 +228,7 @@ class VanillaExtractPlugin {
       typography.join('\n'),
     ].join('\n');
     return {
-      path: join(this.config.outDir, 'styles.css.ts'),
+      path: join(this.outDir, 'styles.css.ts'),
       content,
     };
   }
@@ -241,7 +245,6 @@ export function vanillaExtractPlugin(config: VanillaExtractPluginConfig = {}): T
           globalThemes: false,
           createGlobalContract: false,
           onlyValues: false,
-          pathToStyleName,
           outDir: '',
           ...config,
         },

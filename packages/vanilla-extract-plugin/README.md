@@ -44,7 +44,7 @@ export default {
     // create global theme contract, default: false
     createGlobalContract: false,
     // generate style name from token path
-    pathToStyleName: path => path.split('.').join('_')
+    styleName: ({ path }) => path.split('.').join('_')
   })],
 }
 ```
