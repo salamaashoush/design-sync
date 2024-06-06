@@ -1,4 +1,5 @@
-import { isObject, isTokenAlias } from '../guards';
+import { isObject } from '@design-sync/utils';
+import { isTokenAlias } from '../guards';
 import { normalizeColorValue } from './color';
 import { normalizeDimensionValue } from './dimension';
 import { normalizeStrokeStyleValue } from './stroke';

@@ -1,4 +1,4 @@
-import { get, toArray } from '@design-sync/utils';
+import { get, isObject, toArray } from '@design-sync/utils';
 import { normalizeTokenAlias } from '../alias';
 import {
   hasModeExtension,
@@ -6,7 +6,6 @@ import {
   isDesignToken,
   isDesignTokenGroup,
   isDesignTokenLike,
-  isObject,
   isTokenAlias,
 } from '../guards';
 import {
