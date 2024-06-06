@@ -1,4 +1,5 @@
-import { isObject, isString, isTokenAlias } from '../guards';
+import { isObject, isString } from '@design-sync/utils';
+import { isTokenAlias } from '../guards';
 import { StrokeStyleName } from '../types';
 
 const VALID_STROKE_STYLES = ['solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'outset', 'inset'];
