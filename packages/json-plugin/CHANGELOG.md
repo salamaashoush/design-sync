@@ -1,5 +1,13 @@
 # @design-sync/json-plugin
 
+## 0.3.3
+
+### Patch Changes
+
+- Updated dependencies [9e30ac5]
+  - @design-sync/w3c-dtfm@0.11.2
+  - @design-sync/manager@0.6.3
+
 ## 0.3.2
 
 ### Patch Changes

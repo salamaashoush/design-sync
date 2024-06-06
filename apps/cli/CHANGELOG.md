@@ -1,5 +1,14 @@
 # @design-sync/sync
 
+## 0.11.3
+
+### Patch Changes
+
+- 6ef6be5: Rexport utils from `@design-sync/cli`
+- Updated dependencies [9e30ac5]
+  - @design-sync/w3c-dtfm@0.11.2
+  - @design-sync/manager@0.6.3
+
 ## 0.11.2
 
 ### Patch Changes
