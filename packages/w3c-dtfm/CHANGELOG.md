@@ -1,5 +1,11 @@
 # @design-sync/w3c-dtfm
 
+## 0.11.2
+
+### Patch Changes
+
+- 9e30ac5: Change some import and use utils package instead of internal one
+
 ## 0.11.1
 
 ### Patch Changes
