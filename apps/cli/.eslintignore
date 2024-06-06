@@ -2,3 +2,6 @@ node_modules
 coverage
 dist
 generated
+*.config.js
+*.config.ts
+bin/design-sync.mjs

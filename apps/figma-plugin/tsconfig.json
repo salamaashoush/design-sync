@@ -1,5 +1,5 @@
 {
-  "extends": "@design-sync/tsconfig/base.json",
+  "extends": "@design-sync/tsconfig/react.json",
   "compilerOptions": {
     "allowImportingTsExtensions": true,
     "jsx": "react",

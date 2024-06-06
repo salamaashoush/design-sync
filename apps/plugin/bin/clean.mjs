@@ -1,3 +1,3 @@
-import { rm } from "fs/promises";
+import { rm } from "node:fs/promises";
 
 await rm("dist", { force: true, recursive: true });

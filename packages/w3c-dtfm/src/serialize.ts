@@ -57,6 +57,7 @@ export function processJSValue(value: unknown) {
   }
 
   if (hasTemplateString(value)) {
+    // eslint-disable-next-line no-useless-escape
     const processed = value.replace(TEMPLATE_STRING_REGEX, (_, match) => `\${${correctJSObjectPath(match)}\}`);
     return `\`${processed}\``;
   }

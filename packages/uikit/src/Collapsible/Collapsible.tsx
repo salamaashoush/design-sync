@@ -1,6 +1,6 @@
 import { CaretRight16Icon } from '@design-sync/figma-icons';
 import { Collapsible as KCollapsible } from '@kobalte/core';
-import { JSX, ParentProps } from 'solid-js';
+import { ComponentProps, JSX, ParentProps } from 'solid-js';
 import {
   collapsible,
   collapsibleCaret,
@@ -9,7 +9,7 @@ import {
   collapsibleLabel,
 } from './collapsible.css';
 
-interface CollapsibleProps extends KCollapsible.CollapsibleRootOptions {
+interface CollapsibleProps extends ComponentProps<typeof KCollapsible.Root> {
   title: string;
   section?: boolean;
   control?: JSX.Element;

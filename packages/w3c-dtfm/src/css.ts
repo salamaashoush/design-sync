@@ -12,12 +12,6 @@ import { normalizeFontFamilyValue, normalizeFontWeightValue, normalizeTypography
 import { processPrimitiveValue } from './serialize';
 import { DesignToken, TokenDefinition } from './types';
 
-export function pathToStyleName(path: string, camel: boolean = true, count: number = 3) {
-  const parts = (isTokenAlias(path) ? normalizeTokenAlias(path) : path).replace(/[^a-zA-Z0-9-_.]/g, '').split('.');
-  const name = parts.slice(parts.length - count).join('-');
-  return camel ? camelCase(name) : name;
-}
-
 export function pathToCssVarName(path: string, prefix?: string) {
   return `--${prefix ?? ''}${path.replace('@', '\\@').replace(/\./g, '-')}`;
 }
@@ -28,8 +22,16 @@ export function processCssVarRef(tokenValue: string | number, prefix?: string, d
   );
 }
 
-export function tokenPathToStyleName(path: string, textTransform = camelCase, count: number = 3) {
-  const parts = (isTokenAlias(path) ? normalizeTokenAlias(path) : path).replace(/[^a-zA-Z0-9-_.]/g, '').split('.');
+export function normalizeTokenPath(path: string) {
+  return (isTokenAlias(path) ? normalizeTokenAlias(path) : path).replace(/[^a-zA-Z0-9-_.]/g, '');
+}
+
+interface PathToStyleNameOptions {
+  textTransform?: (name: string) => string;
+  count?: number;
+}
+export function pathToStyleName(path: string, { textTransform = camelCase, count = 3 }: PathToStyleNameOptions = {}) {
+  const parts = normalizeTokenPath(path).split('.');
   const name = parts.slice(parts.length - count).join('-');
   return textTransform(name);
 }
@@ -154,7 +156,7 @@ export function gradientToCssValue(gradient?: TokenDefinition<'gradient'>['$valu
     return value;
   }
   // convert the gradient stops to a css gradient
-  return value.map((stop) => `${stop.color} ${stop.position ?? 0 * 100}%`).join(', ');
+  return value.map((stop) => `${stop.color} ${(stop.position ?? 0) * 100}%`).join(', ');
 }
 
 export function tokenValueToCss(tokenValue: DesignToken['$value'], type: DesignToken['$type']) {

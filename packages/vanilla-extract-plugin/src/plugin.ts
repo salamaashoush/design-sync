@@ -11,7 +11,7 @@ import {
   tokenValueToCss,
   typographyToCssStyle,
 } from '@design-sync/w3c-dtfm';
-import { join } from 'path';
+import { join } from 'node:path';
 
 interface VanillaExtractPluginConfig {
   contractName?: string;
@@ -20,6 +20,7 @@ interface VanillaExtractPluginConfig {
   themeSelector?: string | Record<string, string>;
   globalThemes?: boolean | 'default' | string[];
   createGlobalContract?: boolean;
+  pathToStyleName?: (path: string) => string;
 }
 
 class VanillaExtractPlugin {
@@ -101,7 +102,7 @@ class VanillaExtractPlugin {
       finalStyle = this.processCssStyleObject(style);
     }
     // use the last part of the path as the style name
-    const styleName = pathToStyleName(path, true);
+    const styleName = this.config.pathToStyleName(path);
     const docs = token.description ? `/**\n * ${token.description}\n */\n` : '';
     this.styles.push(`${docs}export const ${styleName} = style(${serializeObject(finalStyle)})\n`);
   }
@@ -240,6 +241,7 @@ export function vanillaExtractPlugin(config: VanillaExtractPluginConfig = {}): T
           globalThemes: false,
           createGlobalContract: false,
           onlyValues: false,
+          pathToStyleName,
           outDir: '',
           ...config,
         },

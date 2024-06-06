@@ -1,5 +1,5 @@
-import { rm } from 'fs/promises';
-import { resolve } from 'path';
+import { rm } from 'node:fs/promises';
+import { resolve } from 'node:path';
 import { getIconContent, getSvgFiles, writeComponentsFiles } from './utils';
 
 async function main() {

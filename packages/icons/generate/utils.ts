@@ -1,6 +1,6 @@
 import { load } from 'cheerio';
-import { mkdir, readdir, readFile, stat, writeFile } from 'fs/promises';
-import path from 'path';
+import { mkdir, readdir, readFile, stat, writeFile } from 'node:fs/promises';
+import path from 'node:path';
 import prettier from 'prettier';
 import { optimize } from 'svgo';
 import { svgoConfig } from './svgo-config';

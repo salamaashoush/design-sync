@@ -6,9 +6,9 @@ import {
   getModeRawValue,
   isTokenAlias,
   pathToCssVarName,
+  pathToStyleName,
   processCssVarRef,
   serializeObjectToCSS,
-  tokenPathToStyleName,
   tokenValueToCss,
   typographyToCssStyle,
 } from '@design-sync/w3c-dtfm';
@@ -66,7 +66,9 @@ class CSSPlugin {
   private createCssClass(token: WalkerDesignToken) {
     const { defaultMode } = this.walker.getModes();
     const { rawValue, path, isResponsive, valueByMode } = token;
-    const selector = `.${tokenPathToStyleName(path, kebabCase)}`;
+    const selector = `.${pathToStyleName(path, {
+      textTransform: kebabCase,
+    })}`;
     let baseStyle = {};
     if (isResponsive) {
       baseStyle = typographyToCssStyle(getModeRawValue(valueByMode.base as DesignTokenValueByMode, defaultMode));

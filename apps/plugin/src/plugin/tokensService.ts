@@ -9,8 +9,9 @@ export class TokensService {
   private localStorage = new LocalStorage();
   private remoteStorage = new GitlabStorage({
     accessToken: 'xxxxx',
-    repoPath: 'quin-pro/tokens',
-    branch: 'master',
+    repo: 'quin-pro/tokens',
+    ref: 'master',
+    path: 'src/quin-pro-tokens.json',
   });
   private tokenSets = [TOKEN_SET_1, TOKEN_SET_2] as TokenSet[];
   async getTokens() {

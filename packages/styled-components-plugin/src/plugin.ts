@@ -14,7 +14,7 @@ import {
   tokenValueToCss,
   typographyToCssStyle,
 } from '@design-sync/w3c-dtfm';
-import { join } from 'path';
+import { join } from 'node:path';
 
 interface StyledComponentsPluginConfig {
   outDir?: string;

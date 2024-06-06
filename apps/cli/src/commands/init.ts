@@ -1,10 +1,10 @@
 import { logger } from '@design-sync/manager';
 import { camelCase } from '@design-sync/utils';
 import { defineCommand } from 'citty';
-import { existsSync } from 'fs';
-import { readFile, writeFile } from 'fs/promises';
+import { existsSync } from 'node:fs';
+import { readFile, writeFile } from 'node:fs/promises';
+import { join } from 'node:path';
 import { addDevDependency, detectPackageManager } from 'nypm';
-import { join } from 'path';
 export interface ConfigTemplateOptions {
   out: string;
   uri: string;

@@ -5,10 +5,12 @@ export function varaibleScopeToTokenType(scope: VariableScope): TokenType {
     case 'CORNER_RADIUS':
       return 'borderRadius';
     case 'GAP':
+    case 'PARAGRAPH_SPACING':
       return 'spacing';
     case 'WIDTH_HEIGHT':
+    case 'STROKE_FLOAT':
       return 'dimension';
-    case 'STROKE':
+    case 'STROKE_COLOR':
     case 'TEXT_FILL':
     case 'FRAME_FILL':
     case 'SHAPE_FILL':

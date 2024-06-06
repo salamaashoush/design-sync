@@ -29,6 +29,7 @@ export const SUPPORTED_TYPES = [
   'link',
   'other',
 ] as const;
-
+// eslint-disable-next-line no-useless-escape
 export const TOKEN_ALIAS_REGEX = /\{[^\.\{\}]+(\.[^\.\{\}]+)*\}/g;
+// eslint-disable-next-line no-useless-escape
 export const EXACT_TOKEN_ALIAS_REGEX = /^\{[^\.\{\}]+(\.[^\.\{\}]+)*\}$/g;

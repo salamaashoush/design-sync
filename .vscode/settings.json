@@ -4,6 +4,7 @@
     "source.fixAll.eslint": "explicit",
     "source.organizeImports": "explicit"
   },
+  "oxc_language_server.enable": true,
   "json.schemas": [
     {
       "fileMatch": ["package.json"],

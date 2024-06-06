@@ -5,20 +5,18 @@
   "main": "src/index.ts",
   "private": true,
   "scripts": {
-    "lint": "eslint ./src --ext .ts,.tsx,.js,.jsx",
-    "lint:fix": "pnpm run lint --fix",
-    "test:types": "tsc --noEmit --skipLibCheck",
-    "precommit": "lint-staged"
+    "lint": "oxlint --import-plugin --deny-warnings && prettier -c src",
+    "lint:fix": "oxlint --import-plugin --deny-warnings --fix && prettier -c src -w",
+    "test:types": "tsc --noEmit --skipLibCheck"
   },
   "dependencies": {
     "@design-sync/utils": "workspace:*",
     "mitt": "^3.0.1"
   },
   "devDependencies": {
-    "@design-sync/eslint-config": "workspace:*",
     "@design-sync/tsconfig": "workspace:*",
-    "eslint": "^8.56.0",
-    "lint-staged": "^15.2.0",
-    "typescript": "^5.3.3"
+    "oxlint": "^0.4.2",
+    "prettier": "^3.3.1",
+    "typescript": "^5.4.5"
   }
 }

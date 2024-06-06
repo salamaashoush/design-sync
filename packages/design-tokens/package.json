@@ -5,21 +5,19 @@
   "main": "src/index.ts",
   "private": true,
   "scripts": {
-    "lint": "eslint ./src --ext .ts,.tsx,.js,.jsx",
-    "lint:fix": "pnpm run lint --fix",
-    "test:types": "tsc --noEmit --skipLibCheck",
-    "precommit": "lint-staged"
+    "lint": "oxlint --import-plugin --deny-warnings && prettier -c src",
+    "lint:fix": "oxlint --import-plugin --deny-warnings --fix && prettier -c src -w",
+    "test:types": "tsc --noEmit --skipLibCheck"
   },
   "dependencies": {
-    "@vanilla-extract/css": "^1.14.0",
-    "@vanilla-extract/recipes": "^0.5.1",
-    "@vanilla-extract/sprinkles": "^1.6.1"
+    "@vanilla-extract/css": "^1.15.2",
+    "@vanilla-extract/recipes": "^0.5.3",
+    "@vanilla-extract/sprinkles": "^1.6.2"
   },
   "devDependencies": {
-    "@design-sync/eslint-config": "workspace:*",
     "@design-sync/tsconfig": "workspace:*",
-    "eslint": "^8.56.0",
-    "lint-staged": "^15.2.0",
-    "typescript": "^5.3.3"
+    "oxlint": "^0.4.2",
+    "prettier": "^3.3.1",
+    "typescript": "^5.4.5"
   }
 }
