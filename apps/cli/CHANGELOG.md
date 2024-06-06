@@ -1,5 +1,11 @@
 # @design-sync/sync
 
+## 0.11.3
+
+### Patch Changes
+
+- 6ef6be5: Rexport utils from `@design-sync/cli`
+
 ## 0.11.2
 
 ### Patch Changes
