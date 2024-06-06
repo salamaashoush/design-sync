@@ -1,5 +1,11 @@
 # @design-sync/vanilla-extract-plugin
 
+## 0.7.2
+
+### Patch Changes
+
+- ea3d476: rename pathToStyleName to styleName and pass the full token
+
 ## 0.7.1
 
 ### Patch Changes
