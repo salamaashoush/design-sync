@@ -1,5 +1,13 @@
 # @design-sync/manager
 
+## 0.6.2
+
+### Patch Changes
+
+- Updated dependencies [ede2061]
+  - @design-sync/utils@0.5.1
+  - @design-sync/w3c-dtfm@0.11.1
+
 ## 0.6.1
 
 ### Patch Changes

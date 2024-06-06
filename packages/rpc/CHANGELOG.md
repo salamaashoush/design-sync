@@ -1,5 +1,12 @@
 # @design-sync/rpc
 
+## 0.0.7
+
+### Patch Changes
+
+- Updated dependencies [ede2061]
+  - @design-sync/utils@0.5.1
+
 ## 0.0.6
 
 ### Patch Changes
