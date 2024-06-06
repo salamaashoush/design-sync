@@ -18,14 +18,19 @@
     "prepare": "husky",
     "changeset": "changeset",
     "ci:version": "changeset version",
-    "ci:publish": "changeset publish"
+    "ci:publish": "changeset publish",
+    "lint:ws": "pnpm dlx sherif@latest",
+    "postinstall": "pnpm lint:ws"
   },
   "license": "MIT",
-  "dependencies": {
+  "devDependencies": {
     "husky": "^9.0.11",
     "prettier": "^3.3.1",
     "turbo": "^2.0.1",
-    "typescript": "^5.4.5"
+    "typescript": "^5.4.5",
+    "@changesets/cli": "^2.27.1",
+    "@design-sync/cli": "workspace:*",
+    "tsx": "^4.11.2"
   },
   "resolutions": {
     "esbuild": "^0.21.4"
@@ -33,11 +38,6 @@
   "packageManager": "pnpm@9.2.0",
   "engines": {
     "node": ">=22.0.0"
-  },
-  "devDependencies": {
-    "@changesets/cli": "^2.27.5",
-    "@design-sync/cli": "workspace:*",
-    "tsx": "^4.11.2"
   },
   "pnpm": {
     "overrides": {
