@@ -1,59 +1,45 @@
 {
-  "name": "@design-sync/figma-plugin-2",
-  "version": "0.0.6",
-  "description": "Tokenize Figma Plugin",
+  "name": "@design-sync/figma-plugin",
+  "version": "0.1.0",
+  "description": "DesignSync Figma Plugin",
   "private": true,
   "scripts": {
-    "watch": "build-figma-plugin --watch",
-    "build": "echo 'build-figma-plugin --minify'"
+    "build:ui": "vite build",
+    "build:main": "tsx esbuild.config.ts",
+    "build": "bun run build:main && bun run build:ui",
+    "dev:ui": "vite build --watch",
+    "dev:main": "tsx esbuild.config.ts --watch",
+    "dev": "concurrently \"bun run dev:main\" \"bun run dev:ui\"",
+    "lint": "oxlint --import-plugin --deny-warnings && oxfmt --check src",
+    "lint:fix": "oxlint --import-plugin --deny-warnings --fix && oxfmt src",
+    "test:types": "tsc --noEmit --skipLibCheck"
   },
   "dependencies": {
-    "@create-figma-plugin/ui": "^3.2.0",
-    "@create-figma-plugin/utilities": "^3.2.0",
-    "@design-sync/storage": "workspace:*",
-    "@design-sync/utils": "workspace:*",
-    "@dessert-box/react": "^0.7.5",
-    "@modular-forms/preact": "^0.7.0",
-    "@preact/signals": "^1.2.3",
-    "@tanstack/react-query": "^5.40.1",
-    "@vanilla-extract/css": "^1.15.2",
-    "@vanilla-extract/recipes": "^0.5.3",
-    "@vanilla-extract/sprinkles": "^1.6.2",
-    "clsx": "^2.1.1",
-    "preact": "^10.22.0",
-    "valibot": "^0.30.0"
-  },
-  "devDependencies": {
-    "@create-figma-plugin/build": "^3.2.0",
-    "@create-figma-plugin/tsconfig": "^3.2.0",
     "@design-sync/design-tokens": "workspace:*",
     "@design-sync/rpc": "workspace:*",
-    "@design-sync/tsconfig": "workspace:*",
+    "@design-sync/storage": "workspace:*",
+    "@design-sync/uikit": "workspace:*",
     "@design-sync/utils": "workspace:*",
     "@design-sync/w3c-dtfm": "workspace:*",
-    "@figma/plugin-typings": "^1.94.0",
-    "@hyrious/esbuild-plugin-style": "^0.3.5",
-    "@vanilla-extract/esbuild-plugin": "^2.3.6",
-    "@vanilla-extract/integration": "^7.1.5",
-    "esbuild": "^0.21.4",
-    "oxlint": "^0.4.2",
-    "prettier": "^3.3.1",
-    "typescript": "^5.4.5"
+    "@vanilla-extract/css": "^1.18.0",
+    "@vanilla-extract/recipes": "^0.5.7",
+    "@vanilla-extract/sprinkles": "^1.6.5",
+    "clsx": "^2.1.1",
+    "solid-js": "^1.9.11",
+    "valibot": "^1.2.0"
   },
-  "figma-plugin": {
-    "editorType": [
-      "dev",
-      "figma"
-    ],
-    "capabilities": [
-      "inspect"
-    ],
-    "permissions": [
-      "teamlibrary"
-    ],
-    "id": "tokenize-2",
-    "name": "Tokenize 2",
-    "main": "src/main.ts",
-    "ui": "src/ui.tsx"
+  "devDependencies": {
+    "@design-sync/tsconfig": "workspace:*",
+    "@figma/plugin-typings": "^1.123.0",
+    "@vanilla-extract/vite-plugin": "^5.1.4",
+    "concurrently": "^9.2.1",
+    "esbuild": "^0.27.3",
+    "oxfmt": "^0.32.0",
+    "oxlint": "^1.47.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.1",
+    "vite-plugin-singlefile": "^2.3.0",
+    "vite-plugin-solid": "^2.11.10"
   }
 }

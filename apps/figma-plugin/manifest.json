@@ -1,0 +1,19 @@
+{
+  "name": "DesignSync",
+  "id": "design-sync",
+  "api": "1.0.0",
+  "main": "dist/code.js",
+  "ui": "dist/index.html",
+  "editorType": ["figma", "dev"],
+  "capabilities": ["inspect"],
+  "permissions": ["teamlibrary"],
+  "networkAccess": {
+    "allowedDomains": [
+      "api.github.com",
+      "gitlab.com",
+      "*.gitlab.com",
+      "dev.azure.com",
+      "api.bitbucket.org"
+    ]
+  }
+}

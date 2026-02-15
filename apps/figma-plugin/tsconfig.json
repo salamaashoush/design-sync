@@ -1,11 +1,10 @@
 {
-  "extends": "@design-sync/tsconfig/react.json",
+  "extends": "@design-sync/tsconfig/base.json",
   "compilerOptions": {
     "allowImportingTsExtensions": true,
-    "jsx": "react",
-    "jsxFactory": "h",
-    "jsxFragmentFactory": "Fragment",
+    "jsx": "preserve",
+    "jsxImportSource": "solid-js",
     "types": ["@figma/plugin-typings"]
   },
-  "include": ["src/**/*", "vanilla-extract-loader.ts"]
+  "include": ["src/**/*"]
 }
