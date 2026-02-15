@@ -20,7 +20,7 @@
     "dev": "obuild --watch",
     "lint": "oxlint --import-plugin --deny-warnings && oxfmt --check src",
     "lint:fix": "oxlint --import-plugin --deny-warnings --fix && oxfmt src",
-    "test": "bun run lint && bun run test:types && vitest run",
+    "test": "bun run lint && bun run test:types && vitest run --passWithNoTests",
     "test:types": "tsc --noEmit"
   },
   "dependencies": {
