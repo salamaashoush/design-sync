@@ -1,5 +1,5 @@
-import { JsonRpcCall } from '@design-sync/rpc';
-import { DiffResult, RemoteStorage, RemoteStorageWithoutId } from './types';
+import { JsonRpcCall } from "@design-sync/rpc";
+import { DiffResult, RemoteStorage, RemoteStorageWithoutId } from "./types";
 
 export interface UIItem {
   id: string;
@@ -7,7 +7,7 @@ export interface UIItem {
 }
 
 export interface UIVraibleCollection extends UIItem {
-  type: 'local' | 'library';
+  type: "local" | "library";
 }
 
 export interface GetStylesResponse {
@@ -49,22 +49,22 @@ interface GetVariablesResponse {
 
 declare global {
   interface RpcCalls {
-    init: JsonRpcCall<'init', void, boolean>;
-    resize: JsonRpcCall<'resize', { height: number; width: number }, void>;
-    'tokens/sync': JsonRpcCall<'tokens/sync', SyncTokenParams, void>;
-    'variables/get': JsonRpcCall<'variables/get', void, GetVariablesResponse>;
-    'styles/get': JsonRpcCall<'styles/get', void, GetStylesResponse>;
-    'remoteStorages/all': JsonRpcCall<'remoteStorages/all', void, RemoteStorage[]>;
-    'remoteStorages/getActive': JsonRpcCall<'remoteStorages/getActive', void, RemoteStorage>;
-    'remoteStorages/add': JsonRpcCall<'remoteStorages/add', RemoteStorageWithoutId, void>;
-    'remoteStorages/remove': JsonRpcCall<'remoteStorages/remove', string, void>;
-    'remoteStorages/activate': JsonRpcCall<'remoteStorages/activate', string, void>;
-    'remoteStorages/update': JsonRpcCall<'remoteStorages/update', RemoteStorage, void>;
-    'remoteStorages/pull': JsonRpcCall<'remoteStorages/pull', string, void>;
-    'remoteStorages/push': JsonRpcCall<'remoteStorages/push', string, void>;
-    'sync/export-preview': JsonRpcCall<'sync/export-preview', ExportPreviewParams, DiffResult>;
-    'sync/push': JsonRpcCall<'sync/push', PushParams, void>;
-    'sync/pull-preview': JsonRpcCall<'sync/pull-preview', void, DiffResult>;
-    'sync/apply': JsonRpcCall<'sync/apply', void, { applied: number }>;
+    init: JsonRpcCall<"init", void, boolean>;
+    resize: JsonRpcCall<"resize", { height: number; width: number }, void>;
+    "tokens/sync": JsonRpcCall<"tokens/sync", SyncTokenParams, void>;
+    "variables/get": JsonRpcCall<"variables/get", void, GetVariablesResponse>;
+    "styles/get": JsonRpcCall<"styles/get", void, GetStylesResponse>;
+    "remoteStorages/all": JsonRpcCall<"remoteStorages/all", void, RemoteStorage[]>;
+    "remoteStorages/getActive": JsonRpcCall<"remoteStorages/getActive", void, RemoteStorage>;
+    "remoteStorages/add": JsonRpcCall<"remoteStorages/add", RemoteStorageWithoutId, void>;
+    "remoteStorages/remove": JsonRpcCall<"remoteStorages/remove", string, void>;
+    "remoteStorages/activate": JsonRpcCall<"remoteStorages/activate", string, void>;
+    "remoteStorages/update": JsonRpcCall<"remoteStorages/update", RemoteStorage, void>;
+    "remoteStorages/pull": JsonRpcCall<"remoteStorages/pull", string, void>;
+    "remoteStorages/push": JsonRpcCall<"remoteStorages/push", string, void>;
+    "sync/export-preview": JsonRpcCall<"sync/export-preview", ExportPreviewParams, DiffResult>;
+    "sync/push": JsonRpcCall<"sync/push", PushParams, void>;
+    "sync/pull-preview": JsonRpcCall<"sync/pull-preview", void, DiffResult>;
+    "sync/apply": JsonRpcCall<"sync/apply", void, { applied: number }>;
   }
 }

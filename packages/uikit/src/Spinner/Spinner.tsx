@@ -1,6 +1,6 @@
-import { SpinnerVariants, spinner } from './spinner.css';
+import { SpinnerVariants, spinner } from "./spinner.css";
 
-type SpinnerSize = NonNullable<NonNullable<SpinnerVariants>['size']>;
+type SpinnerSize = NonNullable<NonNullable<SpinnerVariants>["size"]>;
 
 interface SpinnerProps {
   size?: SpinnerSize;

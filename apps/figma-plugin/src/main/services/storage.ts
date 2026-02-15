@@ -1,6 +1,6 @@
-import { LocalStorage, PluginDataStorage, createGitStorage } from '@design-sync/storage';
-import { RemoteStorage } from '../../shared/types';
-import { stringToUint8Array, uint8ArrayToString } from '../utils/encoding';
+import { LocalStorage, PluginDataStorage, createGitStorage } from "@design-sync/storage";
+import { RemoteStorage } from "../../shared/types";
+import { stringToUint8Array, uint8ArrayToString } from "../utils/encoding";
 
 export const pluginDataStorage = new PluginDataStorage();
 export const localStorage = new LocalStorage();

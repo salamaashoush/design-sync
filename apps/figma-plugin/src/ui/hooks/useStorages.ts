@@ -1,15 +1,14 @@
-import { createSignal } from 'solid-js';
-import type { RemoteStorage, RemoteStorageWithoutId } from '../../shared/types';
-import { useRpcQuery, useRpcMutation } from './useRpc';
+import type { RemoteStorage, RemoteStorageWithoutId } from "../../shared/types";
+import { useRpcQuery, useRpcMutation } from "./useRpc";
 
 export function useRemoteStorages() {
-  const [storages, { refetch }] = useRpcQuery('remoteStorages/all');
-  const [activeStorage, { refetch: refetchActive }] = useRpcQuery('remoteStorages/getActive');
+  const [storages, { refetch }] = useRpcQuery("remoteStorages/all");
+  const [activeStorage, { refetch: refetchActive }] = useRpcQuery("remoteStorages/getActive");
 
-  const addMutation = useRpcMutation('remoteStorages/add');
-  const removeMutation = useRpcMutation('remoteStorages/remove');
-  const activateMutation = useRpcMutation('remoteStorages/activate');
-  const updateMutation = useRpcMutation('remoteStorages/update');
+  const addMutation = useRpcMutation("remoteStorages/add");
+  const removeMutation = useRpcMutation("remoteStorages/remove");
+  const activateMutation = useRpcMutation("remoteStorages/activate");
+  const updateMutation = useRpcMutation("remoteStorages/update");
 
   async function addStorage(storage: RemoteStorageWithoutId) {
     await addMutation.mutate(storage);

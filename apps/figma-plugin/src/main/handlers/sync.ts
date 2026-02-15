@@ -1,16 +1,16 @@
-import type { ExportPreviewParams, PushParams } from '../../shared/calls';
-import { server } from '../server';
-import { stylesService } from '../services/styles';
-import { syncService } from '../services/sync';
-import { variablesService } from '../services/variables';
+import type { ExportPreviewParams, PushParams } from "../../shared/calls";
+import { server } from "../server";
+import { stylesService } from "../services/styles";
+import { syncService } from "../services/sync";
+import { variablesService } from "../services/variables";
 
 export function setupSyncHandlers() {
-  server.handle('sync/export-preview', async (params: ExportPreviewParams) => {
+  server.handle("sync/export-preview", async (params: ExportPreviewParams) => {
     const { collections, exportStyles } = params;
     return syncService.getExportPreview(collections, exportStyles);
   });
 
-  server.handle('sync/push', async (params: PushParams) => {
+  server.handle("sync/push", async (params: PushParams) => {
     const { collections, exportStyles, commitMessage } = params;
 
     // Generate tokens from selected collections and styles
@@ -37,11 +37,11 @@ export function setupSyncHandlers() {
     await syncService.saveTokens(tokens, commitMessage);
   });
 
-  server.handle('sync/pull-preview', async () => {
+  server.handle("sync/pull-preview", async () => {
     return syncService.getImportPreview();
   });
 
-  server.handle('sync/apply', async () => {
+  server.handle("sync/apply", async () => {
     const remoteTokens = await syncService.loadTokens();
     if (!remoteTokens) {
       return { applied: 0 };

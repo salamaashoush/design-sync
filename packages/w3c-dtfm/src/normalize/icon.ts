@@ -336,10 +336,7 @@ export function normalizeStandardAsset(
 /**
  * Normalize icon value (handles both formats)
  */
-export function normalizeIconValue(
-  value: unknown,
-  path?: string,
-): NormalizedIconValue | string {
+export function normalizeIconValue(value: unknown, path?: string): NormalizedIconValue | string {
   if (typeof value === "string") {
     if (isTokenAlias(value)) {
       return value;
@@ -411,9 +408,7 @@ export function normalizeAssetValue(value: unknown): NormalizedAssetValue | stri
  * Convert SVG to data URL
  */
 export function svgToDataUrl(svg: string): string {
-  const encoded = encodeURIComponent(svg)
-    .replace(/'/g, "%27")
-    .replace(/"/g, "%22");
+  const encoded = encodeURIComponent(svg).replace(/'/g, "%27").replace(/"/g, "%22");
   return `data:image/svg+xml,${encoded}`;
 }
 
@@ -422,8 +417,7 @@ export function svgToDataUrl(svg: string): string {
  */
 export function svgToBase64DataUrl(svg: string): string {
   // Use btoa for browser, Buffer for Node
-  const base64 =
-    typeof btoa !== "undefined" ? btoa(svg) : Buffer.from(svg).toString("base64");
+  const base64 = typeof btoa !== "undefined" ? btoa(svg) : Buffer.from(svg).toString("base64");
   return `data:image/svg+xml;base64,${base64}`;
 }
 

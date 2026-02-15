@@ -2171,374 +2171,6 @@ public extension Color {
         Color(light: Color(hex: 0xF0F8FF), dark: Color(hex: 0xF0F8FF))
     }
 
-    public static var semanticInfoN0: Color {
-        Color(light: Color(hex: 0xF0F8FF), dark: Color(hex: 0xF0F8FF))
-    }
-
-    public static var semanticInfoN1: Color {
-        Color(light: Color(hex: 0xD6EBFF), dark: Color(hex: 0xD6EBFF))
-    }
-
-    public static var semanticInfoN5: Color {
-        Color(light: Color(hex: 0xBBDBF9), dark: Color(hex: 0xBBDBF9))
-    }
-
-    public static var semanticInfoN10: Color {
-        Color(light: Color(hex: 0xA0CBF4), dark: Color(hex: 0xA0CBF4))
-    }
-
-    public static var semanticInfoN20: Color {
-        Color(light: Color(hex: 0x86BCEE), dark: Color(hex: 0x86BCEE))
-    }
-
-    public static var semanticInfoN20@alpha20: Color {
-        Color(light: Color(hex: 0x000000), dark: Color(hex: 0x000000))
-    }
-
-    public static var semanticInfoN20@alpha80: Color {
-        Color(light: Color(hex: 0x000000), dark: Color(hex: 0x000000))
-    }
-
-    public static var semanticInfoN30: Color {
-        Color(light: Color(hex: 0x6BACE8), dark: Color(hex: 0x6BACE8))
-    }
-
-    public static var semanticInfoN40: Color {
-        Color(light: Color(hex: 0x509CE3), dark: Color(hex: 0x509CE3))
-    }
-
-    public static var semanticInfoN50: Color {
-        Color(light: Color(hex: 0x358CDD), dark: Color(hex: 0x358CDD))
-    }
-
-    public static var semanticInfoN60: Color {
-        Color(light: Color(hex: 0x2E7AC0), dark: Color(hex: 0x2E7AC0))
-    }
-
-    public static var semanticInfoN70: Color {
-        Color(light: Color(hex: 0x2767A3), dark: Color(hex: 0x2767A3))
-    }
-
-    public static var semanticInfoN80: Color {
-        Color(light: Color(hex: 0x205586), dark: Color(hex: 0x205586))
-    }
-
-    public static var semanticInfoN80@alpha20: Color {
-        Color(light: Color(hex: 0x000000), dark: Color(hex: 0x000000))
-    }
-
-    public static var semanticInfoN80@alpha80: Color {
-        Color(light: Color(hex: 0x000000), dark: Color(hex: 0x000000))
-    }
-
-    public static var semanticInfoN90: Color {
-        Color(light: Color(hex: 0x194268), dark: Color(hex: 0x194268))
-    }
-
-    public static var semanticInfoN95: Color {
-        Color(light: Color(hex: 0x112C46), dark: Color(hex: 0x112C46))
-    }
-
-    public static var semanticInfoN99: Color {
-        Color(light: Color(hex: 0x0B1D2E), dark: Color(hex: 0x0B1D2E))
-    }
-
-    public static var semanticInfoN100: Color {
-        Color(light: Color(hex: 0x06101A), dark: Color(hex: 0x06101A))
-    }
-
-    public static var semanticNegativeN0: Color {
-        Color(light: Color(hex: 0xFFF5F5), dark: Color(hex: 0xFFF5F5))
-    }
-
-    public static var semanticNegativeN1: Color {
-        Color(light: Color(hex: 0xFFEBE7), dark: Color(hex: 0xFFEBE7))
-    }
-
-    public static var semanticNegativeN5: Color {
-        Color(light: Color(hex: 0xFFDDD6), dark: Color(hex: 0xFFDDD6))
-    }
-
-    public static var semanticNegativeN10: Color {
-        Color(light: Color(hex: 0xFFCDC3), dark: Color(hex: 0xFFCDC3))
-    }
-
-    public static var semanticNegativeN20: Color {
-        Color(light: Color(hex: 0xFFB7A9), dark: Color(hex: 0xFFB7A9))
-    }
-
-    public static var semanticNegativeN20@alpha20: Color {
-        Color(light: Color(hex: 0x000000), dark: Color(hex: 0x000000))
-    }
-
-    public static var semanticNegativeN20@alpha80: Color {
-        Color(light: Color(hex: 0x000000), dark: Color(hex: 0x000000))
-    }
-
-    public static var semanticNegativeN30: Color {
-        Color(light: Color(hex: 0xFF9B88), dark: Color(hex: 0xFF9B88))
-    }
-
-    public static var semanticNegativeN40: Color {
-        Color(light: Color(hex: 0xFF7C65), dark: Color(hex: 0xFF7C65))
-    }
-
-    public static var semanticNegativeN50: Color {
-        Color(light: Color(hex: 0xF75C46), dark: Color(hex: 0xF75C46))
-    }
-
-    public static var semanticNegativeN60: Color {
-        Color(light: Color(hex: 0xEA3829), dark: Color(hex: 0xEA3829))
-    }
-
-    public static var semanticNegativeN70: Color {
-        Color(light: Color(hex: 0xD31510), dark: Color(hex: 0xD31510))
-    }
-
-    public static var semanticNegativeN80: Color {
-        Color(light: Color(hex: 0xB40000), dark: Color(hex: 0xB40000))
-    }
-
-    public static var semanticNegativeN80@alpha20: Color {
-        Color(light: Color(hex: 0x000000), dark: Color(hex: 0x000000))
-    }
-
-    public static var semanticNegativeN80@alpha80: Color {
-        Color(light: Color(hex: 0x000000), dark: Color(hex: 0x000000))
-    }
-
-    public static var semanticNegativeN90: Color {
-        Color(light: Color(hex: 0x930000), dark: Color(hex: 0x930000))
-    }
-
-    public static var semanticNegativeN95: Color {
-        Color(light: Color(hex: 0x740000), dark: Color(hex: 0x740000))
-    }
-
-    public static var semanticNegativeN99: Color {
-        Color(light: Color(hex: 0x590000), dark: Color(hex: 0x590000))
-    }
-
-    public static var semanticNegativeN100: Color {
-        Color(light: Color(hex: 0x330000), dark: Color(hex: 0x330000))
-    }
-
-    public static var semanticPositiveN0: Color {
-        Color(light: Color(hex: 0xE9FCE3), dark: Color(hex: 0xE9FCE3))
-    }
-
-    public static var semanticPositiveN1: Color {
-        Color(light: Color(hex: 0xCDFCBF), dark: Color(hex: 0xCDFCBF))
-    }
-
-    public static var semanticPositiveN5: Color {
-        Color(light: Color(hex: 0xAEF69D), dark: Color(hex: 0xAEF69D))
-    }
-
-    public static var semanticPositiveN10: Color {
-        Color(light: Color(hex: 0x96EE85), dark: Color(hex: 0x96EE85))
-    }
-
-    public static var semanticPositiveN20: Color {
-        Color(light: Color(hex: 0x72E06A), dark: Color(hex: 0x72E06A))
-    }
-
-    public static var semanticPositiveN20@alpha20: Color {
-        Color(light: Color(hex: 0x000000), dark: Color(hex: 0x000000))
-    }
-
-    public static var semanticPositiveN20@alpha80: Color {
-        Color(light: Color(hex: 0x000000), dark: Color(hex: 0x000000))
-    }
-
-    public static var semanticPositiveN30: Color {
-        Color(light: Color(hex: 0x4ECF50), dark: Color(hex: 0x4ECF50))
-    }
-
-    public static var semanticPositiveN40: Color {
-        Color(light: Color(hex: 0x27BB36), dark: Color(hex: 0x27BB36))
-    }
-
-    public static var semanticPositiveN50: Color {
-        Color(light: Color(hex: 0x07A721), dark: Color(hex: 0x07A721))
-    }
-
-    public static var semanticPositiveN60: Color {
-        Color(light: Color(hex: 0x009112), dark: Color(hex: 0x009112))
-    }
-
-    public static var semanticPositiveN70: Color {
-        Color(light: Color(hex: 0x007C0F), dark: Color(hex: 0x007C0F))
-    }
-
-    public static var semanticPositiveN80: Color {
-        Color(light: Color(hex: 0x00670F), dark: Color(hex: 0x00670F))
-    }
-
-    public static var semanticPositiveN80@alpha20: Color {
-        Color(light: Color(hex: 0x000000), dark: Color(hex: 0x000000))
-    }
-
-    public static var semanticPositiveN80@alpha80: Color {
-        Color(light: Color(hex: 0x000000), dark: Color(hex: 0x000000))
-    }
-
-    public static var semanticPositiveN90: Color {
-        Color(light: Color(hex: 0x00530D), dark: Color(hex: 0x00530D))
-    }
-
-    public static var semanticPositiveN95: Color {
-        Color(light: Color(hex: 0x00400A), dark: Color(hex: 0x00400A))
-    }
-
-    public static var semanticPositiveN99: Color {
-        Color(light: Color(hex: 0x003007), dark: Color(hex: 0x003007))
-    }
-
-    public static var semanticPositiveN100: Color {
-        Color(light: Color(hex: 0x001A04), dark: Color(hex: 0x001A04))
-    }
-
-    public static var semanticWarningN0: Color {
-        Color(light: Color(hex: 0xFBF8DD), dark: Color(hex: 0xFBF8DD))
-    }
-
-    public static var semanticWarningN1: Color {
-        Color(light: Color(hex: 0xFBF198), dark: Color(hex: 0xFBF198))
-    }
-
-    public static var semanticWarningN5: Color {
-        Color(light: Color(hex: 0xF8E750), dark: Color(hex: 0xF8E750))
-    }
-
-    public static var semanticWarningN10: Color {
-        Color(light: Color(hex: 0xF8D904), dark: Color(hex: 0xF8D904))
-    }
-
-    public static var semanticWarningN20: Color {
-        Color(light: Color(hex: 0xE8C600), dark: Color(hex: 0xE8C600))
-    }
-
-    public static var semanticWarningN20@alpha20: Color {
-        Color(light: Color(hex: 0x000000), dark: Color(hex: 0x000000))
-    }
-
-    public static var semanticWarningN20@alpha80: Color {
-        Color(light: Color(hex: 0x000000), dark: Color(hex: 0x000000))
-    }
-
-    public static var semanticWarningN30: Color {
-        Color(light: Color(hex: 0xD7B300), dark: Color(hex: 0xD7B300))
-    }
-
-    public static var semanticWarningN40: Color {
-        Color(light: Color(hex: 0xC49F00), dark: Color(hex: 0xC49F00))
-    }
-
-    public static var semanticWarningN50: Color {
-        Color(light: Color(hex: 0xB08C00), dark: Color(hex: 0xB08C00))
-    }
-
-    public static var semanticWarningN60: Color {
-        Color(light: Color(hex: 0x9B7800), dark: Color(hex: 0x9B7800))
-    }
-
-    public static var semanticWarningN70: Color {
-        Color(light: Color(hex: 0x856600), dark: Color(hex: 0x856600))
-    }
-
-    public static var semanticWarningN80: Color {
-        Color(light: Color(hex: 0x705300), dark: Color(hex: 0x705300))
-    }
-
-    public static var semanticWarningN80@alpha20: Color {
-        Color(light: Color(hex: 0x000000), dark: Color(hex: 0x000000))
-    }
-
-    public static var semanticWarningN80@alpha80: Color {
-        Color(light: Color(hex: 0x000000), dark: Color(hex: 0x000000))
-    }
-
-    public static var semanticWarningN90: Color {
-        Color(light: Color(hex: 0x5B4300), dark: Color(hex: 0x5B4300))
-    }
-
-    public static var semanticWarningN95: Color {
-        Color(light: Color(hex: 0x483300), dark: Color(hex: 0x483300))
-    }
-
-    public static var semanticWarningN99: Color {
-        Color(light: Color(hex: 0x362500), dark: Color(hex: 0x362500))
-    }
-
-    public static var semanticWarningN100: Color {
-        Color(light: Color(hex: 0x1A1100), dark: Color(hex: 0x1A1100))
-    }
-
-    public static var categoricalCategory1Default: Color {
-        Color(light: Color(hex: 0x2898BD), dark: Color(hex: 0x2898BD))
-    }
-
-    public static var categoricalCategory1@hover: Color {
-        Color(light: Color(hex: 0x227D9B), dark: Color(hex: 0x42B2D7))
-    }
-
-    public static var categoricalCategory2Default: Color {
-        Color(light: Color(hex: 0x5E4DB2), dark: Color(hex: 0xB8ACF6))
-    }
-
-    public static var categoricalCategory2@hover: Color {
-        Color(light: Color(hex: 0x352C63), dark: Color(hex: 0xDFD8FD))
-    }
-
-    public static var categoricalCategory3Default: Color {
-        Color(light: Color(hex: 0xE56910), dark: Color(hex: 0xE56910))
-    }
-
-    public static var categoricalCategory3@hover: Color {
-        Color(light: Color(hex: 0xC25100), dark: Color(hex: 0xF38A3F))
-    }
-
-    public static var categoricalCategory4Default: Color {
-        Color(light: Color(hex: 0x943D73), dark: Color(hex: 0xF797D2))
-    }
-
-    public static var categoricalCategory4@hover: Color {
-        Color(light: Color(hex: 0x50253F), dark: Color(hex: 0xFDD0EC))
-    }
-
-    public static var categoricalCategory5Default: Color {
-        Color(light: Color(hex: 0x09326C), dark: Color(hex: 0xCCE0FF))
-    }
-
-    public static var categoricalCategory5@hover: Color {
-        Color(light: Color(hex: 0x1C2B41), dark: Color(hex: 0xE9F2FF))
-    }
-
-    public static var categoricalCategory6Default: Color {
-        Color(light: Color(hex: 0x8F7EE7), dark: Color(hex: 0x8270DB))
-    }
-
-    public static var categoricalCategory6@hover: Color {
-        Color(light: Color(hex: 0x8270DB), dark: Color(hex: 0x8F7EE7))
-    }
-
-    public static var categoricalCategory7Default: Color {
-        Color(light: Color(hex: 0x50253F), dark: Color(hex: 0xFDD0EC))
-    }
-
-    public static var categoricalCategory7@hover: Color {
-        Color(light: Color(hex: 0x3D2232), dark: Color(hex: 0xFFECF8))
-    }
-
-    public static var categoricalCategory8Default: Color {
-        Color(light: Color(hex: 0xA54800), dark: Color(hex: 0xFEC195))
-    }
-
-    public static var categoricalCategory8@hover: Color {
-        Color(light: Color(hex: 0x702E00), dark: Color(hex: 0xFEDEC8))
-    }
-
     public static var paletteAquaN0: Color {
         Color(light: Color(hex: 0xF0FFFA), dark: Color(hex: 0x0A1F18))
     }
@@ -3089,6 +2721,374 @@ public extension Color {
 
     public static var paletteYellowN80@alpha80: Color {
         Color(light: Color(hex: 0x000000), dark: Color(hex: 0x000000))
+    }
+
+    public static var semanticInfoN0: Color {
+        Color(light: Color(hex: 0xF0F8FF), dark: Color(hex: 0xF0F8FF))
+    }
+
+    public static var semanticInfoN1: Color {
+        Color(light: Color(hex: 0xD6EBFF), dark: Color(hex: 0xD6EBFF))
+    }
+
+    public static var semanticInfoN5: Color {
+        Color(light: Color(hex: 0xBBDBF9), dark: Color(hex: 0xBBDBF9))
+    }
+
+    public static var semanticInfoN10: Color {
+        Color(light: Color(hex: 0xA0CBF4), dark: Color(hex: 0xA0CBF4))
+    }
+
+    public static var semanticInfoN20: Color {
+        Color(light: Color(hex: 0x86BCEE), dark: Color(hex: 0x86BCEE))
+    }
+
+    public static var semanticInfoN20@alpha20: Color {
+        Color(light: Color(hex: 0x000000), dark: Color(hex: 0x000000))
+    }
+
+    public static var semanticInfoN20@alpha80: Color {
+        Color(light: Color(hex: 0x000000), dark: Color(hex: 0x000000))
+    }
+
+    public static var semanticInfoN30: Color {
+        Color(light: Color(hex: 0x6BACE8), dark: Color(hex: 0x6BACE8))
+    }
+
+    public static var semanticInfoN40: Color {
+        Color(light: Color(hex: 0x509CE3), dark: Color(hex: 0x509CE3))
+    }
+
+    public static var semanticInfoN50: Color {
+        Color(light: Color(hex: 0x358CDD), dark: Color(hex: 0x358CDD))
+    }
+
+    public static var semanticInfoN60: Color {
+        Color(light: Color(hex: 0x2E7AC0), dark: Color(hex: 0x2E7AC0))
+    }
+
+    public static var semanticInfoN70: Color {
+        Color(light: Color(hex: 0x2767A3), dark: Color(hex: 0x2767A3))
+    }
+
+    public static var semanticInfoN80: Color {
+        Color(light: Color(hex: 0x205586), dark: Color(hex: 0x205586))
+    }
+
+    public static var semanticInfoN80@alpha20: Color {
+        Color(light: Color(hex: 0x000000), dark: Color(hex: 0x000000))
+    }
+
+    public static var semanticInfoN80@alpha80: Color {
+        Color(light: Color(hex: 0x000000), dark: Color(hex: 0x000000))
+    }
+
+    public static var semanticInfoN90: Color {
+        Color(light: Color(hex: 0x194268), dark: Color(hex: 0x194268))
+    }
+
+    public static var semanticInfoN95: Color {
+        Color(light: Color(hex: 0x112C46), dark: Color(hex: 0x112C46))
+    }
+
+    public static var semanticInfoN99: Color {
+        Color(light: Color(hex: 0x0B1D2E), dark: Color(hex: 0x0B1D2E))
+    }
+
+    public static var semanticInfoN100: Color {
+        Color(light: Color(hex: 0x06101A), dark: Color(hex: 0x06101A))
+    }
+
+    public static var semanticNegativeN0: Color {
+        Color(light: Color(hex: 0xFFF5F5), dark: Color(hex: 0xFFF5F5))
+    }
+
+    public static var semanticNegativeN1: Color {
+        Color(light: Color(hex: 0xFFEBE7), dark: Color(hex: 0xFFEBE7))
+    }
+
+    public static var semanticNegativeN5: Color {
+        Color(light: Color(hex: 0xFFDDD6), dark: Color(hex: 0xFFDDD6))
+    }
+
+    public static var semanticNegativeN10: Color {
+        Color(light: Color(hex: 0xFFCDC3), dark: Color(hex: 0xFFCDC3))
+    }
+
+    public static var semanticNegativeN20: Color {
+        Color(light: Color(hex: 0xFFB7A9), dark: Color(hex: 0xFFB7A9))
+    }
+
+    public static var semanticNegativeN20@alpha20: Color {
+        Color(light: Color(hex: 0x000000), dark: Color(hex: 0x000000))
+    }
+
+    public static var semanticNegativeN20@alpha80: Color {
+        Color(light: Color(hex: 0x000000), dark: Color(hex: 0x000000))
+    }
+
+    public static var semanticNegativeN30: Color {
+        Color(light: Color(hex: 0xFF9B88), dark: Color(hex: 0xFF9B88))
+    }
+
+    public static var semanticNegativeN40: Color {
+        Color(light: Color(hex: 0xFF7C65), dark: Color(hex: 0xFF7C65))
+    }
+
+    public static var semanticNegativeN50: Color {
+        Color(light: Color(hex: 0xF75C46), dark: Color(hex: 0xF75C46))
+    }
+
+    public static var semanticNegativeN60: Color {
+        Color(light: Color(hex: 0xEA3829), dark: Color(hex: 0xEA3829))
+    }
+
+    public static var semanticNegativeN70: Color {
+        Color(light: Color(hex: 0xD31510), dark: Color(hex: 0xD31510))
+    }
+
+    public static var semanticNegativeN80: Color {
+        Color(light: Color(hex: 0xB40000), dark: Color(hex: 0xB40000))
+    }
+
+    public static var semanticNegativeN80@alpha20: Color {
+        Color(light: Color(hex: 0x000000), dark: Color(hex: 0x000000))
+    }
+
+    public static var semanticNegativeN80@alpha80: Color {
+        Color(light: Color(hex: 0x000000), dark: Color(hex: 0x000000))
+    }
+
+    public static var semanticNegativeN90: Color {
+        Color(light: Color(hex: 0x930000), dark: Color(hex: 0x930000))
+    }
+
+    public static var semanticNegativeN95: Color {
+        Color(light: Color(hex: 0x740000), dark: Color(hex: 0x740000))
+    }
+
+    public static var semanticNegativeN99: Color {
+        Color(light: Color(hex: 0x590000), dark: Color(hex: 0x590000))
+    }
+
+    public static var semanticNegativeN100: Color {
+        Color(light: Color(hex: 0x330000), dark: Color(hex: 0x330000))
+    }
+
+    public static var semanticPositiveN0: Color {
+        Color(light: Color(hex: 0xE9FCE3), dark: Color(hex: 0xE9FCE3))
+    }
+
+    public static var semanticPositiveN1: Color {
+        Color(light: Color(hex: 0xCDFCBF), dark: Color(hex: 0xCDFCBF))
+    }
+
+    public static var semanticPositiveN5: Color {
+        Color(light: Color(hex: 0xAEF69D), dark: Color(hex: 0xAEF69D))
+    }
+
+    public static var semanticPositiveN10: Color {
+        Color(light: Color(hex: 0x96EE85), dark: Color(hex: 0x96EE85))
+    }
+
+    public static var semanticPositiveN20: Color {
+        Color(light: Color(hex: 0x72E06A), dark: Color(hex: 0x72E06A))
+    }
+
+    public static var semanticPositiveN20@alpha20: Color {
+        Color(light: Color(hex: 0x000000), dark: Color(hex: 0x000000))
+    }
+
+    public static var semanticPositiveN20@alpha80: Color {
+        Color(light: Color(hex: 0x000000), dark: Color(hex: 0x000000))
+    }
+
+    public static var semanticPositiveN30: Color {
+        Color(light: Color(hex: 0x4ECF50), dark: Color(hex: 0x4ECF50))
+    }
+
+    public static var semanticPositiveN40: Color {
+        Color(light: Color(hex: 0x27BB36), dark: Color(hex: 0x27BB36))
+    }
+
+    public static var semanticPositiveN50: Color {
+        Color(light: Color(hex: 0x07A721), dark: Color(hex: 0x07A721))
+    }
+
+    public static var semanticPositiveN60: Color {
+        Color(light: Color(hex: 0x009112), dark: Color(hex: 0x009112))
+    }
+
+    public static var semanticPositiveN70: Color {
+        Color(light: Color(hex: 0x007C0F), dark: Color(hex: 0x007C0F))
+    }
+
+    public static var semanticPositiveN80: Color {
+        Color(light: Color(hex: 0x00670F), dark: Color(hex: 0x00670F))
+    }
+
+    public static var semanticPositiveN80@alpha20: Color {
+        Color(light: Color(hex: 0x000000), dark: Color(hex: 0x000000))
+    }
+
+    public static var semanticPositiveN80@alpha80: Color {
+        Color(light: Color(hex: 0x000000), dark: Color(hex: 0x000000))
+    }
+
+    public static var semanticPositiveN90: Color {
+        Color(light: Color(hex: 0x00530D), dark: Color(hex: 0x00530D))
+    }
+
+    public static var semanticPositiveN95: Color {
+        Color(light: Color(hex: 0x00400A), dark: Color(hex: 0x00400A))
+    }
+
+    public static var semanticPositiveN99: Color {
+        Color(light: Color(hex: 0x003007), dark: Color(hex: 0x003007))
+    }
+
+    public static var semanticPositiveN100: Color {
+        Color(light: Color(hex: 0x001A04), dark: Color(hex: 0x001A04))
+    }
+
+    public static var semanticWarningN0: Color {
+        Color(light: Color(hex: 0xFBF8DD), dark: Color(hex: 0xFBF8DD))
+    }
+
+    public static var semanticWarningN1: Color {
+        Color(light: Color(hex: 0xFBF198), dark: Color(hex: 0xFBF198))
+    }
+
+    public static var semanticWarningN5: Color {
+        Color(light: Color(hex: 0xF8E750), dark: Color(hex: 0xF8E750))
+    }
+
+    public static var semanticWarningN10: Color {
+        Color(light: Color(hex: 0xF8D904), dark: Color(hex: 0xF8D904))
+    }
+
+    public static var semanticWarningN20: Color {
+        Color(light: Color(hex: 0xE8C600), dark: Color(hex: 0xE8C600))
+    }
+
+    public static var semanticWarningN20@alpha20: Color {
+        Color(light: Color(hex: 0x000000), dark: Color(hex: 0x000000))
+    }
+
+    public static var semanticWarningN20@alpha80: Color {
+        Color(light: Color(hex: 0x000000), dark: Color(hex: 0x000000))
+    }
+
+    public static var semanticWarningN30: Color {
+        Color(light: Color(hex: 0xD7B300), dark: Color(hex: 0xD7B300))
+    }
+
+    public static var semanticWarningN40: Color {
+        Color(light: Color(hex: 0xC49F00), dark: Color(hex: 0xC49F00))
+    }
+
+    public static var semanticWarningN50: Color {
+        Color(light: Color(hex: 0xB08C00), dark: Color(hex: 0xB08C00))
+    }
+
+    public static var semanticWarningN60: Color {
+        Color(light: Color(hex: 0x9B7800), dark: Color(hex: 0x9B7800))
+    }
+
+    public static var semanticWarningN70: Color {
+        Color(light: Color(hex: 0x856600), dark: Color(hex: 0x856600))
+    }
+
+    public static var semanticWarningN80: Color {
+        Color(light: Color(hex: 0x705300), dark: Color(hex: 0x705300))
+    }
+
+    public static var semanticWarningN80@alpha20: Color {
+        Color(light: Color(hex: 0x000000), dark: Color(hex: 0x000000))
+    }
+
+    public static var semanticWarningN80@alpha80: Color {
+        Color(light: Color(hex: 0x000000), dark: Color(hex: 0x000000))
+    }
+
+    public static var semanticWarningN90: Color {
+        Color(light: Color(hex: 0x5B4300), dark: Color(hex: 0x5B4300))
+    }
+
+    public static var semanticWarningN95: Color {
+        Color(light: Color(hex: 0x483300), dark: Color(hex: 0x483300))
+    }
+
+    public static var semanticWarningN99: Color {
+        Color(light: Color(hex: 0x362500), dark: Color(hex: 0x362500))
+    }
+
+    public static var semanticWarningN100: Color {
+        Color(light: Color(hex: 0x1A1100), dark: Color(hex: 0x1A1100))
+    }
+
+    public static var categoricalCategory1Default: Color {
+        Color(light: Color(hex: 0x2898BD), dark: Color(hex: 0x2898BD))
+    }
+
+    public static var categoricalCategory1@hover: Color {
+        Color(light: Color(hex: 0x227D9B), dark: Color(hex: 0x42B2D7))
+    }
+
+    public static var categoricalCategory2Default: Color {
+        Color(light: Color(hex: 0x5E4DB2), dark: Color(hex: 0xB8ACF6))
+    }
+
+    public static var categoricalCategory2@hover: Color {
+        Color(light: Color(hex: 0x352C63), dark: Color(hex: 0xDFD8FD))
+    }
+
+    public static var categoricalCategory3Default: Color {
+        Color(light: Color(hex: 0xE56910), dark: Color(hex: 0xE56910))
+    }
+
+    public static var categoricalCategory3@hover: Color {
+        Color(light: Color(hex: 0xC25100), dark: Color(hex: 0xF38A3F))
+    }
+
+    public static var categoricalCategory4Default: Color {
+        Color(light: Color(hex: 0x943D73), dark: Color(hex: 0xF797D2))
+    }
+
+    public static var categoricalCategory4@hover: Color {
+        Color(light: Color(hex: 0x50253F), dark: Color(hex: 0xFDD0EC))
+    }
+
+    public static var categoricalCategory5Default: Color {
+        Color(light: Color(hex: 0x09326C), dark: Color(hex: 0xCCE0FF))
+    }
+
+    public static var categoricalCategory5@hover: Color {
+        Color(light: Color(hex: 0x1C2B41), dark: Color(hex: 0xE9F2FF))
+    }
+
+    public static var categoricalCategory6Default: Color {
+        Color(light: Color(hex: 0x8F7EE7), dark: Color(hex: 0x8270DB))
+    }
+
+    public static var categoricalCategory6@hover: Color {
+        Color(light: Color(hex: 0x8270DB), dark: Color(hex: 0x8F7EE7))
+    }
+
+    public static var categoricalCategory7Default: Color {
+        Color(light: Color(hex: 0x50253F), dark: Color(hex: 0xFDD0EC))
+    }
+
+    public static var categoricalCategory7@hover: Color {
+        Color(light: Color(hex: 0x3D2232), dark: Color(hex: 0xFFECF8))
+    }
+
+    public static var categoricalCategory8Default: Color {
+        Color(light: Color(hex: 0xA54800), dark: Color(hex: 0xFEC195))
+    }
+
+    public static var categoricalCategory8@hover: Color {
+        Color(light: Color(hex: 0x702E00), dark: Color(hex: 0xFEDEC8))
     }
 
 }

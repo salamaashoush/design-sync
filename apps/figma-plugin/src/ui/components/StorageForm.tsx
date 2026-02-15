@@ -1,6 +1,6 @@
-import { Button, Input, Select } from '@design-sync/uikit';
-import { createSignal, Show } from 'solid-js';
-import type { RemoteStorage, RemoteStorageWithoutId } from '../../shared/types';
+import { Button, Input } from "@design-sync/uikit";
+import { createSignal, Show } from "solid-js";
+import type { RemoteStorage, RemoteStorageWithoutId } from "../../shared/types";
 
 interface StorageFormProps {
   storage?: RemoteStorage;
@@ -8,16 +8,16 @@ interface StorageFormProps {
 }
 
 export function StorageForm(props: StorageFormProps) {
-  const [name, setName] = createSignal(props.storage?.name ?? '');
-  const [uri, setUri] = createSignal(props.storage?.uri ?? '');
-  const [accessToken, setAccessToken] = createSignal(props.storage?.accessToken ?? '');
-  const [apiUrl, setApiUrl] = createSignal(props.storage?.apiUrl ?? '');
+  const [name, setName] = createSignal(props.storage?.name ?? "");
+  const [uri, setUri] = createSignal(props.storage?.uri ?? "");
+  const [accessToken, setAccessToken] = createSignal(props.storage?.accessToken ?? "");
+  const [apiUrl, setApiUrl] = createSignal(props.storage?.apiUrl ?? "");
   const [error, setError] = createSignal<string | null>(null);
 
   const handleSubmit = (e: Event) => {
     e.preventDefault();
     if (!name() || !uri() || !accessToken()) {
-      setError('Name, URI, and Access Token are required');
+      setError("Name, URI, and Access Token are required");
       return;
     }
     setError(null);
@@ -30,7 +30,10 @@ export function StorageForm(props: StorageFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ display: 'flex', 'flex-direction': 'column', gap: '12px', width: '100%' }}>
+    <form
+      onSubmit={handleSubmit}
+      style={{ display: "flex", "flex-direction": "column", gap: "12px", width: "100%" }}
+    >
       <Input
         label="Name"
         placeholder="My Project Tokens"
@@ -59,11 +62,17 @@ export function StorageForm(props: StorageFormProps) {
         description="Only needed for self-hosted instances"
       />
       <Show when={error()}>
-        <p style={{ color: 'var(--figma-color-text-danger, #dc3412)', 'font-size': '11px', margin: 0 }}>{error()}</p>
+        <p
+          style={{
+            color: "var(--figma-color-text-danger, #dc3412)",
+            "font-size": "11px",
+            margin: 0,
+          }}
+        >
+          {error()}
+        </p>
       </Show>
-      <Button type="submit">
-        {props.storage ? 'Update' : 'Add Storage'}
-      </Button>
+      <Button type="submit">{props.storage ? "Update" : "Add Storage"}</Button>
     </form>
   );
 }

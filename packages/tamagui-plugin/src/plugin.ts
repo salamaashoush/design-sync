@@ -82,8 +82,8 @@ export function tamaguiPlugin(config: TamaguiPluginConfig = {}): ReturnType<type
     useTs = true,
     themePrefix = "",
     generateShorthands = true,
-    includeWeb = true,
-    includeNative = true,
+    _includeWeb = true,
+    _includeNative = true,
     media,
   } = config;
 
@@ -149,11 +149,7 @@ function getTamaguiCategory(token: ProcessedToken): TamaguiTokenCategory | null 
     case "dimension": {
       if (pathLower.includes("spacing") || pathLower.includes("space") || pathLower.includes("gap"))
         return "space";
-      if (
-        pathLower.includes("width") ||
-        pathLower.includes("height") ||
-        pathLower.includes("size")
-      )
+      if (pathLower.includes("width") || pathLower.includes("height") || pathLower.includes("size"))
         return "size";
       if (pathLower.includes("fontsize") || pathLower.includes("font-size")) return "fontSize";
       if (pathLower.includes("lineheight") || pathLower.includes("line-height"))
@@ -222,7 +218,7 @@ function processToken(
 function processThemeToken(
   token: ProcessedToken,
   themeTokens: Record<string, Record<string, unknown>>,
-  defaultMode: string,
+  _defaultMode: string,
 ) {
   const name = getTokenName(token.path);
 
@@ -298,10 +294,7 @@ function generateThemesFile(
   themePrefix: string,
   useTs: boolean,
 ): string {
-  const parts: string[] = [
-    "// Auto-generated Tamagui themes",
-    "// Do not edit manually\n",
-  ];
+  const parts: string[] = ["// Auto-generated Tamagui themes", "// Do not edit manually\n"];
 
   // Generate each theme
   for (const [mode, tokens] of Object.entries(themeTokens)) {

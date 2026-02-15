@@ -1,15 +1,15 @@
-import { theme, ui11 } from '@design-sync/design-tokens';
-import { recipe, RecipeVariants } from '@vanilla-extract/recipes';
-import { style } from '@vanilla-extract/css';
+import { theme, ui11 } from "@design-sync/design-tokens";
+import { recipe, RecipeVariants } from "@vanilla-extract/recipes";
+import { style } from "@vanilla-extract/css";
 
 export const toast = recipe({
   base: [
     ui11,
     {
-      display: 'flex',
-      alignItems: 'center',
+      display: "flex",
+      alignItems: "center",
       gap: 8,
-      padding: '8px 12px',
+      padding: "8px 12px",
       borderRadius: theme.borderRadius.md,
       boxShadow: theme.shadows.floatingWindow,
       minWidth: 200,
@@ -40,7 +40,7 @@ export const toast = recipe({
     },
   },
   defaultVariants: {
-    intent: 'info',
+    intent: "info",
   },
 });
 
@@ -51,22 +51,22 @@ export const toastMessage = style({
 });
 
 export const closeButton = style({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  background: 'transparent',
-  border: 'none',
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  background: "transparent",
+  border: "none",
   borderRadius: theme.borderRadius.md,
-  cursor: 'pointer',
+  cursor: "pointer",
   width: 24,
   height: 24,
-  color: 'currentColor',
-  outline: 'none',
+  color: "currentColor",
+  outline: "none",
   selectors: {
-    '&:hover': {
+    "&:hover": {
       background: theme.color.bgHover,
     },
-    '&:focus-visible': {
+    "&:focus-visible": {
       outline: `2px solid ${theme.color.bgBrand}`,
     },
   },

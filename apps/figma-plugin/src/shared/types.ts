@@ -1,4 +1,4 @@
-export type RemoteStorageType = 'github' | 'gitlab' | 'bitbucket' | 'azure-devops';
+export type RemoteStorageType = "github" | "gitlab" | "bitbucket" | "azure-devops";
 
 export interface RemoteStorage {
   id: string;
@@ -8,11 +8,11 @@ export interface RemoteStorage {
   apiUrl?: string;
 }
 
-export type RemoteStorageWithoutId = Omit<RemoteStorage, 'id'>;
+export type RemoteStorageWithoutId = Omit<RemoteStorage, "id">;
 
 export interface DiffEntry {
   path: string;
-  type: 'add' | 'update' | 'remove';
+  type: "add" | "update" | "remove";
   oldValue?: string;
   newValue?: string;
 }

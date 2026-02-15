@@ -1,18 +1,18 @@
-import { theme } from '@design-sync/design-tokens';
-import { recipe, RecipeVariants } from '@vanilla-extract/recipes';
+import { theme } from "@design-sync/design-tokens";
+import { recipe, RecipeVariants } from "@vanilla-extract/recipes";
 
 export const badge = recipe({
   base: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    padding: '2px 6px',
+    display: "inline-flex",
+    alignItems: "center",
+    padding: "2px 6px",
     borderRadius: theme.borderRadius.sm,
     fontFamily: theme.fontFamily.main,
     fontSize: 10,
     fontWeight: theme.fontWeight.medium,
     lineHeight: theme.lineHeight.sm,
     letterSpacing: theme.letterSpacing.ui11,
-    whiteSpace: 'nowrap',
+    whiteSpace: "nowrap",
   },
   variants: {
     intent: {
@@ -39,7 +39,7 @@ export const badge = recipe({
     },
   },
   defaultVariants: {
-    intent: 'neutral',
+    intent: "neutral",
   },
 });
 

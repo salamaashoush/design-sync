@@ -5,7 +5,7 @@ import {
   getModesToIterate,
   stripTokenPrefix,
 } from "@design-sync/manager";
-import { camelCase, pascalCase } from "@design-sync/utils";
+import { pascalCase } from "@design-sync/utils";
 import { type ProcessedToken, isTokenAlias, typographyToCssStyle } from "@design-sync/w3c-dtfm";
 
 export interface ComposePluginConfig {
@@ -175,7 +175,13 @@ export function composePlugin(config: ComposePluginConfig = {}): ReturnType<type
           processColorToken(token, colors, colorPaths, modes.defaultMode, stripPrefixArray);
           break;
         case "typography":
-          processTypographyToken(token, typography, typographyPaths, modes.defaultMode, stripPrefixArray);
+          processTypographyToken(
+            token,
+            typography,
+            typographyPaths,
+            modes.defaultMode,
+            stripPrefixArray,
+          );
           break;
         case "dimension":
           if (pathLower.includes("radius") || pathLower.includes("radii")) {
@@ -205,7 +211,12 @@ export function composePlugin(config: ComposePluginConfig = {}): ReturnType<type
     builder.add("Color.kt", generateColorFile(colors, modes, packageName, supportDarkMode));
     builder.add(
       "Typography.kt",
-      generateTypographyFile(typography[modes.defaultMode], packageName, material3, resolvedTypographyMapping),
+      generateTypographyFile(
+        typography[modes.defaultMode],
+        packageName,
+        material3,
+        resolvedTypographyMapping,
+      ),
     );
     builder.add("Spacing.kt", generateSpacingFile(spacing[modes.defaultMode], packageName));
     builder.add("Shape.kt", generateShapeFile(radii[modes.defaultMode], packageName));
@@ -213,7 +224,13 @@ export function composePlugin(config: ComposePluginConfig = {}): ReturnType<type
     if (generateTheme) {
       builder.add(
         "Theme.kt",
-        generateThemeFile(packageName, material3, supportDarkMode, dynamicColors, resolvedColorMapping),
+        generateThemeFile(
+          packageName,
+          material3,
+          supportDarkMode,
+          dynamicColors,
+          resolvedColorMapping,
+        ),
       );
     }
 
@@ -278,7 +295,10 @@ function processTypographyToken(
     const cssStyle = style as Record<string, unknown>;
 
     if (cssStyle.fontFamily) {
-      kotlinStyle.fontFamily = String(cssStyle.fontFamily).split(",")[0].trim().replace(/['"]/g, "");
+      kotlinStyle.fontFamily = String(cssStyle.fontFamily)
+        .split(",")[0]
+        .trim()
+        .replace(/['"]/g, "");
     }
     if (cssStyle.fontSize) {
       kotlinStyle.fontSize = cssToNumber(String(cssStyle.fontSize));
@@ -429,7 +449,10 @@ function resolveTypographyMapping(
   typographyPaths: Record<string, string>,
   providedMapping?: Partial<Record<M3TypographyRole, string>>,
 ): Record<M3TypographyRole, string | null> {
-  const result: Record<M3TypographyRole, string | null> = {} as Record<M3TypographyRole, string | null>;
+  const result: Record<M3TypographyRole, string | null> = {} as Record<
+    M3TypographyRole,
+    string | null
+  >;
 
   for (const role of Object.keys(TYPOGRAPHY_ROLE_PATTERNS) as M3TypographyRole[]) {
     // Use provided mapping if available
@@ -540,7 +563,7 @@ function generateColorFile(
   colors: Record<string, Record<string, string>>,
   modes: { defaultMode: string; requiredModes: readonly string[] },
   packageName: string,
-  supportDarkMode: boolean,
+  _supportDarkMode: boolean,
 ): string {
   const lines: string[] = [
     `package ${packageName}`,
@@ -850,7 +873,9 @@ function generateThemeFile(
     lines.push("    val colorScheme = when {");
     lines.push("        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {");
     lines.push("            val context = LocalContext.current");
-    lines.push("            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)");
+    lines.push(
+      "            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)",
+    );
     lines.push("        }");
     if (supportDarkMode) {
       lines.push("        darkTheme -> DarkColorScheme");

@@ -6,8 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "lint": "oxlint --import-plugin --deny-warnings && oxfmt --check src",
-    "lint:fix": "oxlint --import-plugin --deny-warnings --fix && oxfmt src",
+    "lint": "oxlint --import-plugin --deny-warnings --ignore-pattern src/tokens && oxfmt --check src",
+    "lint:fix": "oxlint --import-plugin --deny-warnings --ignore-pattern src/tokens --fix && oxfmt src",
     "preview": "vite preview",
     "tokens:sync": "design-sync sync"
   },

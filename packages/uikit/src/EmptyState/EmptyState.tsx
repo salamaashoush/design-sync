@@ -1,5 +1,10 @@
-import { JSX, Show } from 'solid-js';
-import { description as descriptionClass, icon as iconClass, root, title as titleClass } from './emptyState.css';
+import { JSX, Show } from "solid-js";
+import {
+  description as descriptionClass,
+  icon as iconClass,
+  root,
+  title as titleClass,
+} from "./emptyState.css";
 
 interface EmptyStateProps {
   icon?: JSX.Element;

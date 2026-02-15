@@ -1,7 +1,7 @@
-import { ParentProps, splitProps } from 'solid-js';
-import { BadgeVariants, badge } from './badge.css';
+import { ParentProps } from "solid-js";
+import { BadgeVariants, badge } from "./badge.css";
 
-type BadgeIntent = NonNullable<NonNullable<BadgeVariants>['intent']>;
+type BadgeIntent = NonNullable<NonNullable<BadgeVariants>["intent"]>;
 
 interface BadgeProps extends ParentProps {
   intent?: BadgeIntent;

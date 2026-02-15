@@ -1,31 +1,31 @@
-import { theme } from '@design-sync/design-tokens';
-import { recipe, RecipeVariants } from '@vanilla-extract/recipes';
+import { theme } from "@design-sync/design-tokens";
+import { recipe, RecipeVariants } from "@vanilla-extract/recipes";
 
 export const iconButton = recipe({
   base: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    background: 'transparent',
-    border: 'none',
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    background: "transparent",
+    border: "none",
     borderRadius: theme.borderRadius.md,
-    cursor: 'pointer',
+    cursor: "pointer",
     width: 32,
     height: 32,
     color: theme.color.icon,
-    outline: 'none',
+    outline: "none",
     selectors: {
-      '&:hover': {
+      "&:hover": {
         background: theme.color.bgHover,
       },
-      '&:active': {
+      "&:active": {
         background: theme.color.bgPressed,
       },
-      '&:disabled': {
-        cursor: 'not-allowed',
+      "&:disabled": {
+        cursor: "not-allowed",
         color: theme.color.iconDisabled,
       },
-      '&:focus-visible': {
+      "&:focus-visible": {
         outline: `2px solid ${theme.color.bgBrand}`,
       },
     },

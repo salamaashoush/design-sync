@@ -1,10 +1,10 @@
-import { theme, spin } from '@design-sync/design-tokens';
-import { recipe, RecipeVariants } from '@vanilla-extract/recipes';
+import { theme, spin } from "@design-sync/design-tokens";
+import { recipe, RecipeVariants } from "@vanilla-extract/recipes";
 
 export const spinner = recipe({
   base: {
-    display: 'inline-block',
-    borderRadius: '50%',
+    display: "inline-block",
+    borderRadius: "50%",
     border: `2px solid ${theme.color.borderDisabled}`,
     borderTopColor: theme.color.bgBrand,
     animation: `${spin} 600ms linear infinite`,
@@ -26,7 +26,7 @@ export const spinner = recipe({
     },
   },
   defaultVariants: {
-    size: 'md',
+    size: "md",
   },
 });
 

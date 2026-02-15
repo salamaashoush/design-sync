@@ -18,8 +18,8 @@
   "scripts": {
     "build": "obuild",
     "dev": "obuild --watch",
-    "lint": "oxlint && oxfmt --check",
-    "lint:fix": "oxlint --fix && oxfmt --write",
+    "lint": "oxlint --import-plugin --deny-warnings && oxfmt --check src",
+    "lint:fix": "oxlint --import-plugin --deny-warnings --fix && oxfmt src",
     "test": "bun run lint && bun run test:types && vitest run",
     "test:types": "tsc --noEmit"
   },
@@ -31,6 +31,8 @@
   "devDependencies": {
     "@design-sync/tsconfig": "workspace:*",
     "obuild": "^0.4.27",
+    "oxfmt": "^0.32.0",
+    "oxlint": "^1.47.0",
     "typescript": "^5.9.3",
     "vitest": "^4.0.18"
   },

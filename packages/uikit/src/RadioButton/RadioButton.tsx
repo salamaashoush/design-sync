@@ -1,6 +1,6 @@
-import { RadioGroup as KRadioGroup } from '@kobalte/core/radio-group';
-import { ParentProps, splitProps } from 'solid-js';
-import { control, group, item, label } from './radioButton.css';
+import { RadioGroup as KRadioGroup } from "@kobalte/core/radio-group";
+import { ParentProps, splitProps } from "solid-js";
+import { control, group, item, label } from "./radioButton.css";
 
 interface RadioGroupProps extends ParentProps {
   value?: string;
@@ -10,7 +10,13 @@ interface RadioGroupProps extends ParentProps {
 }
 
 export function RadioGroup(props: RadioGroupProps) {
-  const [local, rest] = splitProps(props, ['value', 'defaultValue', 'onChange', 'name', 'children']);
+  const [local, rest] = splitProps(props, [
+    "value",
+    "defaultValue",
+    "onChange",
+    "name",
+    "children",
+  ]);
   return (
     <KRadioGroup
       value={local.value}

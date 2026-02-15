@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import styled, { css } from 'styled-components';
+import { useState } from "react";
+import styled, { css } from "styled-components";
 
 // ============================================================================
 // Styled Components using Design Tokens
@@ -8,7 +8,10 @@ import styled, { css } from 'styled-components';
 const AppContainer = styled.div`
   min-height: 100vh;
   background: #f8f9fa;
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family:
+    system-ui,
+    -apple-system,
+    sans-serif;
 `;
 
 const Header = styled.header`
@@ -300,15 +303,15 @@ const TransitionBox = styled.div<{ $transition: string; $hovered: boolean }>`
 
 function SpacingDemo() {
   const spacings = [
-    { name: 'no', var: '--kda-foundation-spacing-no' },
-    { name: 'xxs', var: '--kda-foundation-spacing-xxs' },
-    { name: 'xs', var: '--kda-foundation-spacing-xs' },
-    { name: 'sm', var: '--kda-foundation-spacing-sm' },
-    { name: 'md', var: '--kda-foundation-spacing-md' },
-    { name: 'lg', var: '--kda-foundation-spacing-lg' },
-    { name: 'xl', var: '--kda-foundation-spacing-xl' },
-    { name: 'xxl', var: '--kda-foundation-spacing-xxl' },
-    { name: 'xxxl', var: '--kda-foundation-spacing-xxxl' },
+    { name: "no", var: "--kda-foundation-spacing-no" },
+    { name: "xxs", var: "--kda-foundation-spacing-xxs" },
+    { name: "xs", var: "--kda-foundation-spacing-xs" },
+    { name: "sm", var: "--kda-foundation-spacing-sm" },
+    { name: "md", var: "--kda-foundation-spacing-md" },
+    { name: "lg", var: "--kda-foundation-spacing-lg" },
+    { name: "xl", var: "--kda-foundation-spacing-xl" },
+    { name: "xxl", var: "--kda-foundation-spacing-xxl" },
+    { name: "xxxl", var: "--kda-foundation-spacing-xxxl" },
   ];
 
   return (
@@ -330,13 +333,19 @@ function SpacingDemo() {
       <SectionSubtitle>Spacing in Action</SectionSubtitle>
       <SpacingExample>
         <Card $padding="--kda-foundation-spacing-md">
-          <p>Padding: <code>--kda-foundation-spacing-md</code></p>
+          <p>
+            Padding: <code>--kda-foundation-spacing-md</code>
+          </p>
         </Card>
         <Card $padding="--kda-foundation-spacing-lg">
-          <p>Padding: <code>--kda-foundation-spacing-lg</code></p>
+          <p>
+            Padding: <code>--kda-foundation-spacing-lg</code>
+          </p>
         </Card>
         <Card $padding="--kda-foundation-spacing-xl">
-          <p>Padding: <code>--kda-foundation-spacing-xl</code></p>
+          <p>
+            Padding: <code>--kda-foundation-spacing-xl</code>
+          </p>
         </Card>
       </SpacingExample>
     </DemoSection>
@@ -345,13 +354,13 @@ function SpacingDemo() {
 
 function SizingDemo() {
   const sizes = [
-    { name: 'n4', var: '--kda-foundation-size-n4' },
-    { name: 'n6', var: '--kda-foundation-size-n6' },
-    { name: 'n8', var: '--kda-foundation-size-n8' },
-    { name: 'n10', var: '--kda-foundation-size-n10' },
-    { name: 'n12', var: '--kda-foundation-size-n12' },
-    { name: 'n16', var: '--kda-foundation-size-n16' },
-    { name: 'n20', var: '--kda-foundation-size-n20' },
+    { name: "n4", var: "--kda-foundation-size-n4" },
+    { name: "n6", var: "--kda-foundation-size-n6" },
+    { name: "n8", var: "--kda-foundation-size-n8" },
+    { name: "n10", var: "--kda-foundation-size-n10" },
+    { name: "n12", var: "--kda-foundation-size-n12" },
+    { name: "n16", var: "--kda-foundation-size-n16" },
+    { name: "n20", var: "--kda-foundation-size-n20" },
   ];
 
   return (
@@ -393,14 +402,14 @@ function SizingDemo() {
 
 function RadiusDemo() {
   const radii = [
-    { name: 'no', var: '--kda-foundation-radius-no' },
-    { name: 'xs', var: '--kda-foundation-radius-xs' },
-    { name: 'sm', var: '--kda-foundation-radius-sm' },
-    { name: 'md', var: '--kda-foundation-radius-md' },
-    { name: 'lg', var: '--kda-foundation-radius-lg' },
-    { name: 'xl', var: '--kda-foundation-radius-xl' },
-    { name: 'xxl', var: '--kda-foundation-radius-xxl' },
-    { name: 'round', var: '--kda-foundation-radius-round' },
+    { name: "no", var: "--kda-foundation-radius-no" },
+    { name: "xs", var: "--kda-foundation-radius-xs" },
+    { name: "sm", var: "--kda-foundation-radius-sm" },
+    { name: "md", var: "--kda-foundation-radius-md" },
+    { name: "lg", var: "--kda-foundation-radius-lg" },
+    { name: "xl", var: "--kda-foundation-radius-xl" },
+    { name: "xxl", var: "--kda-foundation-radius-xxl" },
+    { name: "round", var: "--kda-foundation-radius-round" },
   ];
 
   return (
@@ -441,8 +450,8 @@ function TransitionsDemo() {
       <TransitionGrid>
         <TransitionBox
           $transition="--kda-foundation-transition-duration-base"
-          $hovered={hovered === 'base'}
-          onMouseEnter={() => setHovered('base')}
+          $hovered={hovered === "base"}
+          onMouseEnter={() => setHovered("base")}
           onMouseLeave={() => setHovered(null)}
         >
           <span>Base (400ms)</span>
@@ -451,8 +460,8 @@ function TransitionsDemo() {
 
         <TransitionBox
           $transition="--kda-foundation-transition-duration-d200"
-          $hovered={hovered === 'd200'}
-          onMouseEnter={() => setHovered('d200')}
+          $hovered={hovered === "d200"}
+          onMouseEnter={() => setHovered("d200")}
           onMouseLeave={() => setHovered(null)}
         >
           <span>Fast (200ms)</span>
@@ -461,8 +470,8 @@ function TransitionsDemo() {
 
         <TransitionBox
           $transition="--kda-foundation-transition-animation-ease-out-sine"
-          $hovered={hovered === 'sine'}
-          onMouseEnter={() => setHovered('sine')}
+          $hovered={hovered === "sine"}
+          onMouseEnter={() => setHovered("sine")}
           onMouseLeave={() => setHovered(null)}
         >
           <span>Ease Out Sine</span>
@@ -471,8 +480,8 @@ function TransitionsDemo() {
 
         <TransitionBox
           $transition="--kda-foundation-transition-animation-ease-out-cubic"
-          $hovered={hovered === 'cubic'}
-          onMouseEnter={() => setHovered('cubic')}
+          $hovered={hovered === "cubic"}
+          onMouseEnter={() => setHovered("cubic")}
           onMouseLeave={() => setHovered(null)}
         >
           <span>Ease Out Cubic</span>
@@ -488,7 +497,7 @@ function TransitionsDemo() {
 // ============================================================================
 
 function App() {
-  const [activeTab, setActiveTab] = useState('spacing');
+  const [activeTab, setActiveTab] = useState("spacing");
 
   return (
     <AppContainer>
@@ -498,31 +507,30 @@ function App() {
       </Header>
 
       <Tabs>
-        <Tab $active={activeTab === 'spacing'} onClick={() => setActiveTab('spacing')}>
+        <Tab $active={activeTab === "spacing"} onClick={() => setActiveTab("spacing")}>
           Spacing
         </Tab>
-        <Tab $active={activeTab === 'sizing'} onClick={() => setActiveTab('sizing')}>
+        <Tab $active={activeTab === "sizing"} onClick={() => setActiveTab("sizing")}>
           Sizing
         </Tab>
-        <Tab $active={activeTab === 'radius'} onClick={() => setActiveTab('radius')}>
+        <Tab $active={activeTab === "radius"} onClick={() => setActiveTab("radius")}>
           Border Radius
         </Tab>
-        <Tab $active={activeTab === 'transitions'} onClick={() => setActiveTab('transitions')}>
+        <Tab $active={activeTab === "transitions"} onClick={() => setActiveTab("transitions")}>
           Transitions
         </Tab>
       </Tabs>
 
       <Content>
-        {activeTab === 'spacing' && <SpacingDemo />}
-        {activeTab === 'sizing' && <SizingDemo />}
-        {activeTab === 'radius' && <RadiusDemo />}
-        {activeTab === 'transitions' && <TransitionsDemo />}
+        {activeTab === "spacing" && <SpacingDemo />}
+        {activeTab === "sizing" && <SizingDemo />}
+        {activeTab === "radius" && <RadiusDemo />}
+        {activeTab === "transitions" && <TransitionsDemo />}
       </Content>
 
       <Footer>
         <p>
-          Tokens imported from <code>./tokens/light.ts</code> via{' '}
-          <code>GlobalThemeStyle</code>
+          Tokens imported from <code>./tokens/light.ts</code> via <code>GlobalThemeStyle</code>
         </p>
       </Footer>
     </AppContainer>

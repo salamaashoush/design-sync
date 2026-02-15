@@ -22,15 +22,14 @@ export const KdacolorBlackIcon = React.forwardRef<SVGSVGElement, KdacolorBlackIc
       {...props}
     >
       {title && <title>{title}</title>}
-      <path d="M56.8703 56L39.4779 55.9911L17.7995 39.0708L26.6166 32L56.8703 56Z" id="{kda.foundation.color.brand.key.black}" fill="#020E1B"/>
-  <path d="M56.8703 8H39.4868L17.7995 24.9292L26.6166 32L56.8703 8Z" id="{kda.foundation.color.brand.key.black}" fill="#020E1B"/>
-  <path d="M17.7935 55.9913L7 47.4633V16.537L17.7935 8.00901V55.9913Z" id="{kda.foundation.color.brand.key.black}" fill="#020E1B"/>
+      <path d="M52.7144 52L38.2208 51.9926L20.1554 37.8923L27.503 32L52.7144 52Z" id="{kda.foundation.color.brand.key.black}" fill="#020E1B"/>
+  <path d="M52.7144 12H38.2282L20.1554 26.1077L27.503 32L52.7144 12Z" id="{kda.foundation.color.brand.key.black}" fill="#020E1B"/>
+  <path d="M20.1504 51.9928L11.1559 44.8861V19.1142L20.1504 12.0075V51.9928Z" id="{kda.foundation.color.brand.key.black}" fill="#020E1B"/>
     </svg>
   )
 );
 
 KdacolorBlackIcon.displayName = "KdacolorBlackIcon";
-Icon";
 F5F5F5"/>
     </svg>
   )

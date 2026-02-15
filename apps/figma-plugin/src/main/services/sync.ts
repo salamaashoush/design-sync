@@ -1,10 +1,15 @@
-import { GitStorage } from '@design-sync/storage';
-import { get, isObject } from '@design-sync/utils';
-import { isTokenAlias, normalizeTokenAlias, type DesignToken, type TokenAlias } from '@design-sync/w3c-dtfm';
-import type { DiffResult, RemoteStorage, RemoteStorageWithoutId } from '../../shared/types';
-import { createGitStorageForFigma, localStorage } from './storage';
-import { stylesService } from './styles';
-import { variablesService } from './variables';
+import { GitStorage } from "@design-sync/storage";
+import { get, isObject } from "@design-sync/utils";
+import {
+  isTokenAlias,
+  normalizeTokenAlias,
+  type DesignToken,
+  type TokenAlias,
+} from "@design-sync/w3c-dtfm";
+import type { DiffResult, RemoteStorage, RemoteStorageWithoutId } from "../../shared/types";
+import { createGitStorageForFigma, localStorage } from "./storage";
+import { stylesService } from "./styles";
+import { variablesService } from "./variables";
 
 export class SyncService {
   private remoteStorages: Map<string, RemoteStorage> = new Map();
@@ -13,8 +18,8 @@ export class SyncService {
   private activeStorageId: string | undefined;
 
   async init() {
-    const remoteStorages = (await localStorage.get<RemoteStorage[]>('remoteStorages')) ?? [];
-    this.activeStorageId = await localStorage.get<string>('activeStorage');
+    const remoteStorages = (await localStorage.get<RemoteStorage[]>("remoteStorages")) ?? [];
+    this.activeStorageId = await localStorage.get<string>("activeStorage");
     if (remoteStorages) {
       for (const storage of remoteStorages) {
         this.remoteStorages.set(storage.id, storage);
@@ -30,19 +35,19 @@ export class SyncService {
   }
 
   async loadTokens() {
-    const filePath = this.storageService?.path ?? 'tokens.json';
+    const filePath = this.storageService?.path ?? "tokens.json";
     const tokens = await this.storageService?.load<object>(filePath);
 
     if (tokens) {
       this.tokens.set(filePath, tokens);
     }
-    console.log('loaded tokens', tokens);
+    console.log("loaded tokens", tokens);
     return tokens;
   }
 
   async saveTokens(tokens: object, commitMessage?: string) {
-    const filePath = this.storageService?.path ?? 'tokens.json';
-    console.log('saving tokens', tokens);
+    const filePath = this.storageService?.path ?? "tokens.json";
+    console.log("saving tokens", tokens);
     await this.storageService?.save(tokens, {
       commitMessage: commitMessage ?? `Update tokens.json`,
       filePath,
@@ -64,17 +69,17 @@ export class SyncService {
       ...storage,
       id,
     });
-    localStorage.set('remoteStorages', Array.from(this.remoteStorages.values()));
+    localStorage.set("remoteStorages", Array.from(this.remoteStorages.values()));
   }
 
   removeRemoteStorage(id: string) {
     this.remoteStorages.delete(id);
-    localStorage.set('remoteStorages', Array.from(this.remoteStorages.values()));
+    localStorage.set("remoteStorages", Array.from(this.remoteStorages.values()));
   }
 
   updateRemoteStorage(storage: RemoteStorage) {
     this.remoteStorages.set(storage.id, storage);
-    localStorage.set('remoteStorages', Array.from(this.remoteStorages.values()));
+    localStorage.set("remoteStorages", Array.from(this.remoteStorages.values()));
   }
 
   async activateRemoteStorage(id: string) {
@@ -82,7 +87,7 @@ export class SyncService {
     if (storage) {
       this.storageService = createGitStorageForFigma(storage);
       this.activeStorageId = id;
-      localStorage.set('activeStorage', id);
+      localStorage.set("activeStorage", id);
     }
   }
 
@@ -103,7 +108,7 @@ export class SyncService {
     return undefined;
   }
 
-  resolveTokenValue<T extends DesignToken>({ $value }: T): T['$value'] {
+  resolveTokenValue<T extends DesignToken>({ $value }: T): T["$value"] {
     if (isTokenAlias($value)) {
       const resolved = this.getTokenByRefOrPath($value).$value;
       return this.resolveTokenValue(resolved);
@@ -149,7 +154,7 @@ export class SyncService {
     const diff: DiffResult = [];
 
     // Compare local tokens against remote tokens
-    this.diffObjects(localTokens, (remoteTokens as Record<string, any>) ?? {}, '', diff);
+    this.diffObjects(localTokens, (remoteTokens as Record<string, any>) ?? {}, "", diff);
 
     return diff;
   }
@@ -171,7 +176,7 @@ export class SyncService {
     const allKeys = new Set([...Object.keys(local), ...Object.keys(remote)]);
 
     for (const key of allKeys) {
-      if (key.startsWith('$')) {
+      if (key.startsWith("$")) {
         continue;
       }
       const path = prefix ? `${prefix}.${key}` : key;
@@ -179,16 +184,16 @@ export class SyncService {
       const remoteVal = remote[key];
 
       if (localVal !== undefined && remoteVal === undefined) {
-        diff.push({ path, type: 'add', newValue: JSON.stringify(localVal) });
+        diff.push({ path, type: "add", newValue: JSON.stringify(localVal) });
       } else if (localVal === undefined && remoteVal !== undefined) {
-        diff.push({ path, type: 'remove', oldValue: JSON.stringify(remoteVal) });
+        diff.push({ path, type: "remove", oldValue: JSON.stringify(remoteVal) });
       } else if (isObject(localVal) && isObject(remoteVal)) {
         // Check if this is a token (has $value)
-        if ('$value' in localVal || '$value' in remoteVal) {
+        if ("$value" in localVal || "$value" in remoteVal) {
           const localStr = JSON.stringify(localVal);
           const remoteStr = JSON.stringify(remoteVal);
           if (localStr !== remoteStr) {
-            diff.push({ path, type: 'update', oldValue: remoteStr, newValue: localStr });
+            diff.push({ path, type: "update", oldValue: remoteStr, newValue: localStr });
           }
         } else {
           this.diffObjects(localVal, remoteVal, path, diff);
@@ -196,7 +201,7 @@ export class SyncService {
       } else if (JSON.stringify(localVal) !== JSON.stringify(remoteVal)) {
         diff.push({
           path,
-          type: 'update',
+          type: "update",
           oldValue: JSON.stringify(remoteVal),
           newValue: JSON.stringify(localVal),
         });

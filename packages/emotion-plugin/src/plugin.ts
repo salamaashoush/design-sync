@@ -12,7 +12,6 @@ import {
   pathToCssVarName,
   pathToStyleName,
   processCssVarRef,
-  processPrimitiveValue,
   serializeObject,
   serializeObjectToCSS,
   typographyToCssStyle,
@@ -147,11 +146,7 @@ export function emotionPlugin(config: EmotionPluginConfig = {}): ReturnType<type
     // Generate provider if requested
     if (generateProvider) {
       const providerExt = useTs ? "tsx" : "jsx";
-      builder.add(
-        `ThemeProvider.${providerExt}`,
-        generateProviderFile(modes, useTs),
-        "ts",
-      );
+      builder.add(`ThemeProvider.${providerExt}`, generateProviderFile(modes, useTs), "ts");
     }
 
     // Generate media helpers if breakpoints provided
@@ -286,10 +281,7 @@ function generateThemeFile(
   useCssVars: boolean,
   useTs: boolean,
 ): string {
-  const parts: string[] = [
-    "// Auto-generated Emotion theme",
-    "// Do not edit manually\n",
-  ];
+  const parts: string[] = ["// Auto-generated Emotion theme", "// Do not edit manually\n"];
 
   const themeName = `${mode}Theme`;
   const typeAnnotation = useTs ? ": Theme" : "";
@@ -298,15 +290,13 @@ function generateThemeFile(
     parts.push('import type { Theme } from "./types";\n');
   }
 
-  parts.push(
-    `export const ${themeName}${typeAnnotation} = ${serializeObjectLiteral(tokens)};\n`,
-  );
+  parts.push(`export const ${themeName}${typeAnnotation} = ${serializeObjectLiteral(tokens)};\n`);
   parts.push(`export default ${themeName};`);
 
   return parts.join("\n");
 }
 
-function generateStylesFile(styles: string[], useTs: boolean): string {
+function generateStylesFile(styles: string[], _useTs: boolean): string {
   const parts: string[] = [
     "// Auto-generated Emotion styles",
     "// Do not edit manually\n",
@@ -343,9 +333,7 @@ function generateGlobalStylesFile(
     'import { Global, css } from "@emotion/react";\n',
   ];
 
-  const cssContent = useCssVars
-    ? serializeObjectToCSS(tokens, ":root")
-    : CSS_RESET;
+  const cssContent = useCssVars ? serializeObjectToCSS(tokens, ":root") : CSS_RESET;
 
   if (useTs) {
     parts.push("export const GlobalStyles = () => (");
@@ -382,7 +370,9 @@ function generateProviderFile(modes: ProcessorModes, useTs: boolean): string {
   parts.push("");
 
   const propsType = useTs
-    ? `{ children: ReactNode; mode?: ${getModesToIterate(modes).map((m) => `"${m}"`).join(" | ")} }`
+    ? `{ children: ReactNode; mode?: ${getModesToIterate(modes)
+        .map((m) => `"${m}"`)
+        .join(" | ")} }`
     : "";
 
   parts.push(`export const themes = {`);
@@ -393,7 +383,9 @@ function generateProviderFile(modes: ProcessorModes, useTs: boolean): string {
 
   if (useTs) {
     parts.push(`interface ThemeProviderProps ${propsType}\n`);
-    parts.push(`export function ThemeProvider({ children, mode = "${modes.defaultMode}" }: ThemeProviderProps) {`);
+    parts.push(
+      `export function ThemeProvider({ children, mode = "${modes.defaultMode}" }: ThemeProviderProps) {`,
+    );
   } else {
     parts.push(`export function ThemeProvider({ children, mode = "${modes.defaultMode}" }) {`);
   }
@@ -412,10 +404,7 @@ function generateProviderFile(modes: ProcessorModes, useTs: boolean): string {
 function generateMediaFile(breakpoints: Record<string, string>, useTs: boolean): string {
   const breakpointEntries = Object.entries(breakpoints);
 
-  const parts: string[] = [
-    "// Auto-generated media query helpers",
-    "// Do not edit manually\n",
-  ];
+  const parts: string[] = ["// Auto-generated media query helpers", "// Do not edit manually\n"];
 
   // Breakpoint values
   parts.push("export const breakpoints = {");

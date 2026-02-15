@@ -173,17 +173,26 @@ export const darkThemeValues = {
   "--kda-foundation-color-background-base-inverse-\\@hover": "#252F3A",
   "--kda-foundation-color-background-base-inverse-\\@focus": "#131e2bcc",
   "--kda-foundation-color-background-base-inverse-\\@disabled": "#ffffff1a",
-  "--kda-foundation-color-background-layer-default": "var(--kda-foundation-color-neutral-n5\\@alpha80)",
+  "--kda-foundation-color-background-layer-default":
+    "var(--kda-foundation-color-neutral-n5\\@alpha80)",
   "--kda-foundation-color-background-layer-solid": "var(--kda-foundation-color-neutral-n5)",
-  "--kda-foundation-color-background-overlay-default": "var(--kda-foundation-color-neutral-n5\\@alpha95)",
-  "--kda-foundation-color-background-overlay-context-default": "var(--kda-foundation-color-neutral-n5\\@alpha95)",
+  "--kda-foundation-color-background-overlay-default":
+    "var(--kda-foundation-color-neutral-n5\\@alpha95)",
+  "--kda-foundation-color-background-overlay-context-default":
+    "var(--kda-foundation-color-neutral-n5\\@alpha95)",
   "--kda-foundation-color-background-overlay-\\@hover": "var(--kda-foundation-color-neutral-n5)",
-  "--kda-foundation-color-background-surface-default": "var(--kda-foundation-color-neutral-n99\\@alpha6)",
-  "--kda-foundation-color-background-surface-inverse-default": "var(--kda-foundation-color-neutral-n99\\@alpha80)",
-  "--kda-foundation-color-background-surface-subtle-default": "var(--kda-foundation-color-neutral-n0\\@alpha20)",
-  "--kda-foundation-color-background-surface-subtle-inverse-default": "var(--kda-foundation-color-neutral-n99\\@alpha80)",
-  "--kda-foundation-color-background-surfaceHighContrast-default": "var(--kda-foundation-color-neutral-n0\\@alpha90)",
-  "--kda-foundation-color-background-surfaceHighContrast-inverse-default": "var(--kda-foundation-color-neutral-n100\\@alpha90)",
+  "--kda-foundation-color-background-surface-default":
+    "var(--kda-foundation-color-neutral-n99\\@alpha6)",
+  "--kda-foundation-color-background-surface-inverse-default":
+    "var(--kda-foundation-color-neutral-n99\\@alpha80)",
+  "--kda-foundation-color-background-surface-subtle-default":
+    "var(--kda-foundation-color-neutral-n0\\@alpha20)",
+  "--kda-foundation-color-background-surface-subtle-inverse-default":
+    "var(--kda-foundation-color-neutral-n99\\@alpha80)",
+  "--kda-foundation-color-background-surfaceHighContrast-default":
+    "var(--kda-foundation-color-neutral-n0\\@alpha90)",
+  "--kda-foundation-color-background-surfaceHighContrast-inverse-default":
+    "var(--kda-foundation-color-neutral-n100\\@alpha90)",
   "--kda-foundation-color-background-brand-primary-default": "#B8E7CF",
   "--kda-foundation-color-background-brand-primary-subtle": "#CEF8E0",
   "--kda-foundation-color-background-brand-primary-subtlest": "#E9F8EF",
@@ -212,7 +221,8 @@ export const darkThemeValues = {
   "--kda-foundation-color-background-accent-primary-\\@hover": "#4BE9B5",
   "--kda-foundation-color-background-accent-primary-\\@focus": "#52ffc6cc",
   "--kda-foundation-color-background-accent-primary-\\@active": "#7AFFD3",
-  "--kda-foundation-color-background-accent-primary-inverse-default": "var(--kda-foundation-color-palette-aqua-n80)",
+  "--kda-foundation-color-background-accent-primary-inverse-default":
+    "var(--kda-foundation-color-palette-aqua-n80)",
   "--kda-foundation-color-background-accent-primary-inverse-\\@hover": "#2E8F6F",
   "--kda-foundation-color-background-accent-primary-inverse-\\@focus": "#27795ecc",
   "--kda-foundation-color-background-accent-primary-inverse-\\@active": "#27795E",
@@ -280,19 +290,24 @@ export const darkThemeValues = {
   "--kda-foundation-color-background-semantic-info-inverse-\\@hover": "#2767A3",
   "--kda-foundation-color-background-semantic-info-inverse-\\@focus": "#205586cc",
   "--kda-foundation-color-background-semantic-info-inverse-\\@active": "#194268",
-  "--kda-foundation-color-background-input-default": "var(--kda-foundation-color-neutral-n5\\@alpha80)",
-  "--kda-foundation-color-background-input-\\@hover": "var(--kda-foundation-color-neutral-n20\\@alpha80)",
+  "--kda-foundation-color-background-input-default":
+    "var(--kda-foundation-color-neutral-n5\\@alpha80)",
+  "--kda-foundation-color-background-input-\\@hover":
+    "var(--kda-foundation-color-neutral-n20\\@alpha80)",
   "--kda-foundation-color-background-input-\\@focus": "#e4e5e5cc",
   "--kda-foundation-color-background-input-\\@active": "#E4E5E5",
   "--kda-foundation-color-background-input-\\@disabled": "#0000001a",
-  "--kda-foundation-color-background-input-inverse-default": "var(--kda-foundation-color-neutral-n80\\@alpha80)",
+  "--kda-foundation-color-background-input-inverse-default":
+    "var(--kda-foundation-color-neutral-n80\\@alpha80)",
   "--kda-foundation-color-background-input-inverse-\\@hover": "#252F3A",
   "--kda-foundation-color-background-input-inverse-\\@focus": "#131e2bcc",
   "--kda-foundation-color-background-input-inverse-\\@active": "#131E2B",
   "--kda-foundation-color-background-input-inverse-\\@disabled": "#ffffff1a",
-  "--kda-foundation-color-background-skeleton-default": "var(--kda-foundation-color-neutral-n20\\@alpha80)",
+  "--kda-foundation-color-background-skeleton-default":
+    "var(--kda-foundation-color-neutral-n20\\@alpha80)",
   "--kda-foundation-color-background-table-row-default": "#ffffffcc",
-  "--kda-foundation-color-background-table-row-\\@hover": "var(--kda-foundation-color-neutral-n10\\@alpha80)",
+  "--kda-foundation-color-background-table-row-\\@hover":
+    "var(--kda-foundation-color-neutral-n10\\@alpha80)",
   "--kda-foundation-color-border-base-subtle": "var(--kda-foundation-color-neutral-n99\\@alpha10)",
   "--kda-foundation-color-border-base-default": "#252f3a40",
   "--kda-foundation-color-border-base-bold": "#020e1b80",
@@ -326,7 +341,8 @@ export const darkThemeValues = {
   "--kda-foundation-color-border-brand-secondary-inverse-\\@hover": "#2767A3",
   "--kda-foundation-color-border-brand-secondary-inverse-\\@focus": "#2E7AC0",
   "--kda-foundation-color-border-semantic-positive-default": "#009112",
-  "--kda-foundation-color-border-semantic-positive-subtle": "var(--kda-foundation-color-semantic-positive-n5)",
+  "--kda-foundation-color-border-semantic-positive-subtle":
+    "var(--kda-foundation-color-semantic-positive-n5)",
   "--kda-foundation-color-border-semantic-positive-\\@disabled": "#72e06a",
   "--kda-foundation-color-border-semantic-positive-\\@hover": "#007c0f",
   "--kda-foundation-color-border-semantic-positive-\\@focus": "#009112",
@@ -334,7 +350,8 @@ export const darkThemeValues = {
   "--kda-foundation-color-border-semantic-positive-inverse-\\@hover": "#4ecf50",
   "--kda-foundation-color-border-semantic-positive-inverse-\\@focus": "#72e06a",
   "--kda-foundation-color-border-semantic-negative-default": "#EA3829",
-  "--kda-foundation-color-border-semantic-negative-subtle": "var(--kda-foundation-color-semantic-negative-n5)",
+  "--kda-foundation-color-border-semantic-negative-subtle":
+    "var(--kda-foundation-color-semantic-negative-n5)",
   "--kda-foundation-color-border-semantic-negative-\\@disabled": "#FFB7A9",
   "--kda-foundation-color-border-semantic-negative-\\@hover": "#D31510",
   "--kda-foundation-color-border-semantic-negative-\\@focus": "#EA3829",
@@ -342,7 +359,8 @@ export const darkThemeValues = {
   "--kda-foundation-color-border-semantic-negative-inverse-\\@hover": "#FF9B88",
   "--kda-foundation-color-border-semantic-negative-inverse-\\@focus": "#FFB7A9",
   "--kda-foundation-color-border-semantic-warning-default": "#9B7800",
-  "--kda-foundation-color-border-semantic-warning-subtle": "var(--kda-foundation-color-semantic-warning-n5)",
+  "--kda-foundation-color-border-semantic-warning-subtle":
+    "var(--kda-foundation-color-semantic-warning-n5)",
   "--kda-foundation-color-border-semantic-warning-\\@disabled": "#E8C600",
   "--kda-foundation-color-border-semantic-warning-\\@hover": "#856600",
   "--kda-foundation-color-border-semantic-warning-\\@focus": "#9B7800",
@@ -350,7 +368,8 @@ export const darkThemeValues = {
   "--kda-foundation-color-border-semantic-warning-inverse-\\@hover": "#D7B300",
   "--kda-foundation-color-border-semantic-warning-inverse-\\@focus": "#E8C600",
   "--kda-foundation-color-border-semantic-info-default": "#2E7AC0",
-  "--kda-foundation-color-border-semantic-info-subtle": "var(--kda-foundation-color-semantic-info-n5)",
+  "--kda-foundation-color-border-semantic-info-subtle":
+    "var(--kda-foundation-color-semantic-info-n5)",
   "--kda-foundation-color-border-semantic-info-\\@disabled": "#86BCEE",
   "--kda-foundation-color-border-semantic-info-\\@hover": "#2767A3",
   "--kda-foundation-color-border-semantic-info-\\@focus": "#2E7AC0",
@@ -358,7 +377,8 @@ export const darkThemeValues = {
   "--kda-foundation-color-border-semantic-info-inverse-\\@hover": "#6BACE8",
   "--kda-foundation-color-border-semantic-info-inverse-\\@focus": "#86BCEE",
   "--kda-foundation-color-border-tint-outline": "#2E7AC0",
-  "--kda-foundation-color-border-tint-\\@focus": "var(--kda-foundation-color-palette-aqua-n20\\@alpha80)",
+  "--kda-foundation-color-border-tint-\\@focus":
+    "var(--kda-foundation-color-palette-aqua-n20\\@alpha80)",
   "--kda-foundation-color-border-overlay-context": "#b0b3b7cc",
   "--kda-foundation-color-brand-primary-n0": "#E9F8EF",
   "--kda-foundation-color-brand-primary-n1": "#CEF8E0",
@@ -412,7 +432,8 @@ export const darkThemeValues = {
   "--kda-foundation-color-brand-key-neutralwarm": "#F0EAE6",
   "--kda-foundation-color-brand-key-white": "var(--kda-foundation-color-neutral-n99)",
   "--kda-foundation-color-brand-key-black": "var(--kda-foundation-color-neutral-n1)",
-  "--kda-foundation-color-gradient-base-subtle": "linear-gradient(180deg, #F5F5F5 25%, #f5f5f500 100%)",
+  "--kda-foundation-color-gradient-base-subtle":
+    "linear-gradient(180deg, #F5F5F5 25%, #f5f5f500 100%)",
   "--kda-foundation-color-icon-base-default": "#131E2B",
   "--kda-foundation-color-icon-base-bold": "#020E1B",
   "--kda-foundation-color-icon-base-\\@init": "#020E1B",
@@ -428,7 +449,8 @@ export const darkThemeValues = {
   "--kda-foundation-color-icon-base-inverse-\\@active": "#FFFFFF",
   "--kda-foundation-color-icon-base-inverse-\\@disabled": "#ffffff33",
   "--kda-foundation-color-icon-brand-logo-default": "#4A9079",
-  "--kda-foundation-color-icon-brand-logo-inverse-default": "var(--kda-foundation-color-neutralwarm-n99)",
+  "--kda-foundation-color-icon-brand-logo-inverse-default":
+    "var(--kda-foundation-color-neutralwarm-n99)",
   "--kda-foundation-color-icon-brand-primary-default": "#2A5F4B",
   "--kda-foundation-color-icon-brand-primary-bold": "#1F4F3C",
   "--kda-foundation-color-icon-brand-primary-\\@hover": "#356F5A",
@@ -495,7 +517,8 @@ export const darkThemeValues = {
   "--kda-foundation-color-icon-product-spirekey-animation-step1": "#4AA688",
   "--kda-foundation-color-icon-product-spirekey-animation-step2": "#4BBD97",
   "--kda-foundation-color-icon-product-spirekey-animation-step3": "#4BD3A6",
-  "--kda-foundation-color-icon-product-spirekey-animation-end": "var(--kda-foundation-color-palette-aqua-n70)",
+  "--kda-foundation-color-icon-product-spirekey-animation-end":
+    "var(--kda-foundation-color-palette-aqua-n70)",
   "--kda-foundation-color-link-base-default": "var(--kda-foundation-color-palette-aqua-n50)",
   "--kda-foundation-color-link-base-\\@hover": "var(--kda-foundation-color-palette-aqua-n70)",
   "--kda-foundation-color-link-base-\\@focus": "var(--kda-foundation-color-palette-aqua-n70)",
@@ -2249,5 +2272,5 @@ export const darkThemeValues = {
   "--kda-foundation-effect-blur-0": "",
   "--kda-foundation-effect-shadow-level1": "4px 0.5rem 0.5rem 4px #000000",
   "--kda-foundation-effect-shadow-level2": "4rem 4rem 0.5rem 2rem #000000",
-  "--kda-foundation-effect-shadow-level3": "0px 0px 0.5rem 24px #000000"
+  "--kda-foundation-effect-shadow-level3": "0px 0px 0.5rem 24px #000000",
 };

@@ -1,6 +1,6 @@
-import { Tabs as KTabs } from '@kobalte/core/tabs';
-import { ComponentProps, For, JSXElement, splitProps } from 'solid-js';
-import { content, list, root, trigger } from './tabs.css';
+import { Tabs as KTabs } from "@kobalte/core/tabs";
+import { ComponentProps, For, JSXElement, splitProps } from "solid-js";
+import { content, list, root, trigger } from "./tabs.css";
 
 interface Tab {
   value: string;
@@ -13,14 +13,26 @@ interface TabsProps extends ComponentProps<typeof KTabs> {
 }
 
 export function Tabs(props: TabsProps) {
-  const [local, rest] = splitProps(props, ['tabs']);
+  const [local, rest] = splitProps(props, ["tabs"]);
 
   return (
     <KTabs class={root} {...rest}>
       <KTabs.List class={list}>
-        <For each={local.tabs}>{(tab) => <KTabs.Trigger class={trigger} value={tab.value}>{tab.label}</KTabs.Trigger>}</For>
+        <For each={local.tabs}>
+          {(tab) => (
+            <KTabs.Trigger class={trigger} value={tab.value}>
+              {tab.label}
+            </KTabs.Trigger>
+          )}
+        </For>
       </KTabs.List>
-      <For each={local.tabs}>{(tab) => <KTabs.Content class={content} value={tab.value}>{tab.content}</KTabs.Content>}</For>
+      <For each={local.tabs}>
+        {(tab) => (
+          <KTabs.Content class={content} value={tab.value}>
+            {tab.content}
+          </KTabs.Content>
+        )}
+      </For>
     </KTabs>
   );
 }

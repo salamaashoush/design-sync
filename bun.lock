@@ -206,6 +206,8 @@
       "devDependencies": {
         "@design-sync/tsconfig": "workspace:*",
         "obuild": "^0.4.27",
+        "oxfmt": "^0.32.0",
+        "oxlint": "^1.47.0",
         "typescript": "^5.9.3",
         "vitest": "^4.0.18",
       },

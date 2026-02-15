@@ -160,11 +160,27 @@ const COLOR_ROLE_PATTERNS: Record<M3ColorRole, RegExp[]> = {
   onErrorContainer: [/onerrorcontainer$/i, /on-error-container$/i],
   surface: [/surface$/i, /background\.surface/i],
   onSurface: [/onsurface$/i, /on-surface$/i, /surface\.on/i],
-  surfaceContainerLowest: [/surfacecontainerlowest$/i, /surface-container-lowest$/i, /surface\.container\.lowest/i],
-  surfaceContainerLow: [/surfacecontainerlow$/i, /surface-container-low$/i, /surface\.container\.low/i],
+  surfaceContainerLowest: [
+    /surfacecontainerlowest$/i,
+    /surface-container-lowest$/i,
+    /surface\.container\.lowest/i,
+  ],
+  surfaceContainerLow: [
+    /surfacecontainerlow$/i,
+    /surface-container-low$/i,
+    /surface\.container\.low/i,
+  ],
   surfaceContainer: [/surfacecontainer$/i, /surface-container$/i, /surface\.container/i],
-  surfaceContainerHigh: [/surfacecontainerhigh$/i, /surface-container-high$/i, /surface\.container\.high/i],
-  surfaceContainerHighest: [/surfacecontainerhighest$/i, /surface-container-highest$/i, /surface\.container\.highest/i],
+  surfaceContainerHigh: [
+    /surfacecontainerhigh$/i,
+    /surface-container-high$/i,
+    /surface\.container\.high/i,
+  ],
+  surfaceContainerHighest: [
+    /surfacecontainerhighest$/i,
+    /surface-container-highest$/i,
+    /surface\.container\.highest/i,
+  ],
   onSurfaceVariant: [/onsurfacevariant$/i, /on-surface-variant$/i, /surface\.variant\.on/i],
   outline: [/outline$/i, /border$/i],
   outlineVariant: [/outlinevariant$/i, /outline-variant$/i, /border\.light$/i],
@@ -184,7 +200,13 @@ const TYPOGRAPHY_ROLE_PATTERNS: Record<M3TypographyRole, RegExp[]> = {
   displayMedium: [/displaymedium$/i, /display-medium$/i, /display\.md$/i, /heading\.xxl$/i, /h2$/i],
   displaySmall: [/displaysmall$/i, /display-small$/i, /display\.sm$/i, /heading\.xl$/i],
   headlineLarge: [/headlinelarge$/i, /headline-large$/i, /headline\.lg$/i, /heading\.lg$/i, /h3$/i],
-  headlineMedium: [/headlinemedium$/i, /headline-medium$/i, /headline\.md$/i, /heading\.md$/i, /h4$/i],
+  headlineMedium: [
+    /headlinemedium$/i,
+    /headline-medium$/i,
+    /headline\.md$/i,
+    /heading\.md$/i,
+    /h4$/i,
+  ],
   headlineSmall: [/headlinesmall$/i, /headline-small$/i, /headline\.sm$/i, /heading\.sm$/i, /h5$/i],
   titleLarge: [/titlelarge$/i, /title-large$/i, /title\.lg$/i, /h6$/i],
   titleMedium: [/titlemedium$/i, /title-medium$/i, /title\.md$/i, /subtitle$/i],
@@ -213,7 +235,10 @@ function detectColorRole(path: string): M3ColorRole | null {
  * Find M3 typography role for a given token path
  */
 function detectTypographyRole(path: string): M3TypographyRole | null {
-  for (const [role, patterns] of Object.entries(TYPOGRAPHY_ROLE_PATTERNS) as [M3TypographyRole, RegExp[]][]) {
+  for (const [role, patterns] of Object.entries(TYPOGRAPHY_ROLE_PATTERNS) as [
+    M3TypographyRole,
+    RegExp[],
+  ][]) {
     if (patterns.some((p) => p.test(path))) {
       return role;
     }
@@ -323,9 +348,15 @@ export function flutterPlugin(config: FlutterPluginConfig = {}): ReturnType<type
     const radii = createModeRecord<Record<string, number>>(modes, () => ({}));
 
     // M3 color role mappings (role -> token name for each mode)
-    const colorRoleMappings = createModeRecord<Record<M3ColorRole, string>>(modes, () => ({} as Record<M3ColorRole, string>));
+    const colorRoleMappings = createModeRecord<Record<M3ColorRole, string>>(
+      modes,
+      () => ({}) as Record<M3ColorRole, string>,
+    );
     // M3 typography role mappings (role -> token name)
-    const typographyRoleMappings: Record<M3TypographyRole, string> = {} as Record<M3TypographyRole, string>;
+    const typographyRoleMappings: Record<M3TypographyRole, string> = {} as Record<
+      M3TypographyRole,
+      string
+    >;
 
     // Process all tokens
     context.query().forEach((token) => {
@@ -367,9 +398,18 @@ export function flutterPlugin(config: FlutterPluginConfig = {}): ReturnType<type
 
     // Generate Dart files
     builder.add("colors.dart", generateColorsFile(colors, modes, libraryName, useConst));
-    builder.add("spacing.dart", generateSpacingFile(spacing[modes.defaultMode], libraryName, useConst));
-    builder.add("typography.dart", generateTypographyFile(typography[modes.defaultMode], libraryName, useConst));
-    builder.add("shadows.dart", generateShadowsFile(shadows[modes.defaultMode], libraryName, useConst));
+    builder.add(
+      "spacing.dart",
+      generateSpacingFile(spacing[modes.defaultMode], libraryName, useConst),
+    );
+    builder.add(
+      "typography.dart",
+      generateTypographyFile(typography[modes.defaultMode], libraryName, useConst),
+    );
+    builder.add(
+      "shadows.dart",
+      generateShadowsFile(shadows[modes.defaultMode], libraryName, useConst),
+    );
     builder.add("radii.dart", generateRadiiFile(radii[modes.defaultMode], libraryName, useConst));
 
     if (generateThemeData) {
@@ -401,7 +441,10 @@ export function flutterPlugin(config: FlutterPluginConfig = {}): ReturnType<type
     }
 
     // Generate barrel file
-    builder.add(`${libraryName}.dart`, generateBarrelFile(libraryName, generateThemeData, generateThemeExtension));
+    builder.add(
+      `${libraryName}.dart`,
+      generateBarrelFile(libraryName, generateThemeData, generateThemeExtension),
+    );
 
     return builder.build();
   });
@@ -421,9 +464,17 @@ function getTokenName(path: string, stripPrefixArray: string[] = []): string {
   const parts = simplifiedPath.split(".");
   const filtered = parts.filter(
     (p) =>
-      !["colors", "color", "spacing", "space", "typography", "shadows", "shadow", "radii", "radius"].includes(
-        p.toLowerCase(),
-      ),
+      ![
+        "colors",
+        "color",
+        "spacing",
+        "space",
+        "typography",
+        "shadows",
+        "shadow",
+        "radii",
+        "radius",
+      ].includes(p.toLowerCase()),
   );
   return camelCase(filtered.join("-"));
 }
@@ -810,7 +861,10 @@ function generateThemeDataFile(
   const darkColorMappings = colorRoleMappings[darkModeKey] || {};
 
   // Build color scheme properties from mappings
-  const buildColorSchemeProps = (mappings: Record<M3ColorRole, string>, colorClass: string): string[] => {
+  const buildColorSchemeProps = (
+    mappings: Record<M3ColorRole, string>,
+    colorClass: string,
+  ): string[] => {
     const props: string[] = [];
     const roleOrder: M3ColorRole[] = [
       "primary",
@@ -885,7 +939,10 @@ function generateThemeDataFile(
   };
 
   const lightColorProps = buildColorSchemeProps(defaultColorMappings, "AppColors");
-  const darkColorProps = buildColorSchemeProps(darkColorMappings, `AppColors${pascalCase(darkModeKey)}`);
+  const darkColorProps = buildColorSchemeProps(
+    darkColorMappings,
+    `AppColors${pascalCase(darkModeKey)}`,
+  );
   const textThemeProps = buildTextThemeProps();
   const hasTextTheme = textThemeProps.length > 0;
 
@@ -959,18 +1016,22 @@ function generateThemeExtensionFile(
   colorRoleMappings: Record<string, Record<M3ColorRole, string>>,
   typographyRoleMappings: Record<M3TypographyRole, string>,
   modes: { defaultMode: string; requiredModes: readonly string[] },
-  libraryName: string,
+  _libraryName: string,
 ): string {
   const defaultMode = modes.defaultMode;
   const darkModeKey = modes.requiredModes.find((m) => m.toLowerCase().includes("dark")) || "dark";
 
   // Find colors not mapped to M3 roles
   const mappedColorNames = new Set(Object.values(colorRoleMappings[defaultMode] || {}));
-  const customColors = Object.keys(colors[defaultMode] || {}).filter((name) => !mappedColorNames.has(name));
+  const customColors = Object.keys(colors[defaultMode] || {}).filter(
+    (name) => !mappedColorNames.has(name),
+  );
 
   // Find typography not mapped to M3 roles
   const mappedTypoNames = new Set(Object.values(typographyRoleMappings));
-  const customTypography = Object.keys(typography[defaultMode] || {}).filter((name) => !mappedTypoNames.has(name));
+  const customTypography = Object.keys(typography[defaultMode] || {}).filter(
+    (name) => !mappedTypoNames.has(name),
+  );
 
   const lines: string[] = [
     "// Auto-generated Flutter ThemeExtension for custom tokens",

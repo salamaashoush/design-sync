@@ -10,11 +10,11 @@
     "tooling/*"
   ],
   "scripts": {
-    "build": "bun --filter '*' run build",
-    "test": "bun --filter '*' run test",
-    "lint": "bun --filter '*' run lint",
-    "lint:fix": "bun --filter '*' run lint:fix",
-    "test:types": "bun --filter '*' run test:types",
+    "build": "bun run --filter '*' build",
+    "test": "bun run --filter '*' test",
+    "lint": "bun run --filter '*' lint",
+    "lint:fix": "bun run --filter '*' lint:fix",
+    "test:types": "bun run --filter '*' test:types",
     "prepare": "husky",
     "changeset": "changeset",
     "ci:version": "changeset version",

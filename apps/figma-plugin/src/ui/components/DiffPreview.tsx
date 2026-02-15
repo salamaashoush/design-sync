@@ -1,5 +1,5 @@
-import { DiffView } from '@design-sync/uikit';
-import type { DiffEntry } from '../../shared/types';
+import { DiffView } from "@design-sync/uikit";
+import type { DiffEntry } from "../../shared/types";
 
 interface DiffPreviewProps {
   entries: DiffEntry[];

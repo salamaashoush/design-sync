@@ -102,10 +102,7 @@ export function colorGeneratorsExtension(
               value: amount,
             });
           } catch (error) {
-            context.logger.warn(
-              `Failed to generate color for "${newPath}": ${error}`,
-              path,
-            );
+            context.logger.warn(`Failed to generate color for "${newPath}": ${error}`, path);
             generatedDefaultValue = defaultValue;
           }
 

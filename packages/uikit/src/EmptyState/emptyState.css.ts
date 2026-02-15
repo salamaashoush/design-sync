@@ -1,14 +1,14 @@
-import { theme, ui11, ui12Bold } from '@design-sync/design-tokens';
-import { style } from '@vanilla-extract/css';
+import { theme, ui11, ui12Bold } from "@design-sync/design-tokens";
+import { style } from "@vanilla-extract/css";
 
 export const root = style({
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  justifyContent: 'center',
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  justifyContent: "center",
   padding: 32,
   gap: 12,
-  textAlign: 'center',
+  textAlign: "center",
 });
 
 export const icon = style({

@@ -33,7 +33,6 @@ import { createQueryBuilder } from "./query";
 import { createProcessedToken, ProcessedTokenImpl } from "./token";
 import type {
   AddTokenAction,
-  ExtensionPhase,
   ProcessedToken,
   ProcessorError,
   ProcessorMeta,
@@ -288,7 +287,9 @@ export class TokenProcessor implements TokenProcessorInterface {
    * Run schema-phase extensions on the raw token tree.
    * These extensions can add new tokens before alias resolution.
    */
-  private async runSchemaExtensions(tokens: Record<string, unknown>): Promise<Record<string, unknown>> {
+  private async runSchemaExtensions(
+    tokens: Record<string, unknown>,
+  ): Promise<Record<string, unknown>> {
     // Get all schema-phase extensions
     const schemaExtensions = this.pipeline.getSchemaExtensions();
     if (schemaExtensions.length === 0) {

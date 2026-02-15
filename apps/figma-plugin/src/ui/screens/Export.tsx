@@ -1,26 +1,24 @@
-import { Button, Checkbox, Input, Spinner, Toast, EmptyState } from '@design-sync/uikit';
-import { createSignal, For, Show } from 'solid-js';
-import { useRpcQuery, useRpcMutation } from '../hooks/useRpc';
-import { DiffPreview } from '../components/DiffPreview';
-import type { DiffResult } from '../../shared/types';
+import { Button, Checkbox, Input, Spinner, Toast, EmptyState } from "@design-sync/uikit";
+import { createSignal, For, Show } from "solid-js";
+import { useRpcQuery, useRpcMutation } from "../hooks/useRpc";
+import { DiffPreview } from "../components/DiffPreview";
+import type { DiffResult } from "../../shared/types";
 
 export function Export() {
-  const [collections, { refetch }] = useRpcQuery('variables/get');
+  const [collections, { refetch: _refetch }] = useRpcQuery("variables/get");
   const [selectedIds, setSelectedIds] = createSignal<string[]>([]);
   const [exportTypography, setExportTypography] = createSignal(true);
   const [exportShadows, setExportShadows] = createSignal(true);
   const [exportPaints, setExportPaints] = createSignal(true);
   const [preview, setPreview] = createSignal<DiffResult | null>(null);
-  const [commitMessage, setCommitMessage] = createSignal('Update design tokens');
+  const [commitMessage, setCommitMessage] = createSignal("Update design tokens");
   const [toastMsg, setToastMsg] = createSignal<string | null>(null);
 
-  const previewMutation = useRpcMutation('sync/export-preview');
-  const pushMutation = useRpcMutation('sync/push');
+  const previewMutation = useRpcMutation("sync/export-preview");
+  const pushMutation = useRpcMutation("sync/push");
 
   const toggleCollection = (id: string) => {
-    setSelectedIds((prev) =>
-      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
-    );
+    setSelectedIds((prev) => (prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]));
   };
 
   const handlePreview = async () => {
@@ -46,21 +44,29 @@ export function Export() {
       commitMessage: commitMessage(),
     });
     setPreview(null);
-    setToastMsg('Tokens pushed successfully');
+    setToastMsg("Tokens pushed successfully");
     setTimeout(() => setToastMsg(null), 3000);
   };
 
   return (
-    <div style={{ padding: '12px', display: 'flex', 'flex-direction': 'column', gap: '12px' }}>
+    <div style={{ padding: "12px", display: "flex", "flex-direction": "column", gap: "12px" }}>
       <Show when={toastMsg()}>
         <Toast message={toastMsg()!} intent="success" onClose={() => setToastMsg(null)} />
       </Show>
 
       <Show when={collections()} fallback={<Spinner />}>
         <div>
-          <h4 style={{ margin: '0 0 8px' }}>Variable Collections</h4>
-          <Show when={collections()!.local.length > 0} fallback={<EmptyState title="No collections" description="Create variable collections in Figma first" />}>
-            <div style={{ display: 'flex', 'flex-direction': 'column', gap: '4px' }}>
+          <h4 style={{ margin: "0 0 8px" }}>Variable Collections</h4>
+          <Show
+            when={collections()!.local.length > 0}
+            fallback={
+              <EmptyState
+                title="No collections"
+                description="Create variable collections in Figma first"
+              />
+            }
+          >
+            <div style={{ display: "flex", "flex-direction": "column", gap: "4px" }}>
               <For each={collections()!.local}>
                 {(col) => (
                   <Checkbox
@@ -75,9 +81,13 @@ export function Export() {
         </div>
 
         <div>
-          <h4 style={{ margin: '0 0 8px' }}>Styles</h4>
-          <div style={{ display: 'flex', 'flex-direction': 'column', gap: '4px' }}>
-            <Checkbox label="Typography" checked={exportTypography()} onChange={setExportTypography} />
+          <h4 style={{ margin: "0 0 8px" }}>Styles</h4>
+          <div style={{ display: "flex", "flex-direction": "column", gap: "4px" }}>
+            <Checkbox
+              label="Typography"
+              checked={exportTypography()}
+              onChange={setExportTypography}
+            />
             <Checkbox label="Shadows" checked={exportShadows()} onChange={setExportShadows} />
             <Checkbox label="Paint Styles" checked={exportPaints()} onChange={setExportPaints} />
           </div>
@@ -86,9 +96,14 @@ export function Export() {
         <Show when={!preview()}>
           <Button
             onClick={handlePreview}
-            disabled={selectedIds().length === 0 && !exportTypography() && !exportShadows() && !exportPaints()}
+            disabled={
+              selectedIds().length === 0 &&
+              !exportTypography() &&
+              !exportShadows() &&
+              !exportPaints()
+            }
           >
-            {previewMutation.loading() ? 'Generating...' : 'Preview'}
+            {previewMutation.loading() ? "Generating..." : "Preview"}
           </Button>
         </Show>
 
@@ -99,10 +114,12 @@ export function Export() {
             value={commitMessage()}
             onInput={(e) => setCommitMessage(e.currentTarget.value)}
           />
-          <div style={{ display: 'flex', gap: '8px' }}>
-            <Button intent="secondary" onClick={() => setPreview(null)}>Cancel</Button>
+          <div style={{ display: "flex", gap: "8px" }}>
+            <Button intent="secondary" onClick={() => setPreview(null)}>
+              Cancel
+            </Button>
             <Button onClick={handlePush} disabled={pushMutation.loading()}>
-              {pushMutation.loading() ? 'Pushing...' : 'Push'}
+              {pushMutation.loading() ? "Pushing..." : "Push"}
             </Button>
           </div>
         </Show>

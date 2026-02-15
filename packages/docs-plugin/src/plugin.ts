@@ -1,19 +1,13 @@
 import { createFileBuilder, definePlugin, getModesToIterate } from "@design-sync/manager";
 import { kebabCase } from "@design-sync/utils";
 import {
-  type ColorBlindnessType,
   type DocsData,
   type TokenDocEntry,
   type TokenDocGroup,
   buildTokenGroups,
   calculateStats,
-  colorBlindnessMatrices,
-  getContrastRatio,
   getTextColorForBackground,
-  getWCAGLevel,
   groupTokensByType,
-  parseColor,
-  simulateColorBlindness,
   tokenToDocEntry,
 } from "./types";
 
@@ -530,16 +524,20 @@ function generateTokenCard(
   const modeValuesData = JSON.stringify(token.modeValues).replace(/"/g, "&quot;");
   const displayValue = formatDisplayValue(token.cssValue, type);
   // Escape HTML attributes for the raw value (used for copy button)
-  const rawValueAttr = token.cssValue.replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  const rawValueAttr = token.cssValue
+    .replace(/"/g, "&quot;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
 
   // Check if values differ between modes (for compare mode)
-  const hasDifferentModeValues = modes.length > 1 &&
-    Object.values(token.modeValues).some((v, _, arr) => v !== arr[0]);
+  const hasDifferentModeValues =
+    modes.length > 1 && Object.values(token.modeValues).some((v, _, arr) => v !== arr[0]);
 
   // Generate comparison preview HTML if values differ
-  const comparisonPreview = hasDifferentModeValues && modes.length >= 2
-    ? generateComparisonPreview(token, type, modes)
-    : "";
+  const comparisonPreview =
+    hasDifferentModeValues && modes.length >= 2
+      ? generateComparisonPreview(token, type, modes)
+      : "";
 
   return `
     <div class="token-card ${deprecatedClass}${hasDifferentModeValues ? " has-mode-diff" : ""}" data-path="${token.path}" data-mode-values="${modeValuesData}" data-type="${type}">
@@ -586,7 +584,7 @@ function generateTokenCard(
 
 function generateComparisonPreview(token: TokenDocEntry, type: string, modes: string[]): string {
   const lightMode = modes[0];
-  const darkMode = modes.find(m => m.toLowerCase().includes('dark')) || modes[1];
+  const darkMode = modes.find((m) => m.toLowerCase().includes("dark")) || modes[1];
 
   const lightValue = token.modeValues[lightMode];
   const darkValue = token.modeValues[darkMode];
@@ -636,7 +634,7 @@ function getTokenPreview(token: TokenDocEntry, type: string): string {
     case "dimension": {
       const dimInfo = parseDimensionValue(token.cssValue);
       // For small values, show actual size visualization
-      if (dimInfo.unit === 'px' && dimInfo.numeric <= 20) {
+      if (dimInfo.unit === "px" && dimInfo.numeric <= 20) {
         return `<div class="dimension-preview dimension-small">
           <div class="dimension-thickness" style="height: ${Math.max(1, dimInfo.numeric)}px"></div>
           <div class="dimension-value">${token.cssValue}</div>
@@ -670,7 +668,7 @@ function getTokenPreview(token: TokenDocEntry, type: string): string {
       return `<div class="icon-preview icon-preview-empty">🖼️</div>`;
     }
     case "asset":
-      if (token.cssValue && token.cssValue.startsWith('url(')) {
+      if (token.cssValue && token.cssValue.startsWith("url(")) {
         return `<div class="asset-preview" style="background-image: ${token.cssValue}"></div>`;
       }
       return `<div class="asset-preview">📎</div>`;
@@ -683,7 +681,7 @@ function getTokenPreview(token: TokenDocEntry, type: string): string {
  * Extract SVG content from a data URL
  */
 function extractSvgFromDataUrl(cssValue: string): string | null {
-  if (!cssValue || !cssValue.startsWith('url(')) return null;
+  if (!cssValue || !cssValue.startsWith("url(")) return null;
 
   // Extract the data URL from url("...")
   const match = cssValue.match(/url\(["']?(data:image\/svg\+xml[^"')]+)["']?\)/);
@@ -692,8 +690,8 @@ function extractSvgFromDataUrl(cssValue: string): string | null {
   const dataUrl = match[1];
 
   // Handle URL-encoded SVG
-  if (dataUrl.startsWith('data:image/svg+xml,')) {
-    const encoded = dataUrl.replace('data:image/svg+xml,', '');
+  if (dataUrl.startsWith("data:image/svg+xml,")) {
+    const encoded = dataUrl.replace("data:image/svg+xml,", "");
     try {
       return decodeURIComponent(encoded);
     } catch {
@@ -702,11 +700,11 @@ function extractSvgFromDataUrl(cssValue: string): string | null {
   }
 
   // Handle base64-encoded SVG
-  if (dataUrl.startsWith('data:image/svg+xml;base64,')) {
-    const base64 = dataUrl.replace('data:image/svg+xml;base64,', '');
+  if (dataUrl.startsWith("data:image/svg+xml;base64,")) {
+    const base64 = dataUrl.replace("data:image/svg+xml;base64,", "");
     try {
       // Use Buffer for Node.js compatibility
-      return Buffer.from(base64, 'base64').toString('utf-8');
+      return Buffer.from(base64, "base64").toString("utf-8");
     } catch {
       return null;
     }
@@ -721,17 +719,17 @@ function extractSvgFromDataUrl(cssValue: string): string | null {
 function parseDimensionValue(value: string): { numeric: number; unit: string; percentage: number } {
   const match = value.match(/^(-?[\d.]+)(px|rem|em|%|vw|vh|ch|ex|pt|cm|mm|in)?$/);
   if (!match) {
-    return { numeric: 0, unit: '', percentage: 0 };
+    return { numeric: 0, unit: "", percentage: 0 };
   }
 
   const numeric = parseFloat(match[1]);
-  const unit = match[2] || '';
+  const unit = match[2] || "";
 
   // Convert to a reasonable percentage for display (0-100%)
   // Use different scales for different units/ranges
   let percentage: number;
 
-  if (unit === 'px') {
+  if (unit === "px") {
     // For pixels: 0-20px maps to 0-100% (small values like border-width)
     // Clamp at 100% for values > 20px
     if (numeric <= 20) {
@@ -740,7 +738,7 @@ function parseDimensionValue(value: string): { numeric: number; unit: string; pe
       // For larger px values, use logarithmic scale
       percentage = Math.min(100, 50 + Math.log10(numeric / 20) * 30);
     }
-  } else if (unit === 'rem' || unit === 'em') {
+  } else if (unit === "rem" || unit === "em") {
     // For rem/em: use logarithmic scale
     // 0.25rem = ~10%, 1rem = ~30%, 4rem = ~60%, 16rem = ~80%, 64rem+ = ~100%
     if (numeric <= 0) {
@@ -748,7 +746,7 @@ function parseDimensionValue(value: string): { numeric: number; unit: string; pe
     } else {
       percentage = Math.min(100, Math.max(5, 20 + Math.log2(numeric + 1) * 15));
     }
-  } else if (unit === '%' || unit === 'vw' || unit === 'vh') {
+  } else if (unit === "%" || unit === "vw" || unit === "vh") {
     // For percentages and viewport units, use directly (capped at 100)
     percentage = Math.min(100, Math.max(0, numeric));
   } else {
@@ -764,7 +762,7 @@ function parseDimensionValue(value: string): { numeric: number; unit: string; pe
  */
 function formatDisplayValue(value: string, type: string): string {
   if (type === "icon" || type === "asset") {
-    if (value.startsWith('url(')) {
+    if (value.startsWith("url(")) {
       // Show a shortened indicator instead of the full data URL
       return `[${type} data URL]`;
     }
@@ -1612,7 +1610,11 @@ function generateHierarchyNav(groups: TokenDocGroup[]): string {
   `;
 }
 
-function generateColorPalettes(colorTokens: TokenDocEntry[], modes: string[], options: HtmlOptions): string {
+function generateColorPalettes(
+  colorTokens: TokenDocEntry[],
+  _modes: string[],
+  _options: HtmlOptions,
+): string {
   // Group colors by common prefixes to create palettes
   const palettes = new Map<string, TokenDocEntry[]>();
 
@@ -1673,7 +1675,7 @@ function generateColorPalettes(colorTokens: TokenDocEntry[], modes: string[], op
   `;
 }
 
-function getEnhancedStyles(options: HtmlOptions): string {
+function getEnhancedStyles(_options: HtmlOptions): string {
   return `
     /* Enhanced UI Styles */
 
@@ -2132,7 +2134,7 @@ function getEnhancedStyles(options: HtmlOptions): string {
   `;
 }
 
-function getEnhancedScript(options: HtmlOptions, data: DocsData): string {
+function getEnhancedScript(options: HtmlOptions, _data: DocsData): string {
   return `
     // Enhanced functionality
     (function() {

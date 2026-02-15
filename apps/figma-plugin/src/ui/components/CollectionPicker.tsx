@@ -1,6 +1,6 @@
-import { Checkbox, Spinner, EmptyState } from '@design-sync/uikit';
-import { For, Show } from 'solid-js';
-import { useRpcQuery } from '../hooks/useRpc';
+import { Checkbox, Spinner, EmptyState } from "@design-sync/uikit";
+import { For, Show } from "solid-js";
+import { useRpcQuery } from "../hooks/useRpc";
 
 interface CollectionPickerProps {
   selectedIds: string[];
@@ -8,14 +8,20 @@ interface CollectionPickerProps {
 }
 
 export function CollectionPicker(props: CollectionPickerProps) {
-  const [collections] = useRpcQuery('variables/get');
+  const [collections] = useRpcQuery("variables/get");
 
   return (
     <Show when={collections()} fallback={<Spinner size="sm" />}>
-      <Show when={collections()!.local.length > 0} fallback={
-        <EmptyState title="No collections" description="Create variable collections in Figma first" />
-      }>
-        <div style={{ display: 'flex', 'flex-direction': 'column', gap: '4px' }}>
+      <Show
+        when={collections()!.local.length > 0}
+        fallback={
+          <EmptyState
+            title="No collections"
+            description="Create variable collections in Figma first"
+          />
+        }
+      >
+        <div style={{ display: "flex", "flex-direction": "column", gap: "4px" }}>
           <For each={collections()!.local}>
             {(col) => (
               <Checkbox

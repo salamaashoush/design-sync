@@ -13,7 +13,10 @@ export function parseColor(color: string): { r: number; g: number; b: number } |
   if (hexMatch) {
     let hex = hexMatch[1];
     if (hex.length === 3) {
-      hex = hex.split("").map((c) => c + c).join("");
+      hex = hex
+        .split("")
+        .map((c) => c + c)
+        .join("");
     }
     if (hex.length >= 6) {
       return {
@@ -166,10 +169,7 @@ export type ColorBlindnessType = keyof typeof colorBlindnessMatrices;
 /**
  * Simulate color blindness for a color
  */
-export function simulateColorBlindness(
-  color: string,
-  type: ColorBlindnessType,
-): string | null {
+export function simulateColorBlindness(color: string, type: ColorBlindnessType): string | null {
   const rgb = parseColor(color);
   if (!rgb) return null;
 

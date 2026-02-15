@@ -3,6 +3,6 @@
 // Auto-generated theme exports
 // Do not edit manually
 
-export { lightThemeValues } from './light';
-export { darkThemeValues } from './dark';
-export * from './styles';
+export { lightThemeValues } from "./light";
+export { darkThemeValues } from "./dark";
+export * from "./styles";

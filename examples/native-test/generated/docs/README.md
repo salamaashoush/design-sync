@@ -2,7 +2,7 @@
 
 # Kadena Design System
 
-> Generated on 1/18/2026
+> Generated on 2/16/2026
 
 ## Overview
 

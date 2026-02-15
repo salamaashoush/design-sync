@@ -1,8 +1,8 @@
-import { useState } from 'react';
-import './App.css';
+import { useState } from "react";
+import "./App.css";
 
 function App() {
-  const [activeTab, setActiveTab] = useState('spacing');
+  const [activeTab, setActiveTab] = useState("spacing");
 
   return (
     <div className="app">
@@ -13,40 +13,42 @@ function App() {
 
       <nav className="tabs">
         <button
-          className={`tab ${activeTab === 'spacing' ? 'active' : ''}`}
-          onClick={() => setActiveTab('spacing')}
+          className={`tab ${activeTab === "spacing" ? "active" : ""}`}
+          onClick={() => setActiveTab("spacing")}
         >
           Spacing
         </button>
         <button
-          className={`tab ${activeTab === 'sizing' ? 'active' : ''}`}
-          onClick={() => setActiveTab('sizing')}
+          className={`tab ${activeTab === "sizing" ? "active" : ""}`}
+          onClick={() => setActiveTab("sizing")}
         >
           Sizing
         </button>
         <button
-          className={`tab ${activeTab === 'radius' ? 'active' : ''}`}
-          onClick={() => setActiveTab('radius')}
+          className={`tab ${activeTab === "radius" ? "active" : ""}`}
+          onClick={() => setActiveTab("radius")}
         >
           Border Radius
         </button>
         <button
-          className={`tab ${activeTab === 'transitions' ? 'active' : ''}`}
-          onClick={() => setActiveTab('transitions')}
+          className={`tab ${activeTab === "transitions" ? "active" : ""}`}
+          onClick={() => setActiveTab("transitions")}
         >
           Transitions
         </button>
       </nav>
 
       <main className="content">
-        {activeTab === 'spacing' && <SpacingDemo />}
-        {activeTab === 'sizing' && <SizingDemo />}
-        {activeTab === 'radius' && <RadiusDemo />}
-        {activeTab === 'transitions' && <TransitionsDemo />}
+        {activeTab === "spacing" && <SpacingDemo />}
+        {activeTab === "sizing" && <SizingDemo />}
+        {activeTab === "radius" && <RadiusDemo />}
+        {activeTab === "transitions" && <TransitionsDemo />}
       </main>
 
       <footer className="footer">
-        <p>Tokens imported from <code>./tokens/light.css</code> and <code>./tokens/dark.css</code></p>
+        <p>
+          Tokens imported from <code>./tokens/light.css</code> and <code>./tokens/dark.css</code>
+        </p>
       </footer>
     </div>
   );
@@ -54,15 +56,15 @@ function App() {
 
 function SpacingDemo() {
   const spacings = [
-    { name: 'no', var: '--kda-foundation-spacing-no' },
-    { name: 'xxs', var: '--kda-foundation-spacing-xxs' },
-    { name: 'xs', var: '--kda-foundation-spacing-xs' },
-    { name: 'sm', var: '--kda-foundation-spacing-sm' },
-    { name: 'md', var: '--kda-foundation-spacing-md' },
-    { name: 'lg', var: '--kda-foundation-spacing-lg' },
-    { name: 'xl', var: '--kda-foundation-spacing-xl' },
-    { name: 'xxl', var: '--kda-foundation-spacing-xxl' },
-    { name: 'xxxl', var: '--kda-foundation-spacing-xxxl' },
+    { name: "no", var: "--kda-foundation-spacing-no" },
+    { name: "xxs", var: "--kda-foundation-spacing-xxs" },
+    { name: "xs", var: "--kda-foundation-spacing-xs" },
+    { name: "sm", var: "--kda-foundation-spacing-sm" },
+    { name: "md", var: "--kda-foundation-spacing-md" },
+    { name: "lg", var: "--kda-foundation-spacing-lg" },
+    { name: "xl", var: "--kda-foundation-spacing-xl" },
+    { name: "xxl", var: "--kda-foundation-spacing-xxl" },
+    { name: "xxxl", var: "--kda-foundation-spacing-xxxl" },
   ];
 
   return (
@@ -86,14 +88,20 @@ function SpacingDemo() {
 
       <h3>Spacing in Action</h3>
       <div className="spacing-example">
-        <div className="card" style={{ padding: 'var(--kda-foundation-spacing-md)' }}>
-          <p>Padding: <code>--kda-foundation-spacing-md</code></p>
+        <div className="card" style={{ padding: "var(--kda-foundation-spacing-md)" }}>
+          <p>
+            Padding: <code>--kda-foundation-spacing-md</code>
+          </p>
         </div>
-        <div className="card" style={{ padding: 'var(--kda-foundation-spacing-lg)' }}>
-          <p>Padding: <code>--kda-foundation-spacing-lg</code></p>
+        <div className="card" style={{ padding: "var(--kda-foundation-spacing-lg)" }}>
+          <p>
+            Padding: <code>--kda-foundation-spacing-lg</code>
+          </p>
         </div>
-        <div className="card" style={{ padding: 'var(--kda-foundation-spacing-xl)' }}>
-          <p>Padding: <code>--kda-foundation-spacing-xl</code></p>
+        <div className="card" style={{ padding: "var(--kda-foundation-spacing-xl)" }}>
+          <p>
+            Padding: <code>--kda-foundation-spacing-xl</code>
+          </p>
         </div>
       </div>
     </section>
@@ -102,13 +110,13 @@ function SpacingDemo() {
 
 function SizingDemo() {
   const sizes = [
-    { name: 'n4', var: '--kda-foundation-size-n4' },
-    { name: 'n6', var: '--kda-foundation-size-n6' },
-    { name: 'n8', var: '--kda-foundation-size-n8' },
-    { name: 'n10', var: '--kda-foundation-size-n10' },
-    { name: 'n12', var: '--kda-foundation-size-n12' },
-    { name: 'n16', var: '--kda-foundation-size-n16' },
-    { name: 'n20', var: '--kda-foundation-size-n20' },
+    { name: "n4", var: "--kda-foundation-size-n4" },
+    { name: "n6", var: "--kda-foundation-size-n6" },
+    { name: "n8", var: "--kda-foundation-size-n8" },
+    { name: "n10", var: "--kda-foundation-size-n10" },
+    { name: "n12", var: "--kda-foundation-size-n12" },
+    { name: "n16", var: "--kda-foundation-size-n16" },
+    { name: "n20", var: "--kda-foundation-size-n20" },
   ];
 
   return (
@@ -120,10 +128,7 @@ function SizingDemo() {
       <div className="size-grid">
         {sizes.map((s) => (
           <div key={s.name} className="size-item">
-            <div
-              className="size-box"
-              style={{ width: `var(${s.var})`, height: `var(${s.var})` }}
-            />
+            <div className="size-box" style={{ width: `var(${s.var})`, height: `var(${s.var})` }} />
             <span className="token-name">{s.name}</span>
           </div>
         ))}
@@ -131,14 +136,38 @@ function SizingDemo() {
 
       <h3>Icon Sizes</h3>
       <div className="icon-sizes">
-        <div className="icon-demo" style={{ width: 'var(--kda-foundation-size-n4)', height: 'var(--kda-foundation-size-n4)' }}>
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        <div
+          className="icon-demo"
+          style={{
+            width: "var(--kda-foundation-size-n4)",
+            height: "var(--kda-foundation-size-n4)",
+          }}
+        >
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+          </svg>
         </div>
-        <div className="icon-demo" style={{ width: 'var(--kda-foundation-size-n6)', height: 'var(--kda-foundation-size-n6)' }}>
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        <div
+          className="icon-demo"
+          style={{
+            width: "var(--kda-foundation-size-n6)",
+            height: "var(--kda-foundation-size-n6)",
+          }}
+        >
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+          </svg>
         </div>
-        <div className="icon-demo" style={{ width: 'var(--kda-foundation-size-n8)', height: 'var(--kda-foundation-size-n8)' }}>
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        <div
+          className="icon-demo"
+          style={{
+            width: "var(--kda-foundation-size-n8)",
+            height: "var(--kda-foundation-size-n8)",
+          }}
+        >
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+          </svg>
         </div>
       </div>
     </section>
@@ -147,14 +176,14 @@ function SizingDemo() {
 
 function RadiusDemo() {
   const radii = [
-    { name: 'no', var: '--kda-foundation-radius-no' },
-    { name: 'xs', var: '--kda-foundation-radius-xs' },
-    { name: 'sm', var: '--kda-foundation-radius-sm' },
-    { name: 'md', var: '--kda-foundation-radius-md' },
-    { name: 'lg', var: '--kda-foundation-radius-lg' },
-    { name: 'xl', var: '--kda-foundation-radius-xl' },
-    { name: 'xxl', var: '--kda-foundation-radius-xxl' },
-    { name: 'round', var: '--kda-foundation-radius-round' },
+    { name: "no", var: "--kda-foundation-radius-no" },
+    { name: "xs", var: "--kda-foundation-radius-xs" },
+    { name: "sm", var: "--kda-foundation-radius-sm" },
+    { name: "md", var: "--kda-foundation-radius-md" },
+    { name: "lg", var: "--kda-foundation-radius-lg" },
+    { name: "xl", var: "--kda-foundation-radius-xl" },
+    { name: "xxl", var: "--kda-foundation-radius-xxl" },
+    { name: "round", var: "--kda-foundation-radius-round" },
   ];
 
   return (
@@ -166,10 +195,7 @@ function RadiusDemo() {
       <div className="radius-grid">
         {radii.map((r) => (
           <div key={r.name} className="radius-item">
-            <div
-              className="radius-box"
-              style={{ borderRadius: `var(${r.var})` }}
-            />
+            <div className="radius-box" style={{ borderRadius: `var(${r.var})` }} />
             <span className="token-name">{r.name}</span>
           </div>
         ))}
@@ -177,13 +203,13 @@ function RadiusDemo() {
 
       <h3>Button Styles</h3>
       <div className="button-demo">
-        <button className="btn" style={{ borderRadius: 'var(--kda-foundation-radius-sm)' }}>
+        <button className="btn" style={{ borderRadius: "var(--kda-foundation-radius-sm)" }}>
           Small Radius
         </button>
-        <button className="btn" style={{ borderRadius: 'var(--kda-foundation-radius-md)' }}>
+        <button className="btn" style={{ borderRadius: "var(--kda-foundation-radius-md)" }}>
           Medium Radius
         </button>
-        <button className="btn" style={{ borderRadius: 'var(--kda-foundation-radius-round)' }}>
+        <button className="btn" style={{ borderRadius: "var(--kda-foundation-radius-round)" }}>
           Round
         </button>
       </div>
@@ -203,9 +229,9 @@ function TransitionsDemo() {
 
       <div className="transition-grid">
         <div
-          className={`transition-box ${hovered === 'base' ? 'hovered' : ''}`}
+          className={`transition-box ${hovered === "base" ? "hovered" : ""}`}
           style={{ transition: `all var(--kda-foundation-transition-duration-base)` }}
-          onMouseEnter={() => setHovered('base')}
+          onMouseEnter={() => setHovered("base")}
           onMouseLeave={() => setHovered(null)}
         >
           <span>Base (400ms)</span>
@@ -213,9 +239,9 @@ function TransitionsDemo() {
         </div>
 
         <div
-          className={`transition-box ${hovered === 'd200' ? 'hovered' : ''}`}
+          className={`transition-box ${hovered === "d200" ? "hovered" : ""}`}
           style={{ transition: `all var(--kda-foundation-transition-duration-d200)` }}
-          onMouseEnter={() => setHovered('d200')}
+          onMouseEnter={() => setHovered("d200")}
           onMouseLeave={() => setHovered(null)}
         >
           <span>Fast (200ms)</span>
@@ -223,9 +249,9 @@ function TransitionsDemo() {
         </div>
 
         <div
-          className={`transition-box ${hovered === 'sine' ? 'hovered' : ''}`}
+          className={`transition-box ${hovered === "sine" ? "hovered" : ""}`}
           style={{ transition: `all var(--kda-foundation-transition-animation-ease-out-sine)` }}
-          onMouseEnter={() => setHovered('sine')}
+          onMouseEnter={() => setHovered("sine")}
           onMouseLeave={() => setHovered(null)}
         >
           <span>Ease Out Sine</span>
@@ -233,9 +259,9 @@ function TransitionsDemo() {
         </div>
 
         <div
-          className={`transition-box ${hovered === 'cubic' ? 'hovered' : ''}`}
+          className={`transition-box ${hovered === "cubic" ? "hovered" : ""}`}
           style={{ transition: `all var(--kda-foundation-transition-animation-ease-out-cubic)` }}
-          onMouseEnter={() => setHovered('cubic')}
+          onMouseEnter={() => setHovered("cubic")}
           onMouseLeave={() => setHovered(null)}
         >
           <span>Ease Out Cubic</span>

@@ -5,12 +5,8 @@ import {
   getModesToIterate,
   stripTokenPrefix,
 } from "@design-sync/manager";
-import { camelCase, set } from "@design-sync/utils";
-import {
-  type ProcessedToken,
-  isTokenAlias,
-  typographyToCssStyle,
-} from "@design-sync/w3c-dtfm";
+import { camelCase } from "@design-sync/utils";
+import { type ProcessedToken, isTokenAlias, typographyToCssStyle } from "@design-sync/w3c-dtfm";
 
 /**
  * react-native-paper typography variant names
@@ -242,7 +238,10 @@ function findPaperColorRole(
     }
   }
   // Fall back to auto-detection
-  for (const [role, patterns] of Object.entries(PAPER_COLOR_PATTERNS) as [PaperColorRole, RegExp[]][]) {
+  for (const [role, patterns] of Object.entries(PAPER_COLOR_PATTERNS) as [
+    PaperColorRole,
+    RegExp[],
+  ][]) {
     if (patterns.some((p) => p.test(path))) {
       return role;
     }
@@ -260,14 +259,20 @@ function findPaperTypographyVariant(
 ): PaperTypographyVariant | null {
   // Check explicit mappings first
   if (explicitMapping) {
-    for (const [variant, pattern] of Object.entries(explicitMapping) as [PaperTypographyVariant, string][]) {
+    for (const [variant, pattern] of Object.entries(explicitMapping) as [
+      PaperTypographyVariant,
+      string,
+    ][]) {
       if (path.includes(pattern) || tokenName === camelCase(pattern.split(".").join("-"))) {
         return variant;
       }
     }
   }
   // Fall back to auto-detection
-  for (const [variant, patterns] of Object.entries(PAPER_TYPOGRAPHY_PATTERNS) as [PaperTypographyVariant, RegExp[]][]) {
+  for (const [variant, patterns] of Object.entries(PAPER_TYPOGRAPHY_PATTERNS) as [
+    PaperTypographyVariant,
+    RegExp[],
+  ][]) {
     if (patterns.some((p) => p.test(path))) {
       return variant;
     }
@@ -349,8 +354,14 @@ export function reactNativePlugin(
     const borders = createModeRecord<Record<string, unknown>>(modes, () => ({}));
 
     // Paper theme mappings (per mode for colors)
-    const paperColorMappings = createModeRecord<Record<PaperColorRole, string>>(modes, () => ({} as Record<PaperColorRole, string>));
-    const paperTypographyMappings: Record<PaperTypographyVariant, string> = {} as Record<PaperTypographyVariant, string>;
+    const paperColorMappings = createModeRecord<Record<PaperColorRole, string>>(
+      modes,
+      () => ({}) as Record<PaperColorRole, string>,
+    );
+    const paperTypographyMappings: Record<PaperTypographyVariant, string> = {} as Record<
+      PaperTypographyVariant,
+      string
+    >;
 
     // Process all tokens
     context.query().forEach((token) => {
@@ -378,10 +389,20 @@ export function reactNativePlugin(
           processSizingToken(token, sizing, modes.defaultMode, remToPixels, stripPrefixArray);
           break;
         case "typography":
-          processTypographyToken(token, typography, modes.defaultMode, remToPixels, stripPrefixArray);
+          processTypographyToken(
+            token,
+            typography,
+            modes.defaultMode,
+            remToPixels,
+            stripPrefixArray,
+          );
           // Detect Paper typography variant
           if (generatePaperTheme) {
-            const paperTypoVariant = findPaperTypographyVariant(token.path, tokenName, paperTypographyMapping);
+            const paperTypoVariant = findPaperTypographyVariant(
+              token.path,
+              tokenName,
+              paperTypographyMapping,
+            );
             if (paperTypoVariant) {
               paperTypographyMappings[paperTypoVariant] = tokenName;
             }
@@ -432,11 +453,7 @@ export function reactNativePlugin(
     }
 
     // Generate combined theme file
-    builder.add(
-      `theme.${ext}`,
-      generateThemeFile(modes, useTs),
-      ext as "ts" | "js",
-    );
+    builder.add(`theme.${ext}`, generateThemeFile(modes, useTs), ext as "ts" | "js");
 
     // Generate provider if requested
     if (generateProvider) {
@@ -509,11 +526,7 @@ function getTokenCategory(token: ProcessedToken): RNTokenCategory | null {
     case "dimension": {
       if (pathLower.includes("spacing") || pathLower.includes("space") || pathLower.includes("gap"))
         return "spacing";
-      if (
-        pathLower.includes("width") ||
-        pathLower.includes("height") ||
-        pathLower.includes("size")
-      )
+      if (pathLower.includes("width") || pathLower.includes("height") || pathLower.includes("size"))
         return "sizing";
       if (pathLower.includes("radius") || pathLower.includes("radii")) return "radii";
       if (pathLower.includes("fontsize") || pathLower.includes("font")) return null; // handled by typography
@@ -846,7 +859,7 @@ function generateShadowsFile(
 
   // Generate shadow helpers
   parts.push("const createShadow = (ios: IOSShadow, android: AndroidShadow) =>");
-  parts.push('  Platform.select({ ios, android, default: ios });\n');
+  parts.push("  Platform.select({ ios, android, default: ios });\n");
 
   if (useTs) {
     parts.push("interface IOSShadow {");
@@ -936,7 +949,7 @@ function generateProviderFile(
 
   parts.push("");
 
-  const themeType = useTs ? ": typeof theme" : "";
+  const _themeType = useTs ? ": typeof theme" : "";
   const modeType = useTs
     ? `: ${getModesToIterate(modes as any)
         .map((m) => `"${m}"`)
@@ -959,7 +972,9 @@ function generateProviderFile(
     parts.push("}\n");
   }
 
-  parts.push(`const ThemeContext = createContext${useTs ? "<ThemeContextValue | undefined>" : ""}(undefined);\n`);
+  parts.push(
+    `const ThemeContext = createContext${useTs ? "<ThemeContextValue | undefined>" : ""}(undefined);\n`,
+  );
 
   parts.push("export function useTheme() {");
   parts.push("  const context = useContext(ThemeContext);");
@@ -993,7 +1008,7 @@ function generateProviderFile(
   return parts.join("\n");
 }
 
-function generateTypesFile(platforms: ("ios" | "android" | "web")[]): string {
+function generateTypesFile(_platforms: ("ios" | "android" | "web")[]): string {
   return [
     "// Auto-generated React Native types",
     "// Do not edit manually\n",
@@ -1085,7 +1100,9 @@ function generateScalingFile(baseScreenWidth: number, useTs: boolean): string {
   parts.push(" * @param factor - Moderation factor (0-1), default 0.5");
   parts.push(" * @returns Moderately scaled size");
   parts.push(" */");
-  parts.push(`export function moderateScale(size${useTs ? ": number" : ""}, factor${useTs ? ": number" : ""} = 0.5)${useTs ? ": number" : ""} {`);
+  parts.push(
+    `export function moderateScale(size${useTs ? ": number" : ""}, factor${useTs ? ": number" : ""} = 0.5)${useTs ? ": number" : ""} {`,
+  );
   parts.push(`  return PixelRatio.roundToNearestPixel(size + (scale(size) - size) * factor);`);
   parts.push("}\n");
 
@@ -1095,7 +1112,9 @@ function generateScalingFile(baseScreenWidth: number, useTs: boolean): string {
   parts.push(" * @returns Vertically scaled size");
   parts.push(" */");
   const baseHeight = Math.round(baseScreenWidth * (16 / 9)); // Assume 16:9 aspect ratio
-  parts.push(`export function verticalScale(size${useTs ? ": number" : ""})${useTs ? ": number" : ""} {`);
+  parts.push(
+    `export function verticalScale(size${useTs ? ": number" : ""})${useTs ? ": number" : ""} {`,
+  );
   parts.push(`  const BASE_HEIGHT = ${baseHeight};`);
   parts.push(`  return PixelRatio.roundToNearestPixel((SCREEN_HEIGHT / BASE_HEIGHT) * size);`);
   parts.push("}\n");
@@ -1105,7 +1124,9 @@ function generateScalingFile(baseScreenWidth: number, useTs: boolean): string {
   parts.push(" * @param size - Base font size");
   parts.push(" * @returns Responsive font size");
   parts.push(" */");
-  parts.push(`export function fontSize(size${useTs ? ": number" : ""})${useTs ? ": number" : ""} {`);
+  parts.push(
+    `export function fontSize(size${useTs ? ": number" : ""})${useTs ? ": number" : ""} {`,
+  );
   parts.push(`  return moderateScale(size, 0.25);`);
   parts.push("}\n");
 
@@ -1300,7 +1321,9 @@ function generatePaperThemeFile(
   parts.push(" * @param isDark - Whether to use dark theme");
   parts.push(" * @returns Paper MD3 theme");
   parts.push(" */");
-  parts.push(`export function getPaperTheme(isDark${useTs ? ": boolean" : ""} = false)${useTs ? ": MD3Theme" : ""} {`);
+  parts.push(
+    `export function getPaperTheme(isDark${useTs ? ": boolean" : ""} = false)${useTs ? ": MD3Theme" : ""} {`,
+  );
   parts.push("  return isDark ? darkPaperTheme : lightPaperTheme;");
   parts.push("}");
 

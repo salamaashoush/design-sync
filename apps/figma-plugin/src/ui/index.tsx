@@ -1,8 +1,8 @@
-import '../shared/calls';
-import { render } from 'solid-js/web';
-import { App } from './App';
+import "../shared/calls";
+import { render } from "solid-js/web";
+import { App } from "./App";
 
-const root = document.getElementById('app');
+const root = document.getElementById("app");
 if (root) {
   render(() => <App />, root);
 }

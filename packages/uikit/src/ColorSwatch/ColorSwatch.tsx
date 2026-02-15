@@ -1,6 +1,6 @@
-import { SwatchVariants, checkerboard, colorFill, swatch } from './colorSwatch.css';
+import { SwatchVariants, checkerboard, colorFill, swatch } from "./colorSwatch.css";
 
-type SwatchSize = NonNullable<NonNullable<SwatchVariants>['size']>;
+type SwatchSize = NonNullable<NonNullable<SwatchVariants>["size"]>;
 
 interface ColorSwatchProps {
   color: string;
@@ -11,7 +11,7 @@ export function ColorSwatch(props: ColorSwatchProps) {
   return (
     <div class={swatch({ size: props.size })}>
       <div class={checkerboard} />
-      <div class={colorFill} style={{ 'background-color': props.color }} />
+      <div class={colorFill} style={{ "background-color": props.color }} />
     </div>
   );
 }

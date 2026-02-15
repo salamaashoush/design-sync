@@ -9,17 +9,9 @@
  * - JSON manifests
  */
 
-import { createFileBuilder, definePlugin, getModesToIterate } from "@design-sync/manager";
-import { camelCase, kebabCase, pascalCase } from "@design-sync/utils";
-import {
-  type NormalizedIconValue,
-  type NormalizedAssetValue,
-  normalizeIconValue,
-  normalizeAssetValue,
-  isNormalizedIconValue,
-  isNormalizedAssetValue,
-  svgToDataUrl,
-} from "@design-sync/w3c-dtfm";
+import { createFileBuilder, definePlugin } from "@design-sync/manager";
+import { kebabCase, pascalCase } from "@design-sync/utils";
+import { normalizeIconValue, isNormalizedIconValue, svgToDataUrl } from "@design-sync/w3c-dtfm";
 
 // ============================================================================
 // Types
@@ -183,11 +175,7 @@ ${symbols}
 `;
 }
 
-function generateCss(
-  icons: IconData[],
-  config: CssConfig,
-  spriteFilename?: string,
-): string {
+function generateCss(icons: IconData[], config: CssConfig, spriteFilename?: string): string {
   const prefix = config.prefix || "icon";
   const lines: string[] = [];
 
@@ -276,7 +264,7 @@ ${componentName}.displayName = "${componentName}";
 }
 
 function generateVueComponent(icon: IconData, config: ComponentsConfig): string {
-  const componentName = `${config.prefix || ""}${pascalCase(icon.name)}${config.suffix || "Icon"}`;
+  const _componentName = `${config.prefix || ""}${pascalCase(icon.name)}${config.suffix || "Icon"}`;
   const content = extractSvgContent(icon.svg);
   const baseSize = config.baseSize || 24;
 
@@ -420,10 +408,7 @@ export { ${pascalCase(componentName)} };
 `;
 }
 
-function generateComponentIndex(
-  icons: IconData[],
-  config: ComponentsConfig,
-): string {
+function generateComponentIndex(icons: IconData[], config: ComponentsConfig): string {
   const lines: string[] = [];
   lines.push("/* Auto-generated icon index by Design Sync */");
   lines.push("");
@@ -445,9 +430,7 @@ function generateComponentIndex(
 
   // Export icon names type
   lines.push("// Icon names");
-  lines.push(
-    `export type IconName = ${icons.map((i) => `"${i.name}"`).join(" | ")};`,
-  );
+  lines.push(`export type IconName = ${icons.map((i) => `"${i.name}"`).join(" | ")};`);
   lines.push("");
   lines.push("export const iconNames = [");
   for (const icon of icons) {
@@ -494,9 +477,7 @@ function generateTypeScript(icons: IconData[], config: TypeScriptConfig): string
 
     case "union":
     default:
-      lines.push(
-        `export type ${exportName} = ${icons.map((i) => `"${i.name}"`).join(" | ")};`,
-      );
+      lines.push(`export type ${exportName} = ${icons.map((i) => `"${i.name}"`).join(" | ")};`);
       break;
   }
 
@@ -635,10 +616,7 @@ export function assetsPlugin(config: AssetsPluginConfig = {}): ReturnType<typeof
     if (css) {
       const cssConfig: CssConfig = typeof css === "object" ? css : {};
       const cssFilename = cssConfig.filename || "icons.css";
-      builder.add(
-        cssFilename,
-        generateCss(icons, cssConfig, sprite ? spriteFilename : undefined),
-      );
+      builder.add(cssFilename, generateCss(icons, cssConfig, sprite ? spriteFilename : undefined));
     }
 
     // Generate TypeScript types
@@ -670,7 +648,10 @@ export function assetsPlugin(config: AssetsPluginConfig = {}): ReturnType<typeof
             builder.add(`${compsDir}/${filename}.tsx`, generateSolidComponent(icon, compsConfig));
             break;
           case "svelte":
-            builder.add(`${compsDir}/${filename}.svelte`, generateSvelteComponent(icon, compsConfig));
+            builder.add(
+              `${compsDir}/${filename}.svelte`,
+              generateSvelteComponent(icon, compsConfig),
+            );
             break;
           case "web-component":
             builder.add(`${compsDir}/${filename}.ts`, generateWebComponent(icon, compsConfig));
@@ -680,7 +661,8 @@ export function assetsPlugin(config: AssetsPluginConfig = {}): ReturnType<typeof
 
       // Generate index
       if (compsConfig.generateIndex) {
-        const ext = compsConfig.framework === "vue" || compsConfig.framework === "svelte" ? "" : ".ts";
+        const ext =
+          compsConfig.framework === "vue" || compsConfig.framework === "svelte" ? "" : ".ts";
         builder.add(`${compsDir}/index${ext}`, generateComponentIndex(icons, compsConfig));
       }
     }

@@ -1,7 +1,7 @@
-import { Show } from 'solid-js';
-import { ToastVariants, closeButton, toast, toastMessage } from './toast.css';
+import { Show } from "solid-js";
+import { ToastVariants, closeButton, toast, toastMessage } from "./toast.css";
 
-type ToastIntent = NonNullable<NonNullable<ToastVariants>['intent']>;
+type ToastIntent = NonNullable<NonNullable<ToastVariants>["intent"]>;
 
 interface ToastProps {
   message: string;

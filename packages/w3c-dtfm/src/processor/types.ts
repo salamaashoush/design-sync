@@ -267,11 +267,7 @@ export interface ProcessorExtension {
    * Schema phase: Called for each token in the raw tree BEFORE alias resolution.
    * Use this to generate new tokens that other tokens can reference.
    */
-  onSchemaToken?(
-    path: string,
-    token: DesignToken,
-    context: SchemaExtensionContext,
-  ): void;
+  onSchemaToken?(path: string, token: DesignToken, context: SchemaExtensionContext): void;
 
   /**
    * Token phase: Called for each processed token AFTER alias resolution.

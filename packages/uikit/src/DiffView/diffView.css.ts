@@ -1,21 +1,21 @@
-import { theme, ui11, ui11Bold } from '@design-sync/design-tokens';
-import { style } from '@vanilla-extract/css';
+import { theme, ui11, ui11Bold } from "@design-sync/design-tokens";
+import { style } from "@vanilla-extract/css";
 
 export const root = style({
-  display: 'flex',
-  flexDirection: 'column',
+  display: "flex",
+  flexDirection: "column",
   gap: 0,
   border: `1px solid ${theme.color.border}`,
   borderRadius: theme.borderRadius.md,
-  overflow: 'hidden',
+  overflow: "hidden",
 });
 
 export const header = style([
   ui11Bold,
   {
-    display: 'flex',
-    justifyContent: 'space-between',
-    padding: '8px 12px',
+    display: "flex",
+    justifyContent: "space-between",
+    padding: "8px 12px",
     background: theme.color.bgSecondary,
     borderBottom: `1px solid ${theme.color.border}`,
   },
@@ -24,8 +24,8 @@ export const header = style([
 export const stats = style([
   ui11,
   {
-    display: 'flex',
-    gap: '8px',
+    display: "flex",
+    gap: "8px",
   },
 ]);
 
@@ -44,14 +44,14 @@ export const statRemove = style({
 export const row = style([
   ui11,
   {
-    display: 'flex',
-    alignItems: 'center',
-    padding: '6px 12px',
+    display: "flex",
+    alignItems: "center",
+    padding: "6px 12px",
     borderBottom: `1px solid ${theme.color.border}`,
-    gap: '8px',
+    gap: "8px",
     selectors: {
-      '&:last-child': {
-        borderBottom: 'none',
+      "&:last-child": {
+        borderBottom: "none",
       },
     },
   },
@@ -71,23 +71,23 @@ export const rowRemove = style({
 
 export const rowPath = style({
   flex: 1,
-  overflow: 'hidden',
-  textOverflow: 'ellipsis',
-  whiteSpace: 'nowrap',
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  whiteSpace: "nowrap",
 });
 
 export const rowValue = style({
   color: theme.color.textSecondary,
-  maxWidth: '200px',
-  overflow: 'hidden',
-  textOverflow: 'ellipsis',
-  whiteSpace: 'nowrap',
+  maxWidth: "200px",
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  whiteSpace: "nowrap",
 });
 
 export const rowBadge = style({
-  fontSize: '10px',
-  fontWeight: 'bold',
-  padding: '1px 4px',
+  fontSize: "10px",
+  fontWeight: "bold",
+  padding: "1px 4px",
   borderRadius: theme.borderRadius.sm,
 });
 

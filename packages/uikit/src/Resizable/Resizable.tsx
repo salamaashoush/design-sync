@@ -44,7 +44,12 @@ export function Resizer(props: ResizerProps) {
       class={styles.corner}
     >
       <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor">
-        <path d="M9 1L1 9M9 5L5 9M9 9L9 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+        <path
+          d="M9 1L1 9M9 5L5 9M9 9L9 9"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+        />
       </svg>
     </div>
   );

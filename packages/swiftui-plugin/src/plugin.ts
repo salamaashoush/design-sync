@@ -2,7 +2,6 @@ import {
   createFileBuilder,
   createModeRecord,
   definePlugin,
-  getModesToIterate,
   stripTokenPrefix,
 } from "@design-sync/manager";
 import { camelCase } from "@design-sync/utils";
@@ -178,14 +177,20 @@ function findSemanticColorRole(
 ): SemanticColorRole | null {
   // Check explicit mappings first
   if (explicitMapping) {
-    for (const [role, pattern] of Object.entries(explicitMapping) as [SemanticColorRole, string][]) {
+    for (const [role, pattern] of Object.entries(explicitMapping) as [
+      SemanticColorRole,
+      string,
+    ][]) {
       if (path.includes(pattern) || tokenName === camelCase(pattern.split(".").join("-"))) {
         return role;
       }
     }
   }
   // Fall back to auto-detection
-  for (const [role, patterns] of Object.entries(SEMANTIC_COLOR_PATTERNS) as [SemanticColorRole, RegExp[]][]) {
+  for (const [role, patterns] of Object.entries(SEMANTIC_COLOR_PATTERNS) as [
+    SemanticColorRole,
+    RegExp[],
+  ][]) {
     if (patterns.some((p) => p.test(path))) {
       return role;
     }
@@ -203,14 +208,20 @@ function findDynamicTypeStyle(
 ): DynamicTypeStyle | null {
   // Check explicit mappings first
   if (explicitMapping) {
-    for (const [style, pattern] of Object.entries(explicitMapping) as [DynamicTypeStyle, string][]) {
+    for (const [style, pattern] of Object.entries(explicitMapping) as [
+      DynamicTypeStyle,
+      string,
+    ][]) {
       if (path.includes(pattern) || tokenName === camelCase(pattern.split(".").join("-"))) {
         return style;
       }
     }
   }
   // Fall back to auto-detection
-  for (const [style, patterns] of Object.entries(DYNAMIC_TYPE_PATTERNS) as [DynamicTypeStyle, RegExp[]][]) {
+  for (const [style, patterns] of Object.entries(DYNAMIC_TYPE_PATTERNS) as [
+    DynamicTypeStyle,
+    RegExp[],
+  ][]) {
     if (patterns.some((p) => p.test(path))) {
       return style;
     }
@@ -279,9 +290,15 @@ export function swiftUIPlugin(config: SwiftUIPluginConfig = {}): ReturnType<type
     const shadows = createModeRecord<Record<string, ShadowStyle>>(modes, () => ({}));
 
     // Semantic color role mappings (role -> token name)
-    const semanticColorMappings: Record<SemanticColorRole, string> = {} as Record<SemanticColorRole, string>;
+    const semanticColorMappings: Record<SemanticColorRole, string> = {} as Record<
+      SemanticColorRole,
+      string
+    >;
     // Dynamic Type style mappings (style -> token name)
-    const dynamicTypeMappings: Record<DynamicTypeStyle, string> = {} as Record<DynamicTypeStyle, string>;
+    const dynamicTypeMappings: Record<DynamicTypeStyle, string> = {} as Record<
+      DynamicTypeStyle,
+      string
+    >;
 
     // Process all tokens
     context.query().forEach((token) => {
@@ -320,10 +337,18 @@ export function swiftUIPlugin(config: SwiftUIPluginConfig = {}): ReturnType<type
     });
 
     // Generate Swift files
-    builder.add("Colors.swift", generateColorsFile(colors, modes, access, colorType, supportDarkMode));
+    builder.add(
+      "Colors.swift",
+      generateColorsFile(colors, modes, access, colorType, supportDarkMode),
+    );
     builder.add(
       "Typography.swift",
-      generateTypographyFile(typography[modes.defaultMode], access, supportDynamicType, dynamicTypeMappings),
+      generateTypographyFile(
+        typography[modes.defaultMode],
+        access,
+        supportDynamicType,
+        dynamicTypeMappings,
+      ),
     );
     builder.add("Spacing.swift", generateSpacingFile(spacing[modes.defaultMode], access));
     builder.add("Shadows.swift", generateShadowsFile(shadows[modes.defaultMode], access));
@@ -379,9 +404,17 @@ function getTokenName(path: string, stripPrefixArray: string[] = []): string {
   const parts = simplifiedPath.split(".");
   const filtered = parts.filter(
     (p) =>
-      !["colors", "color", "spacing", "space", "typography", "radii", "radius", "shadows", "shadow"].includes(
-        p.toLowerCase(),
-      ),
+      ![
+        "colors",
+        "color",
+        "spacing",
+        "space",
+        "typography",
+        "radii",
+        "radius",
+        "shadows",
+        "shadow",
+      ].includes(p.toLowerCase()),
   );
   return camelCase(filtered.join("-"));
 }
@@ -739,14 +772,22 @@ function generateTypographyFile(
     lines.push("/// Maps design tokens to Apple's Dynamic Type text styles");
     lines.push(`${access}extension Font.TextStyle {`);
     for (const [dynamicStyle, tokenName] of Object.entries(dynamicTypeMappings)) {
-      const styleValue = dynamicStyle === "title1" ? ".title" :
-                         dynamicStyle === "title2" ? ".title2" :
-                         dynamicStyle === "title3" ? ".title3" :
-                         dynamicStyle === "caption1" ? ".caption" :
-                         dynamicStyle === "caption2" ? ".caption2" :
-                         `.${dynamicStyle}`;
+      const styleValue =
+        dynamicStyle === "title1"
+          ? ".title"
+          : dynamicStyle === "title2"
+            ? ".title2"
+            : dynamicStyle === "title3"
+              ? ".title3"
+              : dynamicStyle === "caption1"
+                ? ".caption"
+                : dynamicStyle === "caption2"
+                  ? ".caption2"
+                  : `.${dynamicStyle}`;
       lines.push(`    /// Maps to ${tokenName} design token`);
-      lines.push(`    ${access}static var app${tokenName.charAt(0).toUpperCase() + tokenName.slice(1)}: Font.TextStyle { ${styleValue} }`);
+      lines.push(
+        `    ${access}static var app${tokenName.charAt(0).toUpperCase() + tokenName.slice(1)}: Font.TextStyle { ${styleValue} }`,
+      );
     }
     lines.push("}");
     lines.push("");
@@ -895,7 +936,7 @@ function generateAssetCatalogContents(
 
     // Light mode color
     const lightHex = cssValue.match(/^#([0-9a-fA-F]{6})$/)?.[1] || "000000";
-    const lightRgb = hexToRgb(lightHex);
+    const _lightRgb = hexToRgb(lightHex);
 
     appearances.push({
       color: {
@@ -981,7 +1022,12 @@ function generateSemanticColorsFile(
   ];
 
   // Group roles by category for better organization
-  const labelRoles: SemanticColorRole[] = ["label", "secondaryLabel", "tertiaryLabel", "quaternaryLabel"];
+  const labelRoles: SemanticColorRole[] = [
+    "label",
+    "secondaryLabel",
+    "tertiaryLabel",
+    "quaternaryLabel",
+  ];
   const backgroundRoles: SemanticColorRole[] = [
     "systemBackground",
     "secondarySystemBackground",
@@ -990,8 +1036,19 @@ function generateSemanticColorsFile(
     "secondarySystemGroupedBackground",
     "tertiarySystemGroupedBackground",
   ];
-  const fillRoles: SemanticColorRole[] = ["systemFill", "secondarySystemFill", "tertiarySystemFill", "quaternarySystemFill"];
-  const otherRoles: SemanticColorRole[] = ["separator", "opaqueSeparator", "link", "tintColor", "accentColor"];
+  const fillRoles: SemanticColorRole[] = [
+    "systemFill",
+    "secondarySystemFill",
+    "tertiarySystemFill",
+    "quaternarySystemFill",
+  ];
+  const otherRoles: SemanticColorRole[] = [
+    "separator",
+    "opaqueSeparator",
+    "link",
+    "tintColor",
+    "accentColor",
+  ];
 
   const generateColorAccessor = (role: SemanticColorRole, tokenName: string) => {
     const lightValue = colors[modes.defaultMode]?.[tokenName];
@@ -1005,12 +1062,16 @@ function generateSemanticColorsFile(
       const darkHex = darkHexMatch ? darkHexMatch[1].toUpperCase() : lightHex;
 
       lines.push(`    /// Maps to ${tokenName} token (semantic: ${role})`);
-      lines.push(`    ${access}static var semantic${role.charAt(0).toUpperCase() + role.slice(1)}: Color {`);
+      lines.push(
+        `    ${access}static var semantic${role.charAt(0).toUpperCase() + role.slice(1)}: Color {`,
+      );
       lines.push(`        Color(light: Color(hex: 0x${lightHex}), dark: Color(hex: 0x${darkHex}))`);
       lines.push(`    }`);
     } else {
       lines.push(`    /// Maps to ${tokenName} token (semantic: ${role})`);
-      lines.push(`    ${access}static let semantic${role.charAt(0).toUpperCase() + role.slice(1)} = Color(hex: 0x${lightHex})`);
+      lines.push(
+        `    ${access}static let semantic${role.charAt(0).toUpperCase() + role.slice(1)} = Color(hex: 0x${lightHex})`,
+      );
     }
     lines.push("");
   };
@@ -1059,7 +1120,7 @@ function generateSemanticColorsFile(
   lines.push("");
   lines.push(`${access}enum SemanticColors {`);
 
-  for (const [role, tokenName] of Object.entries(semanticMappings)) {
+  for (const [role, _tokenName] of Object.entries(semanticMappings)) {
     const propName = `semantic${role.charAt(0).toUpperCase() + role.slice(1)}`;
     lines.push(`    ${access}static var ${role}: Color { .${propName} }`);
   }

@@ -7,7 +7,7 @@ export function stringToUint8Array(str: string) {
 }
 
 export function uint8ArrayToString(array: Uint8Array) {
-  let str = '';
+  let str = "";
   for (let i = 0; i < array.length; i++) {
     str += String.fromCharCode(array[i]);
   }

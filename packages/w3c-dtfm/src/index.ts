@@ -15,7 +15,6 @@ export * from "./color";
 // CSS utilities
 export * from "./css";
 
-
 // Format detection and migration
 export * from "./format";
 

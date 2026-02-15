@@ -1,26 +1,26 @@
-import { theme, ui11 } from '@design-sync/design-tokens';
-import { style } from '@vanilla-extract/css';
+import { theme, ui11 } from "@design-sync/design-tokens";
+import { style } from "@vanilla-extract/css";
 
 export const trigger = style([
   ui11,
   {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
     height: 30,
     paddingInline: 8,
-    background: 'transparent',
+    background: "transparent",
     border: `1px solid ${theme.color.border}`,
     borderRadius: theme.borderRadius.md,
     color: theme.color.text,
-    outline: 'none',
-    cursor: 'default',
-    userSelect: 'none',
+    outline: "none",
+    cursor: "default",
+    userSelect: "none",
     selectors: {
-      '&:focus': {
+      "&:focus": {
         borderColor: theme.color.bgBrand,
       },
-      '&[data-invalid]': {
+      "&[data-invalid]": {
         borderColor: theme.color.borderDangerStrong,
       },
     },
@@ -28,15 +28,15 @@ export const trigger = style([
 ]);
 
 export const value = style({
-  overflow: 'hidden',
-  textOverflow: 'ellipsis',
-  whiteSpace: 'nowrap',
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  whiteSpace: "nowrap",
 });
 
 export const icon = style({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
   flexShrink: 0,
   marginLeft: 4,
   color: theme.color.iconSecondary,
@@ -48,11 +48,11 @@ export const content = style({
   borderRadius: theme.borderRadius.md,
   boxShadow: theme.shadows.floatingWindow,
   maxHeight: 200,
-  overflowY: 'auto',
+  overflowY: "auto",
 });
 
 export const listbox = style({
-  listStyle: 'none',
+  listStyle: "none",
   margin: 0,
   padding: 0,
 });
@@ -60,14 +60,14 @@ export const listbox = style({
 export const item = style([
   ui11,
   {
-    display: 'flex',
-    alignItems: 'center',
-    padding: '6px 8px',
-    cursor: 'default',
+    display: "flex",
+    alignItems: "center",
+    padding: "6px 8px",
+    cursor: "default",
     color: theme.color.text,
-    outline: 'none',
+    outline: "none",
     selectors: {
-      '&[data-highlighted]': {
+      "&[data-highlighted]": {
         background: theme.color.bgSelectedSecondary,
       },
     },
@@ -75,9 +75,9 @@ export const item = style([
 ]);
 
 export const itemIndicator = style({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
   marginRight: 4,
   width: 16,
   flexShrink: 0,
@@ -88,7 +88,7 @@ export const label = style([
   {
     color: theme.color.textTertiary,
     marginBottom: 4,
-    userSelect: 'none',
+    userSelect: "none",
   },
 ]);
 

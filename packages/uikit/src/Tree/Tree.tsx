@@ -1,4 +1,4 @@
-import { For, JSX, Show, createSignal } from 'solid-js';
+import { For, JSX, Show, createSignal } from "solid-js";
 import {
   leafNode,
   node,
@@ -10,7 +10,7 @@ import {
   nodeToggle,
   nodeToggleExpanded,
   root,
-} from './tree.css';
+} from "./tree.css";
 
 export interface TreeNode {
   id: string;
