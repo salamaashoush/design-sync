@@ -1,4 +1,6 @@
-import type { JSX } from 'solid-js/jsx-runtime';
+import type { JSX } from "solid-js/jsx-runtime";
+import * as styles from "./resizable.css";
+
 export interface ResizableEvent {
   width: number;
   height: number;
@@ -8,7 +10,7 @@ interface ResizerProps {
   onResize?: (event: ResizableEvent) => void;
 }
 export function Resizer(props: ResizerProps) {
-  let corner: HTMLDivElement | undefined;
+  let corner!: HTMLDivElement;
 
   const handleSizeChange = (e: PointerEvent) => {
     const size = {
@@ -38,10 +40,12 @@ export function Resizer(props: ResizerProps) {
       id="corner"
       onPointerDown={onDown}
       onPointerUp={onUp}
-      ref={corner}
-      class="position-fixed bottom-0 right-0 cursor-se-resize"
+      ref={(el) => (corner = el)}
+      class={styles.corner}
     >
-      <i class="i-mdi-resize-bottom-right" />
+      <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor">
+        <path d="M9 1L1 9M9 5L5 9M9 9L9 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+      </svg>
     </div>
   );
 }
@@ -52,7 +56,7 @@ interface ResizableProps {
 }
 export function Resizable(props: ResizableProps) {
   return (
-    <div class="position-fixed inset-0">
+    <div class={styles.container}>
       {props.children}
       <Resizer onResize={props.onResize} />
     </div>

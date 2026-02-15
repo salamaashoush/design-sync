@@ -1,5 +1,5 @@
-import { style } from '@vanilla-extract/css';
-import { theme } from './theme.css';
+import { style } from "@vanilla-extract/css";
+import { theme } from "./theme-contract.css";
 
 // Positive
 export const ui11 = style({
@@ -58,9 +58,9 @@ export const ui14MediumNeg = style([ui14Medium, { letterSpacing: theme.letterSpa
 export const ui14BoldNeg = style([ui14Bold, { letterSpacing: theme.letterSpacing.ui14Neg }]);
 
 export const ellipsis = style({
-  overflow: 'hidden',
-  textOverflow: 'ellipsis',
-  whiteSpace: 'nowrap',
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  whiteSpace: "nowrap",
 });
 
 export const label = style([ui11, ellipsis, { color: theme.color.textTertiary }]);

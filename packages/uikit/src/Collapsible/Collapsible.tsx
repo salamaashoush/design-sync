@@ -1,13 +1,13 @@
-import { CaretRight16Icon } from '@design-sync/figma-icons';
-import { Collapsible as KCollapsible } from '@kobalte/core';
-import { ComponentProps, JSX, ParentProps } from 'solid-js';
+import { CaretRight16Icon } from "@design-sync/figma-icons";
+import { Collapsible as KCollapsible } from "@kobalte/core";
+import { ComponentProps, JSX, ParentProps } from "solid-js";
 import {
   collapsible,
   collapsibleCaret,
   collapsibleContent,
   collapsibleHeader,
   collapsibleLabel,
-} from './collapsible.css';
+} from "./collapsible.css";
 
 interface CollapsibleProps extends ComponentProps<typeof KCollapsible.Root> {
   title: string;

@@ -1,25 +1,24 @@
-import { theme } from '@design-sync/design-tokens';
-import { ui11Medium } from '@design-sync/design-tokens/src/typography.css';
-import { recipe, RecipeVariants } from '@vanilla-extract/recipes';
+import { theme, ui11Medium } from "@design-sync/design-tokens";
+import { recipe, RecipeVariants } from "@vanilla-extract/recipes";
 
 export const button = recipe({
   base: [
     ui11Medium,
     {
-      display: 'flex',
-      alignItems: 'center',
+      display: "flex",
+      alignItems: "center",
       flexShrink: 0,
       borderRadius: theme.borderRadius.lg,
       color: theme.color.text,
       height: theme.sizing.md,
       paddingInline: theme.spacing.xs,
-      textDecoration: 'none',
-      outline: 'none',
-      border: '2px solid transparent',
-      userSelect: 'none',
+      textDecoration: "none",
+      outline: "none",
+      border: "2px solid transparent",
+      userSelect: "none",
       selectors: {
-        '&:disabled': {
-          cursor: 'not-allowed',
+        "&:disabled": {
+          cursor: "not-allowed",
           color: theme.color.textDisabled,
         },
       },
@@ -31,10 +30,10 @@ export const button = recipe({
         background: theme.color.bgBrand,
         color: theme.color.textOnBrand,
         selectors: {
-          '&:enabled:active, &:enabled:focus': {
+          "&:enabled:active, &:enabled:focus": {
             border: `2px solid ${theme.color.borderOnBrand}`,
           },
-          '&:disabled': {
+          "&:disabled": {
             backgroundColor: theme.color.bgDisabled,
           },
         },
@@ -45,11 +44,11 @@ export const button = recipe({
         border: `1px solid ${theme.color.borderStrong}`,
         paddingInline: `calc(${theme.spacing.xs} + 1px)`,
         selectors: {
-          '&:enabled:active, &:enabled:focus': {
+          "&:enabled:active, &:enabled:focus": {
             border: `2px solid ${theme.color.borderBrandStrong}`,
             paddingInline: theme.spacing.xs,
           },
-          '&:disabled': {
+          "&:disabled": {
             borderColor: theme.color.borderDisabled,
           },
         },
@@ -63,18 +62,18 @@ export const button = recipe({
   compoundVariants: [
     {
       variants: {
-        intent: 'primary',
+        intent: "primary",
         destructive: true,
       },
       style: {
         backgroundColor: theme.color.bgDanger,
-        ':disabled': {
+        ":disabled": {
           backgroundColor: theme.color.bgDanger,
           color: theme.color.textOnDanger,
           opacity: 0.4,
         },
         selectors: {
-          '&:enabled:active, &:enabled:focus': {
+          "&:enabled:active, &:enabled:focus": {
             border: `2px solid ${theme.color.borderOnDanger}`,
           },
         },
@@ -82,17 +81,17 @@ export const button = recipe({
     },
     {
       variants: {
-        intent: 'secondary',
+        intent: "secondary",
         destructive: true,
       },
       style: {
         borderColor: theme.color.borderDangerStrong,
         color: theme.color.textDangerSecondary,
         selectors: {
-          '&:enabled:active, &:enabled:focus': {
+          "&:enabled:active, &:enabled:focus": {
             border: `2px solid ${theme.color.borderDangerStrong}`,
           },
-          '&:disabled': {
+          "&:disabled": {
             borderColor: theme.color.borderDangerStrong,
             color: theme.color.textDangerSecondary,
             opacity: 0.4,
@@ -103,7 +102,7 @@ export const button = recipe({
   ],
 
   defaultVariants: {
-    intent: 'primary',
+    intent: "primary",
   },
 });
 

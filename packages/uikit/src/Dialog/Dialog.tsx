@@ -1,5 +1,14 @@
-import { Dialog as KDialog } from '@kobalte/core';
-import { ComponentProps, createContext, createSignal, For, JSX, ParentProps, useContext } from 'solid-js';
+import { Dialog as KDialog } from "@kobalte/core";
+import {
+  ComponentProps,
+  createContext,
+  createSignal,
+  For,
+  JSX,
+  ParentProps,
+  useContext,
+} from "solid-js";
+import * as styles from "./dialog.css";
 
 interface ModalProps extends ComponentProps<typeof KDialog.Root> {
   title: string;
@@ -17,14 +26,23 @@ export function Dialog(props: ParentProps<ModalProps>) {
     >
       {props.trigger}
       <KDialog.Portal>
-        <KDialog.Overlay class="position-fixed inset-0 z-10" />
-        <div class="position-fixed inset-0 z-10 flex justify-content-center align-items-center">
-          <KDialog.Content class="rounded">
-            <div class="flex px-6 py-4 justify-between border-b-2 border-brand border-b-solid">
-              <KDialog.Title class="dialog__title">{props.title}</KDialog.Title>
-              <KDialog.CloseButton class="dialog__close-button">{/* <Icon name="close" /> */}</KDialog.CloseButton>
+        <KDialog.Overlay class={styles.overlay} />
+        <div class={styles.positioner}>
+          <KDialog.Content class={styles.content}>
+            <div class={styles.header}>
+              <KDialog.Title class={styles.title}>{props.title}</KDialog.Title>
+              <KDialog.CloseButton class={styles.closeButton}>
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                  <path
+                    d="M1 1L11 11M11 1L1 11"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                  />
+                </svg>
+              </KDialog.CloseButton>
             </div>
-            <KDialog.Description class="dialog__description">{props.children}</KDialog.Description>
+            <KDialog.Description class={styles.description}>{props.children}</KDialog.Description>
           </KDialog.Content>
         </div>
       </KDialog.Portal>
@@ -47,7 +65,7 @@ interface ModalsContextType {
 export function useModals() {
   const context = useContext(ModalsContext);
   if (!context) {
-    throw new Error('useModals must be used within a ModalsProvider');
+    throw new Error("useModals must be used within a ModalsProvider");
   }
   return context;
 }

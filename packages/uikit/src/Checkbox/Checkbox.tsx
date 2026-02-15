@@ -1,7 +1,7 @@
-import { CheckboxCheckedControlsIcon, CheckboxMixedControlsIcon } from '@design-sync/figma-icons';
-import { Checkbox as KCheckbox } from '@kobalte/core';
-import { ComponentProps } from 'solid-js';
-import { control, indicator, label, root } from './checkbox.css';
+import { CheckboxCheckedControlsIcon, CheckboxMixedControlsIcon } from "@design-sync/figma-icons";
+import { Checkbox as KCheckbox } from "@kobalte/core";
+import { ComponentProps } from "solid-js";
+import { control, indicator, label, root } from "./checkbox.css";
 
 interface CheckboxProps extends ComponentProps<typeof KCheckbox.Root> {
   label?: string;

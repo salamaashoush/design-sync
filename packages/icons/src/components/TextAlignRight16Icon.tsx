@@ -1,4 +1,4 @@
-import type { IconProps } from '../types';
+import type { IconProps } from "../types";
 export function TextAlignRight16Icon(props: IconProps) {
   return (
     <svg
@@ -9,8 +9,8 @@ export function TextAlignRight16Icon(props: IconProps) {
       stroke-width="0"
       style={{
         ...props.style,
-        overflow: 'visible',
-        color: props.color || 'currentColor',
+        overflow: "visible",
+        color: props.color || "currentColor",
       }}
       {...props}
       xmlns="http://www.w3.org/2000/svg"
