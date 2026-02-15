@@ -1,13 +1,13 @@
-export { default as memoize } from 'fast-memoize';
-export { default as get } from 'just-safe-get';
-export { default as set } from 'just-safe-set';
-export * from 'scule';
+export { default as memoize } from "fast-memoize";
+export { default as get } from "just-safe-get";
+export { default as set } from "just-safe-set";
+export * from "scule";
 
-export * from './array';
-export * from './clone';
-export * from './error';
-export * from './id';
-export * from './is';
-export * from './math';
-export * from './merge';
-export * from './types';
+export * from "./array";
+export * from "./clone";
+export * from "./error";
+export * from "./id";
+export * from "./is";
+export * from "./math";
+export * from "./merge";
+export * from "./types";

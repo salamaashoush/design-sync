@@ -1,4 +1,9 @@
-import { INVALID_CHARACTERS_REGEX, MATH_OPERATOR_REGEX, NUMBERS_REGEX, OPERATOR_SUFFIX_REGEX } from './constants';
+import {
+  INVALID_CHARACTERS_REGEX,
+  MATH_OPERATOR_REGEX,
+  NUMBERS_REGEX,
+  OPERATOR_SUFFIX_REGEX,
+} from "./constants";
 
 /**
  * Evaluates the given numeric `expression`.
@@ -8,7 +13,11 @@ import { INVALID_CHARACTERS_REGEX, MATH_OPERATOR_REGEX, NUMBERS_REGEX, OPERATOR_
  * @category Number
  */
 export function evaluateNumericExpression(value: string): null | number {
-  if (value === '' || NUMBERS_REGEX.test(value) === false || INVALID_CHARACTERS_REGEX.test(value) === true) {
+  if (
+    value === "" ||
+    NUMBERS_REGEX.test(value) === false ||
+    INVALID_CHARACTERS_REGEX.test(value) === true
+  ) {
     return null;
   }
   if (MATH_OPERATOR_REGEX.test(value) === true) {
