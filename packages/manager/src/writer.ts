@@ -1,36 +1,45 @@
-import { existsSync } from 'node:fs';
-import { mkdir, writeFile } from 'node:fs/promises';
-import prettier from 'prettier';
+import { existsSync } from "node:fs";
+import { mkdir, writeFile, mkdtemp, rm, readFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { execSync } from "node:child_process";
 
-type Format = 'typescript' | 'json' | 'css';
-export async function formatTextWithPrettier(text: string, parser: Format = 'typescript') {
-  const configFile = await prettier.resolveConfigFile();
+type Format = "typescript" | "json" | "css";
 
-  let config: prettier.Options = {};
-  if (configFile) {
-    const loadedConfig = await prettier.resolveConfig(configFile);
-    if (loadedConfig) {
-      config = loadedConfig;
-    }
+const formatExtensions: Record<Format, string> = {
+  typescript: ".ts",
+  json: ".json",
+  css: ".css",
+};
+
+export async function formatTextWithPrettier(text: string, parser: Format = "typescript") {
+  const ext = formatExtensions[parser];
+  const tempDir = await mkdtemp(join(tmpdir(), "oxfmt-"));
+  const tempFile = join(tempDir, `temp${ext}`);
+
+  try {
+    await writeFile(tempFile, text);
+    execSync(`npx oxfmt "${tempFile}"`, { stdio: "pipe" });
+    return await readFile(tempFile, "utf-8");
+  } finally {
+    await rm(tempDir, { recursive: true, force: true });
   }
-
-  return prettier.format(text, { ...config, parser });
 }
 
 function detectFileFormat(path: string) {
-  const ext = path.split('.').pop();
+  const ext = path.split(".").pop();
   switch (ext) {
-    case 'css':
-      return 'css';
-    case 'json':
-      return 'json';
+    case "css":
+      return "css";
+    case "json":
+      return "json";
     default:
-      return 'typescript';
+      return "typescript";
   }
 }
 export async function formatAndWriteFile(path: string, content: string, prettify = false) {
   const format = detectFileFormat(path);
-  const folderPath = path.split('/').slice(0, -1).join('/');
+  const folderPath = path.split("/").slice(0, -1).join("/");
   if (!existsSync(folderPath)) {
     await mkdir(folderPath, { recursive: true });
   }
