@@ -7,18 +7,25 @@
   "sideEffects": false,
   "type": "module",
   "private": false,
-  "main": "src/index.ts",
+  "main": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs"
+    }
+  },
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "unbuild",
+    "build": "obuild",
     "dev": "npm run build -- --watch",
-    "lint": "oxlint --import-plugin --deny-warnings && prettier -c src",
-    "lint:fix": "oxlint --import-plugin --deny-warnings --fix && prettier -c src -w",
-    "prepack": "pnpm run build",
-    "release": "pnpm test && pnpm publish",
-    "test": "pnpm lint && pnpm test:types && vitest run --coverage",
+    "lint": "oxlint --import-plugin --deny-warnings && oxfmt --check src",
+    "lint:fix": "oxlint --import-plugin --deny-warnings --fix && oxfmt src",
+    "prepack": "bun run build",
+    "release": "bun test && bun publish",
+    "test": "bun lint && bun test:types && vitest run --coverage",
     "test:types": "tsc --noEmit --skipLibCheck"
   },
   "dependencies": {
@@ -28,31 +35,23 @@
   },
   "devDependencies": {
     "@design-sync/tsconfig": "workspace:*",
-    "@types/node": "^20.14.2",
-    "@vitest/coverage-v8": "^1.6.0",
-    "oxlint": "^0.4.2",
-    "prettier": "^3.3.1",
-    "typescript": "^5.4.5",
-    "unbuild": "^2.0.0",
-    "vitest": "^1.6.0"
+    "@types/node": "^25.2.3",
+    "@vitest/coverage-v8": "^4.0.18",
+    "obuild": "^0.4.27",
+    "oxfmt": "^0.32.0",
+    "oxlint": "^1.47.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18"
   },
   "publishConfig": {
     "access": "public",
     "exports": {
       ".": {
         "types": "./dist/index.d.ts",
-        "import": {
-          "types": "./dist/index.d.mts",
-          "default": "./dist/index.mjs"
-        },
-        "require": {
-          "types": "./dist/index.d.cts",
-          "default": "./dist/index.cjs"
-        }
+        "import": "./dist/index.mjs"
       }
     },
-    "main": "./dist/index.cjs",
-    "module": "./dist/index.mjs",
+    "main": "./dist/index.mjs",
     "types": "./dist/index.d.ts"
   }
 }
