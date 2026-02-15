@@ -35,11 +35,6 @@ import type {
   W3CTokenAlias,
   W3CTokenRef,
   W3CReference,
-  W3CDesignToken,
-  W3CDesignTokens,
-  W3CTokenType,
-  W3CTokenDefinition,
-  W3CTokenGroupDefinition,
 } from "./w3c";
 
 import type {
@@ -53,11 +48,6 @@ import type {
   LegacyGradient,
   LegacyTypography,
   LegacyTokenAlias,
-  LegacyDesignToken,
-  LegacyDesignTokens,
-  LegacyTokenType,
-  LegacyTokenDefinition,
-  LegacyTokenGroupDefinition,
 } from "./legacy";
 
 /**
