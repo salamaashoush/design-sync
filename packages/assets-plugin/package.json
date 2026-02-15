@@ -1,0 +1,40 @@
+{
+  "name": "@design-sync/assets-plugin",
+  "version": "0.1.0",
+  "description": "Assets and icons plugin for Design Sync - generates SVG sprites, React components, and more from icon tokens",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs"
+    }
+  },
+  "main": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "obuild",
+    "dev": "obuild --watch",
+    "lint": "oxlint && oxfmt --check",
+    "lint:fix": "oxlint --fix && oxfmt --write",
+    "test": "bun run lint && bun run test:types && vitest run",
+    "test:types": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@design-sync/manager": "workspace:*",
+    "@design-sync/utils": "workspace:*",
+    "@design-sync/w3c-dtfm": "workspace:*"
+  },
+  "devDependencies": {
+    "@design-sync/tsconfig": "workspace:*",
+    "obuild": "^0.4.27",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

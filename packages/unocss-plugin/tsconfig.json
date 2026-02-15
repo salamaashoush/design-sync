@@ -1,0 +1,4 @@
+{
+  "extends": "@design-sync/tsconfig/base.json",
+  "include": ["src/**/*"]
+}

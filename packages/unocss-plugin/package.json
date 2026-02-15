@@ -1,0 +1,50 @@
+{
+  "name": "@design-sync/unocss-plugin",
+  "version": "0.1.0",
+  "description": "Transforms design tokens to UnoCSS theme configuration",
+  "repository": "salamaashoush/design-sync",
+  "license": "MIT",
+  "sideEffects": false,
+  "type": "module",
+  "private": false,
+  "main": "src/index.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "obuild",
+    "dev": "npm run build -- --watch",
+    "lint": "oxlint --import-plugin --deny-warnings && oxfmt --check src",
+    "lint:fix": "oxlint --import-plugin --deny-warnings --fix && oxfmt src",
+    "prepack": "bun run build",
+    "release": "bun test && bun publish",
+    "test": "bun lint && bun test:types && vitest run --coverage",
+    "test:types": "tsc --noEmit --skipLibCheck"
+  },
+  "dependencies": {
+    "@design-sync/manager": "workspace:*",
+    "@design-sync/utils": "workspace:*",
+    "@design-sync/w3c-dtfm": "workspace:*"
+  },
+  "devDependencies": {
+    "@design-sync/tsconfig": "workspace:*",
+    "@types/node": "^25.2.3",
+    "@vitest/coverage-v8": "^4.0.18",
+    "obuild": "^0.4.27",
+    "oxfmt": "^0.32.0",
+    "oxlint": "^1.47.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18"
+  },
+  "publishConfig": {
+    "access": "public",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.mjs"
+      }
+    },
+    "main": "./dist/index.mjs",
+    "types": "./dist/index.d.ts"
+  }
+}
