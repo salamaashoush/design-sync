@@ -1,0 +1,14 @@
+{
+  "name": "@design-sync/docs-example",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "tokens:sync": "bun design-sync sync",
+    "serve": "bunx serve docs"
+  },
+  "devDependencies": {
+    "@design-sync/cli": "workspace:*",
+    "@design-sync/docs-plugin": "workspace:*"
+  }
+}

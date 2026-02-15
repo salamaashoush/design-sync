@@ -1,42 +1,273 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
+/* Import design tokens */
+@import './tokens/light.css';
+
+.app {
+  min-height: 100vh;
+  background: #f8f9fa;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: var(--kda-foundation-spacing-xl) var(--kda-foundation-spacing-lg);
   text-align: center;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.header h1 {
+  margin: 0 0 var(--kda-foundation-spacing-xs);
+  font-size: 2rem;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.subtitle {
+  margin: 0;
+  opacity: 0.9;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+.tabs {
+  display: flex;
+  gap: var(--kda-foundation-spacing-xs);
+  padding: var(--kda-foundation-spacing-md);
+  background: white;
+  border-bottom: 1px solid #e9ecef;
+  justify-content: center;
 }
 
-.card {
-  padding: 2em;
+.tab {
+  padding: var(--kda-foundation-spacing-sm) var(--kda-foundation-spacing-md);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.875rem;
+  color: #495057;
+  border-radius: var(--kda-foundation-radius-md);
+  transition: all var(--kda-foundation-transition-duration-d200);
 }
 
-.read-the-docs {
-  color: #888;
+.tab:hover {
+  background: #f1f3f4;
+}
+
+.tab.active {
+  background: #667eea;
+  color: white;
+}
+
+.content {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: var(--kda-foundation-spacing-lg);
+}
+
+.demo-section {
+  background: white;
+  border-radius: var(--kda-foundation-radius-lg);
+  padding: var(--kda-foundation-spacing-lg);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.demo-section h2 {
+  margin: 0 0 var(--kda-foundation-spacing-xs);
+  color: #212529;
+}
+
+.demo-section h3 {
+  margin: var(--kda-foundation-spacing-lg) 0 var(--kda-foundation-spacing-md);
+  color: #495057;
+  font-size: 1rem;
+}
+
+.demo-description {
+  color: #6c757d;
+  margin-bottom: var(--kda-foundation-spacing-lg);
+}
+
+.demo-description code {
+  background: #f1f3f4;
+  padding: 0.125rem 0.375rem;
+  border-radius: var(--kda-foundation-radius-xs);
+  font-size: 0.875em;
+}
+
+/* Spacing Demo */
+.spacing-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--kda-foundation-spacing-md);
+}
+
+.spacing-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--kda-foundation-spacing-xs);
+}
+
+.spacing-box {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: var(--kda-foundation-radius-xs);
+  min-width: 4px;
+  min-height: 4px;
+}
+
+.token-name {
+  font-weight: 600;
+  font-size: 0.75rem;
+}
+
+.token-var {
+  font-size: 0.625rem;
+  color: #6c757d;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.spacing-example {
+  display: flex;
+  gap: var(--kda-foundation-spacing-md);
+  flex-wrap: wrap;
+}
+
+.spacing-example .card {
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: var(--kda-foundation-radius-md);
+  flex: 1;
+  min-width: 150px;
+}
+
+.spacing-example .card p {
+  margin: 0;
+  font-size: 0.75rem;
+}
+
+/* Size Demo */
+.size-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--kda-foundation-spacing-lg);
+  align-items: flex-end;
+}
+
+.size-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--kda-foundation-spacing-xs);
+}
+
+.size-box {
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+  border-radius: var(--kda-foundation-radius-sm);
+}
+
+.icon-sizes {
+  display: flex;
+  gap: var(--kda-foundation-spacing-lg);
+  align-items: center;
+}
+
+.icon-demo {
+  color: #667eea;
+}
+
+.icon-demo svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Radius Demo */
+.radius-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--kda-foundation-spacing-lg);
+}
+
+.radius-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--kda-foundation-spacing-xs);
+}
+
+.radius-box {
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.button-demo {
+  display: flex;
+  gap: var(--kda-foundation-spacing-md);
+  flex-wrap: wrap;
+}
+
+.btn {
+  padding: var(--kda-foundation-spacing-sm) var(--kda-foundation-spacing-lg);
+  border: none;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: transform var(--kda-foundation-transition-duration-d200),
+              box-shadow var(--kda-foundation-transition-duration-d200);
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+/* Transition Demo */
+.transition-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--kda-foundation-spacing-md);
+}
+
+.transition-box {
+  background: #f8f9fa;
+  border: 2px solid #dee2e6;
+  border-radius: var(--kda-foundation-radius-md);
+  padding: var(--kda-foundation-spacing-md);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: var(--kda-foundation-spacing-xs);
+}
+
+.transition-box span {
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.transition-box code {
+  font-size: 0.625rem;
+  color: #6c757d;
+  word-break: break-all;
+}
+
+.transition-box.hovered {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-color: transparent;
+  color: white;
+  transform: scale(1.02);
+}
+
+.transition-box.hovered code {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.footer {
+  text-align: center;
+  padding: var(--kda-foundation-spacing-lg);
+  color: #6c757d;
+  font-size: 0.875rem;
+}
+
+.footer code {
+  background: #f1f3f4;
+  padding: 0.125rem 0.375rem;
+  border-radius: var(--kda-foundation-radius-xs);
 }

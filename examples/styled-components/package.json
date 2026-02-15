@@ -6,25 +6,25 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "lint": "oxlint --import-plugin --deny-warnings && prettier -c src",
-    "lint:fix": "oxlint --import-plugin --deny-warnings --fix && prettier -c src -w",
+    "lint": "oxlint --import-plugin --deny-warnings && oxfmt --check src",
+    "lint:fix": "oxlint --import-plugin --deny-warnings --fix && oxfmt src",
     "preview": "vite preview",
     "tokens:sync": "design-sync sync"
   },
   "dependencies": {
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "styled-components": "^6.1.11"
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "styled-components": "^6.3.9"
   },
   "devDependencies": {
     "@design-sync/cli": "workspace:*",
     "@design-sync/styled-components-plugin": "workspace:*",
-    "@types/react": "^18.3.3",
-    "@types/react-dom": "^18.3.0",
-    "@vitejs/plugin-react-swc": "^3.7.0",
-    "oxlint": "^0.4.2",
-    "prettier": "^3.3.1",
-    "typescript": "^5.4.5",
-    "vite": "^5.2.12"
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react-swc": "^4.2.3",
+    "oxfmt": "^0.32.0",
+    "oxlint": "^1.47.0",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.1"
   }
 }
