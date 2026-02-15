@@ -5,13 +5,13 @@ export interface SaveFileOptions {
 }
 
 export interface GitInfo {
-  provider: 'github' | 'gitlab' | 'bitbucket' | 'azure';
+  provider: "github" | "gitlab" | "bitbucket" | "azure";
   repo: string;
   path: string;
   ref: string;
 }
 
-export interface GitStorageOptions extends Omit<GitInfo, 'provider'> {
+export interface GitStorageOptions extends Omit<GitInfo, "provider"> {
   accessToken: string;
 }
 
@@ -28,11 +28,13 @@ export class Base64Encoder {
     return atob(data);
   }
 }
-export abstract class GitStorage<T extends GitStorageOptions = GitStorageOptions> implements FileStorage {
+export abstract class GitStorage<
+  T extends GitStorageOptions = GitStorageOptions,
+> implements FileStorage {
   public accessToken: string;
   public repo: string;
   public path: string;
-  public ref = 'main';
+  public ref = "main";
 
   constructor(
     info: T,

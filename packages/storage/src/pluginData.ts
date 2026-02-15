@@ -1,4 +1,4 @@
-import type { LocalStorageOptions } from './local';
+import type { LocalStorageOptions } from "./local";
 
 export class PluginDataStorage {
   private serialize: <T>(value: T) => string;
@@ -15,7 +15,7 @@ export class PluginDataStorage {
 
   getDocumentData<T>(key: string, defaultValue?: T): T | undefined {
     const value = figma.root.getPluginData(key);
-    if (value === '') {
+    if (value === "") {
       return defaultValue;
     }
     return this.deserialize(value);
@@ -27,7 +27,7 @@ export class PluginDataStorage {
 
   getNodeData<T>(node: BaseNode, key: string, defaultValue?: T): T | undefined {
     const value = node.getPluginData(key);
-    if (value === '') {
+    if (value === "") {
       return defaultValue;
     }
     return this.deserialize(value);
@@ -39,7 +39,7 @@ export class PluginDataStorage {
 
   getPageData<T>(page: PageNode, key: string, defaultValue?: T): T | undefined {
     const value = page.getPluginData(key);
-    if (value === '') {
+    if (value === "") {
       return defaultValue;
     }
     return this.deserialize(value);

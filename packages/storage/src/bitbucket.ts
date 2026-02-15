@@ -1,4 +1,4 @@
-import { GitStorage, SaveFileOptions } from './git';
+import { GitStorage, SaveFileOptions } from "./git";
 
 export class BitbucketStorage extends GitStorage {
   async exists(filePath: string): Promise<boolean> {
@@ -14,15 +14,15 @@ export class BitbucketStorage extends GitStorage {
     const content = JSON.stringify(tokens, null, 2);
     const actions = [
       {
-        action: exists ? 'update' : 'create',
+        action: exists ? "update" : "create",
         file_path: filePath,
         content,
       },
     ];
     const response = await fetch(`https://api.bitbucket.org/2.0/repositories/${projectId}/src`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Basic ${this.accessToken}`,
       },
       body: JSON.stringify({
@@ -33,7 +33,7 @@ export class BitbucketStorage extends GitStorage {
       }),
     });
     if (!response.ok) {
-      throw new Error('Failed to save tokens');
+      throw new Error("Failed to save tokens");
     }
   }
 
@@ -41,15 +41,18 @@ export class BitbucketStorage extends GitStorage {
     const projectId = encodeURIComponent(this.repo);
     const path = encodeURIComponent(filePath ?? this.path);
     const branch = encodeURIComponent(this.ref);
-    const response = await fetch(`https://api.bitbucket.org/2.0/repositories/${projectId}/src/${branch}/${path}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Basic ${this.accessToken}`,
+    const response = await fetch(
+      `https://api.bitbucket.org/2.0/repositories/${projectId}/src/${branch}/${path}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Basic ${this.accessToken}`,
+        },
       },
-    });
+    );
     if (!response.ok) {
-      throw new Error('Failed to load tokens');
+      throw new Error("Failed to load tokens");
     }
     return JSON.parse(await response.text());
   }

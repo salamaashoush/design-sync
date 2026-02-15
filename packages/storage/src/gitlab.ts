@@ -1,4 +1,4 @@
-import { GitStorage, SaveFileOptions } from './git';
+import { GitStorage, SaveFileOptions } from "./git";
 
 // Gitlab using the fetch api
 export class GitlabStorage extends GitStorage {
@@ -15,26 +15,29 @@ export class GitlabStorage extends GitStorage {
     const content = JSON.stringify(tokens, null, 2);
     const actions = [
       {
-        action: exists ? 'update' : 'create',
+        action: exists ? "update" : "create",
         file_path: filePath,
         content,
       },
     ];
-    const response = await fetch(`https://gitlab.com/api/v4/projects/${projectId}/repository/commits`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Private-Token': this.accessToken,
+    const response = await fetch(
+      `https://gitlab.com/api/v4/projects/${projectId}/repository/commits`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Private-Token": this.accessToken,
+        },
+        body: JSON.stringify({
+          id: projectId,
+          branch: b,
+          commit_message: commitMessage,
+          actions,
+        }),
       },
-      body: JSON.stringify({
-        id: projectId,
-        branch: b,
-        commit_message: commitMessage,
-        actions,
-      }),
-    });
+    );
     if (!response.ok) {
-      throw new Error('Failed to save tokens');
+      throw new Error("Failed to save tokens");
     }
   }
 
@@ -45,15 +48,15 @@ export class GitlabStorage extends GitStorage {
     const response = await fetch(
       `https://gitlab.com/api/v4/projects/${projectId}/repository/files/${path}/raw?ref=${branch}`,
       {
-        method: 'GET',
+        method: "GET",
         headers: {
-          'Content-Type': 'application/json',
-          'Private-Token': this.accessToken,
+          "Content-Type": "application/json",
+          "Private-Token": this.accessToken,
         },
       },
     );
     if (!response.ok) {
-      throw new Error('Failed to load tokens');
+      throw new Error("Failed to load tokens");
     }
     const data = await response.json();
     return data;

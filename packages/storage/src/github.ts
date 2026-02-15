@@ -1,7 +1,7 @@
-import { GitStorage, SaveFileOptions } from './git';
+import { GitStorage, SaveFileOptions } from "./git";
 interface GithubFile {
-  type: 'file';
-  encoding: 'base64';
+  type: "file";
+  encoding: "base64";
   size: number;
   name: string;
   path: string;
@@ -17,7 +17,7 @@ export class GithubStorage extends GitStorage {
   private async getSha(path: string) {
     const data = await this.fetchContent(path);
     if (Array.isArray(data)) {
-      const parentPath = path.split('/').slice(0, -1).join('/');
+      const parentPath = path.split("/").slice(0, -1).join("/");
       const parent = await this.fetchContent(parentPath);
       return Array.isArray(parent) ? parent.find((f) => f.path === path)?.sha : parent.sha;
     }
@@ -25,18 +25,21 @@ export class GithubStorage extends GitStorage {
   }
 
   private async fetchContent(path: string): Promise<GithubFile> {
-    const response = await fetch(`https://api.github.com/repos/${this.repo}/contents/${path}?ref=${this.ref}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/vnd.github.raw',
-        Authorization: `token ${this.accessToken}`,
-        'X-GitHub-Api-Version': '2022-11-28',
+    const response = await fetch(
+      `https://api.github.com/repos/${this.repo}/contents/${path}?ref=${this.ref}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/vnd.github.raw",
+          Authorization: `token ${this.accessToken}`,
+          "X-GitHub-Api-Version": "2022-11-28",
+        },
       },
-    });
+    );
     // throw for non 200 status codes
     if (!response.ok) {
-      throw new Error('Failed to load tokens');
+      throw new Error("Failed to load tokens");
     }
     return response.json();
   }
@@ -44,25 +47,25 @@ export class GithubStorage extends GitStorage {
   async save(tokens: any, { commitMessage, filePath }: SaveFileOptions): Promise<void> {
     const sha = await this.getSha(filePath);
     const response = await fetch(`https://api.github.com/repos/${this.repo}/contents/${filePath}`, {
-      method: 'PUT',
+      method: "PUT",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `token ${this.repo}`,
-        'X-GitHub-Api-Version': '2022-11-28',
+        "X-GitHub-Api-Version": "2022-11-28",
       },
       body: JSON.stringify({
         branch: this.ref,
         message: commitMessage,
         committer: {
-          name: 'Salama Ashoush',
-          email: 'salamaashoush@gamil.com',
+          name: "Salama Ashoush",
+          email: "salamaashoush@gamil.com",
         },
         sha,
         content: this.base64.encode(JSON.stringify(tokens)),
       }),
     });
     if (!response.ok) {
-      throw new Error('Failed to save tokens');
+      throw new Error("Failed to save tokens");
     }
   }
 

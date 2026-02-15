@@ -1,5 +1,5 @@
-import { GitStorage, GitStorageOptions, SaveFileOptions } from './git';
-import { PluginDataStorage } from './pluginData';
+import { GitStorage, GitStorageOptions, SaveFileOptions } from "./git";
+import { PluginDataStorage } from "./pluginData";
 
 export class DocumentStorage extends GitStorage {
   constructor(

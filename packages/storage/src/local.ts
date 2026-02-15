@@ -8,7 +8,7 @@ export class LocalStorage {
 
   constructor({ serialize = JSON.stringify, deserialize = JSON.parse }: LocalStorageOptions = {}) {
     if (!figma.clientStorage) {
-      throw new Error('Client storage is not available');
+      throw new Error("Client storage is not available");
     }
     this.serialize = serialize;
     this.deserialize = deserialize;
