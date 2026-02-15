@@ -9,52 +9,51 @@
   ],
   "type": "module",
   "private": false,
-  "main": "src/index.ts",
+  "main": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs"
+    }
+  },
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "unbuild",
+    "build": "obuild",
     "dev": "npm run build -- --watch",
-    "lint": "oxlint --import-plugin --deny-warnings && prettier -c src",
-    "lint:fix": "oxlint --import-plugin --deny-warnings --fix && prettier -c src -w",
-    "prepack": "pnpm run build",
-    "release": "pnpm test && pnpm publish",
-    "test": "pnpm lint && pnpm test:types && vitest run --coverage",
+    "lint": "oxlint --import-plugin --deny-warnings && oxfmt --check src",
+    "lint:fix": "oxlint --import-plugin --deny-warnings --fix && oxfmt src",
+    "prepack": "bun run build",
+    "release": "bun run test && bun publish",
+    "test": "bun run lint && bun run test:types && bun test --coverage",
+    "test:unit": "bun test",
     "test:types": "tsc --noEmit --skipLibCheck"
   },
   "dependencies": {
     "@design-sync/utils": "workspace:*",
-    "culori": "^3.3.0"
+    "culori": "^4.0.2"
   },
   "devDependencies": {
     "@design-sync/tsconfig": "workspace:*",
-    "@types/culori": "^2.1.0",
-    "@types/node": "^20.14.2",
-    "@vitest/coverage-v8": "^1.6.0",
-    "oxlint": "^0.4.2",
-    "prettier": "^3.3.1",
-    "typescript": "^5.4.5",
-    "unbuild": "^2.0.0",
-    "vitest": "^1.6.0"
+    "@types/bun": "latest",
+    "@types/culori": "^4.0.1",
+    "@types/node": "^25.2.3",
+    "obuild": "^0.4.27",
+    "oxfmt": "^0.32.0",
+    "oxlint": "^1.47.0",
+    "typescript": "^5.9.3"
   },
   "publishConfig": {
     "access": "public",
     "exports": {
       ".": {
         "types": "./dist/index.d.ts",
-        "import": {
-          "types": "./dist/index.d.mts",
-          "default": "./dist/index.mjs"
-        },
-        "require": {
-          "types": "./dist/index.d.cts",
-          "default": "./dist/index.cjs"
-        }
+        "import": "./dist/index.mjs"
       }
     },
-    "main": "./dist/index.cjs",
-    "module": "./dist/index.mjs",
+    "main": "./dist/index.mjs",
     "types": "./dist/index.d.ts"
   }
 }

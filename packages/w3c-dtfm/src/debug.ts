@@ -1,4 +1,4 @@
-export const DEBUG_OBJECT_KEY = 'design-sync-debug';
+export const DEBUG_OBJECT_KEY = "design-sync-debug";
 
 function getDebugObject() {
   if (!(globalThis as any)[DEBUG_OBJECT_KEY]) {

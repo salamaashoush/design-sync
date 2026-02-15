@@ -1,16 +1,21 @@
-import { TEMPLATE_STRING_REGEX, hasTemplateString, isObjectPath, isValidJsObjectKey } from '@design-sync/utils';
-import { normalizeTokenAlias } from './alias';
-import { TOKEN_ALIAS_REGEX } from './constants';
-import { hasTokenAlias, isTokenAlias } from './guards';
+import {
+  TEMPLATE_STRING_REGEX,
+  hasTemplateString,
+  isObjectPath,
+  isValidJsObjectKey,
+} from "@design-sync/utils";
+import { normalizeTokenAlias } from "./alias";
+import { TOKEN_ALIAS_REGEX } from "./constants";
+import { hasTokenAlias, isTokenAlias } from "./guards";
 
 type WrapFn = (s: string, isSingleAlias: boolean) => string;
 function processPath(path: string, wrap?: WrapFn, isSingleAlias = false) {
   const normalizedPath = normalizeTokenAlias(path);
-  return typeof wrap === 'function' ? wrap(normalizedPath, isSingleAlias) : normalizedPath;
+  return typeof wrap === "function" ? wrap(normalizedPath, isSingleAlias) : normalizedPath;
 }
 
 export function processPrimitiveValue(value: string | number, wrap?: WrapFn): string | number {
-  if (typeof value !== 'string') {
+  if (typeof value !== "string") {
     return value;
   }
   if (isTokenAlias(value.trim())) {
@@ -32,7 +37,7 @@ export function correctJSObjectPath(path: string): string {
   const validIdentifier = /^[a-zA-Z_$][a-zA-Z0-9_$]*$/;
 
   // Split the path into parts
-  const parts = path.split('.');
+  const parts = path.split(".");
 
   // Process each part
   for (let i = 0; i < parts.length; i++) {
@@ -44,21 +49,23 @@ export function correctJSObjectPath(path: string): string {
   }
 
   // Join the parts back together
-  return parts.join('.').replace(/\.\[/g, '['); // Replace ".[" with "["
+  return parts.join(".").replace(/\.\[/g, "["); // Replace ".[" with "["
 }
 
 export function processJSValue(value: unknown) {
-  if (typeof value === 'undefined' || value === null) {
+  if (typeof value === "undefined" || value === null) {
     return value;
   }
 
-  if (typeof value === 'number') {
+  if (typeof value === "number") {
     return `"${value}"`;
   }
 
   if (hasTemplateString(value)) {
-    // eslint-disable-next-line no-useless-escape
-    const processed = value.replace(TEMPLATE_STRING_REGEX, (_, match) => `\${${correctJSObjectPath(match)}\}`);
+    const processed = value.replace(
+      TEMPLATE_STRING_REGEX,
+      (_, match) => `\${${correctJSObjectPath(match)}}`,
+    );
     return `\`${processed}\``;
   }
 
@@ -70,7 +77,7 @@ export function processJSValue(value: unknown) {
 }
 
 export function processCSSKey(key: string): string {
-  return key.replace(/([A-Z])/g, '-$1').toLowerCase();
+  return key.replace(/([A-Z])/g, "-$1").toLowerCase();
 }
 
 interface SerializeObjectOptions {
@@ -83,12 +90,16 @@ interface SerializeObjectOptions {
   docsComment?: (path: string) => string;
 }
 
-function serializeObjectHelper(obj: object, options: SerializeObjectOptions = {}, path = ''): string {
+function serializeObjectHelper(
+  obj: object,
+  options: SerializeObjectOptions = {},
+  path = "",
+): string {
   const {
-    indent = '  ',
+    indent = "  ",
     processKey = processJSKey,
     processValue = processJSValue,
-    separator = ',\n',
+    separator = ",\n",
     wrap = (s) => `{\n${s}\n}`,
     filterEmpty = false,
     docsComment,
@@ -98,7 +109,9 @@ function serializeObjectHelper(obj: object, options: SerializeObjectOptions = {}
     const currentPath = path ? `${path}.${key}` : key;
     const processedKey = processKey(key);
     const processedValue =
-      typeof value === 'object' ? serializeObjectHelper(value, options, currentPath) : processValue(value);
+      typeof value === "object"
+        ? serializeObjectHelper(value, options, currentPath)
+        : processValue(value);
     if (filterEmpty && !processedValue) {
       continue;
     }
@@ -120,7 +133,8 @@ export function serializeObjectToCSS(obj: object, selector: string, mediaQuery?:
   return serializeObject(obj, {
     processKey: processCSSKey,
     processValue: (value) => `${value}`,
-    separator: ';\n',
-    wrap: (s) => (mediaQuery ? `${mediaQuery} {\n${selector} {\n${s}\n}\n}` : `${selector} {\n${s}\n}`),
+    separator: ";\n",
+    wrap: (s) =>
+      mediaQuery ? `${mediaQuery} {\n${selector} {\n${s}\n}\n}` : `${selector} {\n${s}\n}`,
   });
 }

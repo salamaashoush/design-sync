@@ -1,12 +1,12 @@
-import type { DerefToken, DesignToken, TokenType } from '../types';
-import type { DesignTokenValueByMode, TokensWalkerAction } from './types';
-import { getModeNormalizeValue, getModeRawValue } from './utils';
-import type { TokensWalker } from './walker';
+import type { DerefToken, DesignToken, TokenType } from "../types";
+import type { DesignTokenValueByMode, TokensWalkerAction } from "./types";
+import { getModeNormalizeValue, getModeRawValue } from "./utils";
+import type { TokensWalker } from "./walker";
 
 export class WalkerDesignToken {
   #valueByMode?: DesignTokenValueByMode;
-  #normalizedValue?: DerefToken<DesignToken>['$value'];
-  #rawValue?: DesignToken['$value'];
+  #normalizedValue?: DerefToken<DesignToken>["$value"];
+  #rawValue?: DesignToken["$value"];
 
   public isResponsive: boolean = false;
   public isGenerated: boolean = false;
@@ -35,7 +35,31 @@ export class WalkerDesignToken {
     return this.raw.$description;
   }
 
-  get rawValue(): DesignToken['$value'] {
+  /**
+   * Check if this token is deprecated
+   */
+  get isDeprecated(): boolean {
+    return "$deprecated" in this.raw;
+  }
+
+  /**
+   * Get the deprecation message (if deprecated)
+   */
+  get deprecationMessage(): string | undefined {
+    if (!this.isDeprecated) {
+      return undefined;
+    }
+    const deprecated = (this.raw as unknown as Record<string, unknown>).$deprecated;
+    if (typeof deprecated === "string") {
+      return deprecated;
+    }
+    if (deprecated === true) {
+      return "This token is deprecated";
+    }
+    return undefined;
+  }
+
+  get rawValue(): DesignToken["$value"] {
     if (!this.#rawValue) {
       this.#rawValue = getModeRawValue(this.valueByMode, this.defaultMode);
     }
@@ -49,22 +73,22 @@ export class WalkerDesignToken {
     return this.#valueByMode;
   }
 
-  get normalizedValue(): DerefToken<DesignToken>['$value'] {
+  get normalizedValue(): DerefToken<DesignToken>["$value"] {
     if (!this.#normalizedValue) {
       this.#normalizedValue = getModeNormalizeValue(this.valueByMode, this.defaultMode);
     }
     return this.#normalizedValue;
   }
 
-  getRawValueByMode(mode: string): DerefToken<DesignToken>['$value'] {
+  getRawValueByMode(mode: string): DerefToken<DesignToken>["$value"] {
     return getModeRawValue(this.valueByMode, mode);
   }
 
-  getNormalizeValueByMode(mode: string): DerefToken<DesignToken>['$value'] {
+  getNormalizeValueByMode(mode: string): DerefToken<DesignToken>["$value"] {
     return getModeNormalizeValue(this.valueByMode, mode);
   }
 
-  derefValue(): DerefToken<DesignToken>['$value'] {
+  derefValue(): DerefToken<DesignToken>["$value"] {
     return this.walker.derefTokenValue(this.raw.$value);
   }
 
@@ -73,7 +97,7 @@ export class WalkerDesignToken {
   }
 
   applyTokenAction(action: TokensWalkerAction): void {
-    if (action.type === 'remove') {
+    if (action.type === "remove") {
       return;
     }
     this.#valueByMode = action.payload as DesignTokenValueByMode;

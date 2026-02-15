@@ -1,14 +1,14 @@
-import type { DerefToken, DesignToken, TokenDefinition, TokenType } from '../types';
-import type { WalkerDesignToken } from './token';
-import type { TokensWalker } from './walker';
+import type { DerefToken, DesignToken, TokenDefinition, TokenType } from "../types";
+import type { WalkerDesignToken } from "./token";
+import type { TokensWalker } from "./walker";
 
 export interface DesignTokenValueRecord {
-  normalized: DerefToken<DesignToken>['$value'];
-  raw: DesignToken['$value'];
+  normalized: DerefToken<DesignToken>["$value"];
+  raw: DesignToken["$value"];
 }
 export type DesignTokenValueByMode = Record<
   string,
-  DerefToken<DesignToken>['$value'] | DesignToken['$value'] | DesignTokenValueRecord
+  DerefToken<DesignToken>["$value"] | DesignToken["$value"] | DesignTokenValueRecord
 >;
 
 export interface TokensWalkerBaseAction {
@@ -19,17 +19,17 @@ export interface TokensWalkerBaseAction {
 export type TokensWalkerAction = TokensWalkerBaseAction &
   (
     | {
-        type: 'update';
+        type: "update";
         path: string;
         payload: Record<string, unknown>;
       }
     | {
-        type: 'add';
+        type: "add";
         path: string;
         payload: Record<string, unknown>;
       }
     | {
-        type: 'remove';
+        type: "remove";
         path: string | string[];
       }
   );
@@ -41,7 +41,7 @@ export interface TokenFilterObj {
 }
 export type TokensFilterParams = [string, TokenDefinition<any, any>];
 export type TokensFilter =
-  | '*'
+  | "*"
   | string
   | TokenFilterObj
   | ((params: TokensFilterParams) => boolean)
@@ -57,3 +57,66 @@ export interface TokensWalkerSchemaExtension {
 
 export type TokenOverrideFn = (mode: string, token: DesignToken) => unknown;
 export type TokenOverrides = Record<string, TokenOverrideFn>;
+
+/**
+ * Validation options for the walker
+ */
+export interface WalkerValidationOptions {
+  /**
+   * Enable input validation
+   * @default false
+   */
+  validate?: boolean;
+  /**
+   * Allow legacy format values
+   * @default true
+   */
+  allowLegacy?: boolean;
+  /**
+   * Strict validation mode
+   * @default false
+   */
+  strict?: boolean;
+  /**
+   * Throw on validation errors
+   * @default false
+   */
+  throwOnError?: boolean;
+}
+
+/**
+ * Resolver options for the walker
+ */
+export interface WalkerResolverOptions {
+  /**
+   * Enable reference resolution
+   * @default true
+   */
+  resolveReferences?: boolean;
+  /**
+   * Infer types from references
+   * @default true
+   */
+  inferTypes?: boolean;
+  /**
+   * Throw on resolver errors
+   * @default false
+   */
+  throwOnError?: boolean;
+}
+
+/**
+ * Group processing options
+ */
+export interface WalkerGroupOptions {
+  /**
+   * Process $extends groups
+   * @default true
+   */
+  processExtends?: boolean;
+  /**
+   * Process $root tokens
+   * @default true
+   */
+  processRoot?: boolean;
+}

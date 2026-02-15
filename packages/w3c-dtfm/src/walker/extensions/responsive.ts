@@ -1,15 +1,15 @@
-import { isTokenAlias } from '../../guards';
-import { DesignTokenValueByMode, TokensWalkerSchemaExtension } from '../types';
+import { isTokenAlias } from "../../guards";
+import { DesignTokenValueByMode, TokensWalkerSchemaExtension } from "../types";
 
-type ResponsiveModifier = 'up' | 'down' | 'between' | 'only';
+type ResponsiveModifier = "up" | "down" | "between" | "only";
 
 const defaultBreakpoints = {
-  xs: '0px',
-  sm: '600px',
-  md: '960px',
-  lg: '1280px',
-  xl: '1920px',
-  xxl: '2560px',
+  xs: "0px",
+  sm: "600px",
+  md: "960px",
+  lg: "1280px",
+  xl: "1920px",
+  xxl: "2560px",
 };
 
 function normalizeBp(bp: string) {
@@ -39,7 +39,7 @@ function only(breakpoint: string, breakpoints: Record<string, string>) {
 }
 
 export interface ResponsiveExtensionOptions {
-  filter: TokensWalkerSchemaExtension['filter'];
+  filter: TokensWalkerSchemaExtension["filter"];
   breakpoints?: Record<string, string>;
   pathToBreakpoint?: (path: string) => string;
   type?: ResponsiveModifier;
@@ -47,22 +47,22 @@ export interface ResponsiveExtensionOptions {
 }
 
 function defaultPathToBreakpoint(path: string) {
-  const key = path.split('.').pop() as string;
-  return key.replaceAll('@', '').replaceAll('_', '').replaceAll('-', '');
+  const key = path.split(".").pop() as string;
+  return key.replaceAll("@", "").replaceAll("_", "").replaceAll("-", "");
 }
 
 export function responsiveExtension({
   filter,
   breakpoints = defaultBreakpoints,
-  type = 'up',
-  base = 'xs',
+  type = "up",
+  base = "xs",
   pathToBreakpoint = defaultPathToBreakpoint,
 }: ResponsiveExtensionOptions): TokensWalkerSchemaExtension {
   return {
-    name: 'responsive-extension',
+    name: "responsive-extension",
     filter,
     run(token, walker) {
-      const parentPath = token.path.split('.').slice(0, -1).join('.');
+      const parentPath = token.path.split(".").slice(0, -1).join(".");
       const breakpointTokens = walker.filter((token) => token.path.startsWith(parentPath));
       const breaks = {} as Record<string, string>;
       // normalize breakpoints
@@ -80,29 +80,29 @@ export function responsiveExtension({
           continue;
         }
         switch (type) {
-          case 'up':
+          case "up":
             payload[up(key, breaks)] = breakpoint.valueByMode;
             break;
-          case 'down':
+          case "down":
             payload[down(key, breaks)] = breakpoint.valueByMode;
             break;
-          case 'between':
+          case "between":
             payload[between(base, key, breaks)] = breakpoint.valueByMode;
             break;
-          case 'only':
+          case "only":
             payload[only(key, breaks)] = breakpoint.valueByMode;
             break;
         }
       }
       return [
         {
-          extension: 'default-responsive-extension',
-          type: 'remove',
+          extension: "default-responsive-extension",
+          type: "remove",
           path: breakpointTokens.map(({ path }) => path),
         },
         {
-          extension: 'default-responsive-extension',
-          type: 'add',
+          extension: "default-responsive-extension",
+          type: "add",
           path: parentPath,
           isResponsive: true,
           payload,

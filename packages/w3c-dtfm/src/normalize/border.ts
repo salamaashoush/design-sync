@@ -1,8 +1,8 @@
-import { isObject } from '@design-sync/utils';
-import { isTokenAlias } from '../guards';
-import { normalizeColorValue } from './color';
-import { normalizeDimensionValue } from './dimension';
-import { normalizeStrokeStyleValue } from './stroke';
+import { isObject } from "@design-sync/utils";
+import { isTokenAlias } from "../guards";
+import { normalizeColorValue } from "./color";
+import { normalizeDimensionValue } from "./dimension";
+import { normalizeStrokeStyleValue } from "./stroke";
 
 export function normalizeBorderValue(value?: unknown) {
   if (isTokenAlias(value)) {
@@ -15,13 +15,13 @@ export function normalizeBorderValue(value?: unknown) {
     );
   }
 
-  if (!('color' in value)) {
+  if (!("color" in value)) {
     throw new Error(`Token missing required "color" property`);
   }
-  if (!('width' in value)) {
+  if (!("width" in value)) {
     throw new Error(`Token missing required "width" property`);
   }
-  if (!('style' in value)) {
+  if (!("style" in value)) {
     throw new Error(`Token missing required "style" property`);
   }
 

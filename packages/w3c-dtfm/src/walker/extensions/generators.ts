@@ -1,10 +1,10 @@
-import { hasTokenExtensions } from '../../guards';
-import { normalizeColorValue } from '../../normalize/color';
-import type { ColorModifier, WithExtension } from '../../types';
-import { WalkerDesignToken } from '../token';
-import { DesignTokenValueByMode, TokensWalkerAction, TokensWalkerSchemaExtension } from '../types';
-import { getModeNormalizeValue, isMatchingTokensFilter } from '../utils';
-import { TokensWalker } from '../walker';
+import { hasTokenExtensions } from "../../guards";
+import { normalizeColorValue } from "../../normalize/color";
+import type { ColorModifier, WithExtension } from "../../types";
+import { WalkerDesignToken } from "../token";
+import { DesignTokenValueByMode, TokensWalkerAction, TokensWalkerSchemaExtension } from "../types";
+import { getModeNormalizeValue, isMatchingTokensFilter } from "../utils";
+import { TokensWalker } from "../walker";
 
 export interface TokenGenerator {
   type: ColorModifier;
@@ -21,10 +21,12 @@ export interface TokenGeneratorsExtension {
   generators: TokenGenerator[];
 }
 
-export function hasGeneratorsExtension(value: unknown): value is WithExtension<TokenGeneratorsExtension> {
+export function hasGeneratorsExtension(
+  value: unknown,
+): value is WithExtension<TokenGeneratorsExtension> {
   return (
     hasTokenExtensions(value) &&
-    'generators' in value.$extensions &&
+    "generators" in value.$extensions &&
     Array.isArray(value.$extensions.generators) &&
     value.$extensions.generators.length > 0
   );
@@ -43,15 +45,19 @@ function runGenerator(
     for (const mode of modes) {
       const normalizedValue = getModeNormalizeValue(token.valueByMode, mode);
       const baseColor =
-        typeof value === 'number' ? normalizedValue : value.base ? walker.derefTokenValue(value.base) : normalizedValue;
-      const amount = typeof value === 'number' ? value : value.value;
+        typeof value === "number"
+          ? normalizedValue
+          : value.base
+            ? walker.derefTokenValue(value.base)
+            : normalizedValue;
+      const amount = typeof value === "number" ? value : value.value;
       payload[mode] = normalizeColorValue(baseColor, {
         type: generator.type,
         value: amount,
       });
       results.push({
-        extension: 'default-color-generators-extension',
-        type: 'add',
+        extension: "default-color-generators-extension",
+        type: "add",
         path,
         payload,
       });
@@ -61,17 +67,17 @@ function runGenerator(
 }
 
 interface ColorGeneratorsExtensionOptions {
-  filter?: TokensWalkerSchemaExtension['filter'];
+  filter?: TokensWalkerSchemaExtension["filter"];
 }
 
 const defaultFilter = {
-  type: 'color',
+  type: "color",
 } as const;
 export function colorGeneratorsExtension({
   filter = defaultFilter,
 }: ColorGeneratorsExtensionOptions = {}): TokensWalkerSchemaExtension {
   return {
-    name: 'default-color-generators-extension',
+    name: "default-color-generators-extension",
     filter: (params) => hasGeneratorsExtension(params[1]) && isMatchingTokensFilter(params, filter),
     run(token, walker): TokensWalkerAction[] {
       const generators = token.extensions?.generators as TokenGenerator[];
