@@ -1,14 +1,17 @@
 export type JsonRpcData = unknown;
 
 export interface JsonRpcRequest<Method extends string, Params extends JsonRpcData = JsonRpcData> {
-  jsonrpc: '2.0';
+  jsonrpc: "2.0";
   id: number;
   method: Method;
   params: Params;
 }
 
-export type JsonRpcResponse<Results extends JsonRpcData = JsonRpcData, ErrorData extends JsonRpcData = JsonRpcData> = {
-  jsonrpc: '2.0';
+export type JsonRpcResponse<
+  Results extends JsonRpcData = JsonRpcData,
+  ErrorData extends JsonRpcData = JsonRpcData,
+> = {
+  jsonrpc: "2.0";
   id: number;
   result?: Results;
   error?: {
@@ -27,15 +30,24 @@ export interface JsonRpcCall<
   res: JsonRpcResponse<Results>;
 }
 
-export interface JsonRpcSubscriptionData<Channel extends string, Data extends JsonRpcData = JsonRpcData> {
+export interface JsonRpcSubscriptionData<
+  Channel extends string,
+  Data extends JsonRpcData = JsonRpcData,
+> {
   channel: Channel;
   data: Data;
 }
-export interface JsonRpcSubscription<Channel extends string, Data extends JsonRpcData = JsonRpcData> {
-  jsonrpc: '2.0';
-  method: 'subscription';
+export interface JsonRpcSubscription<
+  Channel extends string,
+  Data extends JsonRpcData = JsonRpcData,
+> {
+  jsonrpc: "2.0";
+  method: "subscription";
   params: JsonRpcSubscriptionData<Channel, Data>;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type JsonRpcObject = JsonRpcRequest<any, any> | JsonRpcResponse | JsonRpcSubscription<any, any>;
+export type JsonRpcObject =
+  | JsonRpcRequest<any, any>
+  | JsonRpcResponse
+  | JsonRpcSubscription<any, any>;

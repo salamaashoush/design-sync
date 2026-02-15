@@ -1,110 +1,124 @@
-import { getErrorMessage } from '@design-sync/utils';
-import mitt from 'mitt';
-import type { RpcPort } from './port';
-import type { JsonRpcResponse } from './types';
-import { isJsonRpcRequest, isJsonRpcSubscribeRequest, isJsonRpcUnsubscribeRequest } from './utils';
+import { getErrorMessage } from "@design-sync/utils";
+import mitt from "mitt";
+import { RPC_ERROR_CODES } from "./errors";
+import type { RpcTransport } from "./transport";
+import type { JsonRpcRequest, JsonRpcResponse } from "./types";
+import { isJsonRpcRequest, isJsonRpcSubscribeRequest, isJsonRpcUnsubscribeRequest } from "./utils";
 
-// jsonrpc 2 server for figma plugin
-
-type RpcServerRequests = {
-  [Method in keyof RpcCalls]: RpcCalls[Method]['req'];
-};
-
-interface RpcServerEvents extends RpcChannelData, RpcServerRequests {}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type RequestHandler = (params: any) => Promise<any>;
 
 export class RpcServer {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore-next-line
-  private emitter = mitt<RpcServerEvents>();
+  private emitter = mitt<RpcChannelData>();
   private channels = new Set<keyof RpcChannelData>();
-  constructor(private port: RpcPort) {
-    this.port.addEventListener('message', this.onMessage);
+  private handlers = new Map<string, RequestHandler>();
+  private unlisten: (() => void) | null = null;
+
+  constructor(private transport: RpcTransport) {
+    this.unlisten = this.transport.listen(this.onMessage);
   }
 
-  private onMessage = (req: unknown) => {
-    if (isJsonRpcSubscribeRequest(req)) {
-      for (const ch of req.params.channels) {
+  private sendResponse(id: number, result?: unknown, error?: JsonRpcResponse["error"]) {
+    const res: JsonRpcResponse = { jsonrpc: "2.0", id };
+    if (error) {
+      res.error = error;
+    } else {
+      res.result = result;
+    }
+    this.transport.send(res);
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private onMessage = (message: unknown) => {
+    if (isJsonRpcSubscribeRequest(message)) {
+      for (const ch of message.params.channels) {
         this.channels.add(ch);
       }
+      this.sendResponse(message.id, true);
       return;
     }
 
-    if (isJsonRpcUnsubscribeRequest(req)) {
-      for (const ch of req.params.channels) {
+    if (isJsonRpcUnsubscribeRequest(message)) {
+      for (const ch of message.params.channels) {
         this.channels.delete(ch);
       }
+      this.sendResponse(message.id, true);
       return;
     }
 
-    if (isJsonRpcRequest(req)) {
-      this.emitter.emit(req.method, req);
+    if (isJsonRpcRequest(message)) {
+      this.dispatch(message);
     }
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private async dispatch(req: JsonRpcRequest<any, any>) {
+    const handler = this.handlers.get(req.method);
+    if (!handler) {
+      this.sendResponse(req.id, undefined, {
+        code: RPC_ERROR_CODES.METHOD_NOT_FOUND,
+        message: `Method "${req.method}" not found`,
+      });
+      return;
+    }
+
+    try {
+      const result = await handler(req.params);
+      this.sendResponse(req.id, result);
+    } catch (error) {
+      this.sendResponse(req.id, undefined, {
+        code: RPC_ERROR_CODES.SERVER_ERROR,
+        message: getErrorMessage(error),
+        data: error,
+      });
+    }
+  }
+
   handle<Method extends keyof RpcCalls>(
     method: Method,
-    handler: (params: RpcCalls[Method]['req']['params']) => Promise<RpcCalls[Method]['res']['result']>,
+    handler: (
+      params: RpcCalls[Method]["req"]["params"],
+    ) => Promise<RpcCalls[Method]["res"]["result"]>,
   ) {
-    this.emitter.on(method, async (req) => {
-      if (req.method !== method) return;
-      try {
-        const res = await handler(req.params);
-        this.port.postMessage(
-          {
-            jsonrpc: '2.0',
-            id: req.id,
-            result: res,
-          },
-          {
-            targetOrigin: '*',
-          },
-        );
-      } catch (error) {
-        const res: JsonRpcResponse = {
-          jsonrpc: '2.0',
-          id: req.id,
-          result: undefined,
-          error: {
-            code: -32000,
-            message: getErrorMessage(error),
-            data: error,
-          },
-        };
+    this.handlers.set(method, handler as RequestHandler);
+  }
 
-        this.port.postMessage(res, {
-          targetOrigin: '*',
-        });
-      }
-    });
+  removeHandler<Method extends keyof RpcCalls>(method: Method) {
+    this.handlers.delete(method);
   }
 
   emit<Channel extends keyof RpcChannelData>(channel: Channel, data: RpcChannelData[Channel]) {
     if (!this.channels.has(channel)) return;
-    this.port.postMessage(
-      {
-        jsonrpc: '2.0',
-        method: 'subscription',
-        params: {
-          channel,
-          data,
-        },
+    this.transport.send({
+      jsonrpc: "2.0",
+      method: "subscription",
+      params: {
+        channel,
+        data,
       },
-      {
-        targetOrigin: '*',
-      },
-    );
+    });
   }
 
-  on<Channel extends keyof RpcChannelData>(channel: Channel, handler: (data: RpcChannelData[Channel]) => void) {
+  on<Channel extends keyof RpcChannelData>(
+    channel: Channel,
+    handler: (data: RpcChannelData[Channel]) => void,
+  ) {
     this.emitter.on(channel, handler);
   }
 
-  off<Channel extends keyof RpcChannelData>(channel: Channel, handler: (data: RpcChannelData[Channel]) => void) {
+  off<Channel extends keyof RpcChannelData>(
+    channel: Channel,
+    handler: (data: RpcChannelData[Channel]) => void,
+  ) {
     this.emitter.off(channel, handler);
   }
 
   destroy() {
+    this.handlers.clear();
     this.emitter.all.clear();
-    this.port.removeEventListener('message', this.onMessage);
+    this.unlisten?.();
+    this.unlisten = null;
   }
 }
