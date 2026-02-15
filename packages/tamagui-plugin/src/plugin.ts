@@ -82,8 +82,8 @@ export function tamaguiPlugin(config: TamaguiPluginConfig = {}): ReturnType<type
     useTs = true,
     themePrefix = "",
     generateShorthands = true,
-    _includeWeb = true,
-    _includeNative = true,
+    includeWeb: _includeWeb = true,
+    includeNative: _includeNative = true,
     media,
   } = config;
 

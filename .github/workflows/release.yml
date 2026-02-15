@@ -22,7 +22,7 @@ jobs:
           node-version: 22
           registry-url: 'https://registry.npmjs.org'
       - run: bun install --frozen-lockfile
-      - run: bun run build
+      - run: bun run --filter './packages/*' --filter './apps/*' build
       - name: Create Release Pull Request or Publish to npm
         id: changesets
         uses: changesets/action@v1
