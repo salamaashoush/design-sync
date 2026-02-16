@@ -77,6 +77,8 @@ export {
   colorModifiersExtension,
   colorGeneratorsExtension,
   responsiveExtension,
+  mathExpressionsExtension,
+  compositionExtension,
   getBuiltinExtensions,
   hasColorTokenModifiersExtension,
   hasGeneratorsExtension,
@@ -88,4 +90,8 @@ export {
   type ColorTokenModifiersExtension,
   type TokenGenerator,
   type TokenGeneratorsExtension,
+  type MathExpressionsOptions,
+  type MathExpressionMetadata,
+  type CompositionMetadata,
+  type CompositionPropertyInfo,
 } from "./extensions/builtin";

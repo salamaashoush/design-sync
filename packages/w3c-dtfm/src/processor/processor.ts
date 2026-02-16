@@ -313,7 +313,19 @@ export class TokenProcessor implements TokenProcessorInterface {
       },
       getToken: (path: string): DesignToken | undefined => {
         const value = get(result, path);
-        return isDesignToken(value) ? value : undefined;
+        if (isDesignToken(value)) return value;
+        // Handle tokens that inherit $type from a parent group
+        if (isObject(value) && "$value" in value) {
+          const parts = path.split(".");
+          for (let i = parts.length - 1; i >= 0; i--) {
+            const parentPath = parts.slice(0, i).join(".");
+            const parent = parentPath ? get(result, parentPath) : result;
+            if (isObject(parent) && "$type" in parent) {
+              return { ...value, $type: parent.$type } as unknown as DesignToken;
+            }
+          }
+        }
+        return undefined;
       },
       getModeValue: (token: DesignToken, mode: string): unknown => {
         if (mode === this._modes.defaultMode) {
@@ -351,6 +363,18 @@ export class TokenProcessor implements TokenProcessorInterface {
 
           if (extension.onSchemaToken) {
             extension.onSchemaToken(path, token, context);
+
+            // Write back mutations to the original tree node.
+            // walkTokens may create a copy for inherited-type tokens,
+            // so we sync changes ($value, $extensions) back to the tree.
+            const original = get(result, path);
+            if (isObject(original) && "$value" in original) {
+              const orig = original as Record<string, unknown>;
+              orig.$value = token.$value;
+              if (token.$extensions) {
+                orig.$extensions = token.$extensions;
+              }
+            }
           }
         });
       } catch (error) {

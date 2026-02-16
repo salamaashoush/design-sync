@@ -20,6 +20,18 @@ export {
   type ResponsiveModifier,
 } from "./responsive";
 
+export {
+  mathExpressionsExtension,
+  type MathExpressionsOptions,
+  type MathExpressionMetadata,
+} from "./math-expressions";
+
+export {
+  compositionExtension,
+  type CompositionMetadata,
+  type CompositionPropertyInfo,
+} from "./composition";
+
 import type { ProcessorExtension } from "../../types";
 import { colorModifiersExtension } from "./color-modifiers";
 import { colorGeneratorsExtension } from "./color-generators";
