@@ -22,15 +22,10 @@ export const KdacolorBlackIcon = React.forwardRef<SVGSVGElement, KdacolorBlackIc
       {...props}
     >
       {title && <title>{title}</title>}
-      <path d="M52.7144 52L38.2208 51.9926L20.1554 37.8923L27.503 32L52.7144 52Z" id="{kda.foundation.color.brand.key.black}" fill="#020E1B"/>
-  <path d="M52.7144 12H38.2282L20.1554 26.1077L27.503 32L52.7144 12Z" id="{kda.foundation.color.brand.key.black}" fill="#020E1B"/>
-  <path d="M20.1504 51.9928L11.1559 44.8861V19.1142L20.1504 12.0075V51.9928Z" id="{kda.foundation.color.brand.key.black}" fill="#020E1B"/>
-    </svg>
-  )
-);
-
-KdacolorBlackIcon.displayName = "KdacolorBlackIcon";
-F5F5F5"/>
+      <circle cx="32" cy="32" r="24" id="{kda.foundation.color.icon.base.default}" fill="#131E2B"/>
+  <path d="M45 45L35.6519 44.9952L24 35.83L28.7391 32L45 45Z" id="{kda.foundation.color.icon.brand.logo.inverse.default}" fill="#F5F5F5"/>
+  <path d="M45 19H35.6566L24 28.17L28.7391 32L45 19Z" id="{kda.foundation.color.icon.brand.logo.inverse.default}" fill="#F5F5F5"/>
+  <path d="M24 45L18 40.3789V23.6211L24 19V45Z" id="{kda.foundation.color.icon.brand.logo.inverse.default}" fill="#F5F5F5"/>
     </svg>
   )
 );
