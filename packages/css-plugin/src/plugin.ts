@@ -17,6 +17,8 @@ import {
   processCssVarRef,
   serializeObjectToCSS,
   typographyToCssStyle,
+  type CompositionMetadata,
+  type MathExpressionMetadata,
   type ProcessedToken,
   type W3CColorSpace,
 } from "@design-sync/w3c-dtfm";
@@ -168,7 +170,9 @@ export function cssPlugin(config: CSSPluginConfig = {}): ReturnType<typeof defin
 
     // Process all tokens
     context.query().forEach((token) => {
-      if (generateClassFor.includes(token.type)) {
+      if ((token.type as string) === "composition") {
+        processCompositionToken(token, styles, modes.defaultMode, prefix);
+      } else if (generateClassFor.includes(token.type)) {
         processStyleToken(token, styles, mediaQueries, modes.defaultMode);
       } else {
         processCssVarToken(
@@ -376,6 +380,40 @@ function processCssVarToken(
   }
 
   const varName = pathToCssVarName(simplifiedPath, prefix);
+
+  // Math expression with token refs → calc(var(...)) output
+  if (token.hasExtension("design-sync.math")) {
+    const meta = token.getExtension<MathExpressionMetadata>("design-sync.math");
+    if (meta?.hasRefs) {
+      const calcValue = `calc(${processCssVarRef(meta.expression, prefix)})`;
+      set(cssVars[defaultMode], varName, calcValue);
+
+      if (useSemanticCategories) {
+        const category = getTokenCategory(token);
+        if (!cssVarsByCategory[defaultMode][category]) {
+          cssVarsByCategory[defaultMode][category] = {};
+        }
+        cssVarsByCategory[defaultMode][category][varName] = calcValue;
+      }
+
+      for (const mode of allModes) {
+        if (mode === defaultMode) continue;
+        const modeExpr = meta.modeExpressions?.[mode] ?? meta.expression;
+        const modeCalcValue = `calc(${processCssVarRef(modeExpr, prefix)})`;
+        set(cssVars[mode], varName, modeCalcValue);
+
+        if (useSemanticCategories) {
+          const category = getTokenCategory(token);
+          if (!cssVarsByCategory[mode][category]) {
+            cssVarsByCategory[mode][category] = {};
+          }
+          cssVarsByCategory[mode][category][varName] = modeCalcValue;
+        }
+      }
+      return;
+    }
+  }
+
   const isColorToken = token.type === "color";
 
   // Process default mode value
@@ -529,6 +567,28 @@ function processStyleToken(
       const processedStyle = processCssStyleObject(style as Record<string, unknown>);
       styles.push(serializeObjectToCSS(processedStyle, selector));
     }
+  }
+}
+
+function processCompositionToken(
+  token: ProcessedToken,
+  styles: string[],
+  defaultMode: string,
+  prefix?: string,
+) {
+  const meta = token.getExtension<CompositionMetadata>("design-sync.composition");
+  if (!meta) return;
+
+  const selector = `.${pathToStyleName(token.path, { textTransform: kebabCase })}`;
+  const cssProps: Record<string, string | number> = {};
+
+  for (const propInfo of Object.values(meta.properties)) {
+    const cssValue = processCssVarRef(propInfo.value, prefix);
+    cssProps[propInfo.cssProperty] = cssValue;
+  }
+
+  if (Object.keys(cssProps).length > 0) {
+    styles.push(serializeObjectToCSS(cssProps, selector));
   }
 }
 
