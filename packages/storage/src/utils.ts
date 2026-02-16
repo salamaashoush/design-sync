@@ -30,41 +30,19 @@ export function createGitStorage(
   infoOrUri: string | GitInfo,
   accessToken: string,
   base64?: Base64Encoder,
+  apiUrl?: string,
 ) {
   const info = typeof infoOrUri === "string" ? parseGitURI(infoOrUri) : infoOrUri;
+  const opts = { ...info, accessToken, apiUrl: apiUrl ?? info.apiUrl };
   switch (info.provider) {
     case "github":
-      return new GithubStorage(
-        {
-          ...info,
-          accessToken,
-        },
-        base64,
-      );
+      return new GithubStorage(opts, base64);
     case "gitlab":
-      return new GitlabStorage(
-        {
-          ...info,
-          accessToken,
-        },
-        base64,
-      );
+      return new GitlabStorage(opts, base64);
     case "bitbucket":
-      return new BitbucketStorage(
-        {
-          ...info,
-          accessToken,
-        },
-        base64,
-      );
+      return new BitbucketStorage(opts, base64);
     case "azure":
-      return new AzureDevOpsStorage(
-        {
-          ...info,
-          accessToken,
-        },
-        base64,
-      );
+      return new AzureDevOpsStorage(opts, base64);
     default:
       throw new Error("Invalid git provider");
   }

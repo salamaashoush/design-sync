@@ -4,6 +4,8 @@ export * from "./document";
 export * from "./git";
 export * from "./github";
 export * from "./gitlab";
+export * from "./jsonbin";
 export * from "./local";
 export * from "./pluginData";
+export * from "./url";
 export * from "./utils";
