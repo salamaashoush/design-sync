@@ -3,6 +3,7 @@ import { syncService } from "../services/sync";
 import { setupStorageHandlers } from "./storage";
 import { setupStylesHandlers } from "./styles";
 import { setupSyncHandlers } from "./sync";
+import { setupThemesHandlers } from "./themes";
 import { setupVariablesHandlers } from "./variables";
 
 export function setupHandlers() {
@@ -20,4 +21,5 @@ export function setupHandlers() {
   setupStylesHandlers();
   setupSyncHandlers();
   setupStorageHandlers();
+  setupThemesHandlers();
 }

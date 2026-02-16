@@ -12,9 +12,13 @@ export function isVariableAlias(value: VariableValue): value is VariableAlias {
   return isObject(value) && "type" in value && value.type === "VARIABLE_ALIAS" && "id" in value;
 }
 
+export function isGradientValue(value: string): boolean {
+  return typeof value === "string" && value.includes("gradient");
+}
+
 export const deserializeColor = memoize((color: string): RGBA | RGB => {
-  if (color.includes("gradient")) {
-    console.warn("gradient color is not supported");
+  if (isGradientValue(color)) {
+    console.warn(`Gradient color "${color}" is not supported as a Figma variable — skipping`);
     return { r: 0, g: 0, b: 0, a: 0 };
   }
   return figma.util.rgba(color);

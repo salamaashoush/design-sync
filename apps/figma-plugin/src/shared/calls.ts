@@ -1,5 +1,13 @@
 import { JsonRpcCall } from "@design-sync/rpc";
-import { DiffResult, RemoteStorage, RemoteStorageWithoutId } from "./types";
+import type { PullRequestOptions, PullRequestResult } from "@design-sync/storage";
+import {
+  DiffResult,
+  RemoteStorage,
+  RemoteStorageWithoutId,
+  ThemesConfig,
+  TokenSetRef,
+  TokenTheme,
+} from "./types";
 
 export interface UIItem {
   id: string;
@@ -65,6 +73,35 @@ declare global {
     "sync/export-preview": JsonRpcCall<"sync/export-preview", ExportPreviewParams, DiffResult>;
     "sync/push": JsonRpcCall<"sync/push", PushParams, void>;
     "sync/pull-preview": JsonRpcCall<"sync/pull-preview", void, DiffResult>;
-    "sync/apply": JsonRpcCall<"sync/apply", void, { applied: number }>;
+    "sync/apply": JsonRpcCall<
+      "sync/apply",
+      { selectedPaths?: string[] } | void,
+      { created: number; updated: number }
+    >;
+    "branches/list": JsonRpcCall<"branches/list", void, string[]>;
+    "branches/create": JsonRpcCall<"branches/create", { name: string; fromRef?: string }, void>;
+    "branches/switch": JsonRpcCall<"branches/switch", string, void>;
+    "sync/create-pr": JsonRpcCall<"sync/create-pr", PullRequestOptions, PullRequestResult>;
+    "themes/get": JsonRpcCall<"themes/get", void, ThemesConfig>;
+    "themes/save": JsonRpcCall<"themes/save", ThemesConfig, void>;
+    "themes/apply": JsonRpcCall<"themes/apply", TokenTheme, { created: number; updated: number }>;
+    "sets/list": JsonRpcCall<"sets/list", void, TokenSetRef[]>;
+    "tokens/get": JsonRpcCall<
+      "tokens/get",
+      string,
+      { path: string; token: Record<string, unknown> } | null
+    >;
+    "tokens/update": JsonRpcCall<
+      "tokens/update",
+      { path: string; token: Record<string, unknown> },
+      void
+    >;
+    "tokens/create": JsonRpcCall<
+      "tokens/create",
+      { path: string; token: Record<string, unknown> },
+      void
+    >;
+    "tokens/delete": JsonRpcCall<"tokens/delete", string, void>;
+    "tokens/tree": JsonRpcCall<"tokens/tree", void, Record<string, unknown>>;
   }
 }

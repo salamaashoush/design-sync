@@ -1,4 +1,10 @@
-export type RemoteStorageType = "github" | "gitlab" | "bitbucket" | "azure-devops";
+export type RemoteStorageType =
+  | "github"
+  | "gitlab"
+  | "bitbucket"
+  | "azure-devops"
+  | "url"
+  | "jsonbin";
 
 export interface RemoteStorage {
   id: string;
@@ -18,3 +24,23 @@ export interface DiffEntry {
 }
 
 export type DiffResult = DiffEntry[];
+
+export interface TokenSet {
+  name: string;
+  tokens: Record<string, unknown>;
+  enabled: boolean;
+}
+
+export interface TokenSetRef {
+  name: string;
+  enabled: boolean;
+}
+
+export interface TokenTheme {
+  name: string;
+  sets: TokenSetRef[];
+}
+
+export interface ThemesConfig {
+  themes: TokenTheme[];
+}

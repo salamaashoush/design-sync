@@ -4,6 +4,7 @@ import type { DiffResult } from "../../shared/types";
 import {
   deserializeColor,
   isColorVariableValue,
+  isGradientValue,
   isVariableAlias,
   serializeColor,
 } from "../utils/colors";
@@ -148,22 +149,57 @@ export class VariablesService {
   }
 
   private processAliases(collection: VariableCollection) {
-    const aliasesValues = Object.values(this.aliasesToProcess);
-    let generations = aliasesValues.length;
-    while (aliasesValues.length && generations > 0) {
-      for (let i = 0; i < aliasesValues.length; i++) {
-        const { name, refName, mode } = aliasesValues[i];
-        if (this.variablesStore.find(refName)) {
-          aliasesValues.splice(i, 1);
-          this.variablesStore.set(name, this.createVariableAlias(name, mode, refName, collection));
-        }
+    const aliases = { ...this.aliasesToProcess };
+    const resolved = new Set<string>();
+    const inProgress = new Set<string>();
+
+    const resolve = (varName: string): boolean => {
+      if (resolved.has(varName)) return true;
+      if (inProgress.has(varName)) {
+        console.warn(`Circular alias detected for "${varName}" — skipping`);
+        return false;
       }
-      generations--;
+
+      const alias = aliases[varName];
+      if (!alias) return this.variablesStore.has(varName);
+
+      inProgress.add(varName);
+
+      // If the reference is already a known variable, resolve directly
+      if (this.variablesStore.has(alias.refName)) {
+        this.variablesStore.set(
+          varName,
+          this.createVariableAlias(varName, alias.mode, alias.refName, collection),
+        );
+        inProgress.delete(varName);
+        resolved.add(varName);
+        return true;
+      }
+
+      // Otherwise, try to resolve the reference first (it might be another alias)
+      if (resolve(alias.refName)) {
+        this.variablesStore.set(
+          varName,
+          this.createVariableAlias(varName, alias.mode, alias.refName, collection),
+        );
+        inProgress.delete(varName);
+        resolved.add(varName);
+        return true;
+      }
+
+      inProgress.delete(varName);
+      console.warn(`Unresolvable alias "${varName}" → "${alias.refName}" — skipping`);
+      return false;
+    };
+
+    for (const varName of Object.keys(aliases)) {
+      resolve(varName);
     }
+
     this.aliasesToProcess = {};
   }
 
-  async import(tokens: Record<string, unknown>) {
+  async import(tokens: Record<string, unknown>): Promise<{ created: number; updated: number }> {
     const processor = createTokenProcessor(tokens);
     const _result = await processor.process();
     const modes = processor.modes;
@@ -171,9 +207,25 @@ export class VariablesService {
     const name = (tokens["$name"] as string) ?? Object.keys(tokens)[0] ?? "tokens";
     const collection = this.getCollection(name, [...modes.availableModes], modes.defaultMode);
 
+    let created = 0;
+    let updated = 0;
+
     for (const token of processor.tokens()) {
       const figmaType = designTokenTypeToVariableType(token.type);
       const varName = token.path.replace(/\./g, "/");
+
+      // Skip gradient tokens — they can't be Figma variables (handled via style import)
+      if (figmaType === "COLOR") {
+        const defaultValue = String(token.value);
+        if (isGradientValue(defaultValue)) {
+          console.warn(
+            `Skipping gradient token "${varName}" — gradients are imported as styles, not variables`,
+          );
+          continue;
+        }
+      }
+
+      const isNew = !this.variablesStore.has(varName);
 
       for (const [mode, modeValue] of Object.entries(token.modeValues)) {
         const rawValue = token.getRawValue(mode);
@@ -203,8 +255,15 @@ export class VariablesService {
           );
         }
       }
+
+      if (isNew) {
+        created++;
+      } else {
+        updated++;
+      }
     }
     this.processAliases(collection);
+    return { created, updated };
   }
 
   async diffImport(tokens: Record<string, unknown>): Promise<DiffResult> {

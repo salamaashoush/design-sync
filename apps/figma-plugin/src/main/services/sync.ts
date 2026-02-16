@@ -1,4 +1,4 @@
-import { GitStorage } from "@design-sync/storage";
+import { GitStorage, type PullRequestOptions, type PullRequestResult } from "@design-sync/storage";
 import { get, isObject } from "@design-sync/utils";
 import {
   isTokenAlias,
@@ -164,7 +164,40 @@ export class SyncService {
     if (!remoteTokens) {
       return [];
     }
-    return variablesService.diffImport(remoteTokens as Record<string, unknown>);
+    const tokens = remoteTokens as Record<string, unknown>;
+    const variableDiff = await variablesService.diffImport(tokens);
+    const typographyDiff = stylesService.diffImportTypography(tokens);
+    const shadowDiff = stylesService.diffImportShadows(tokens);
+    const paintDiff = stylesService.diffImportPaints(tokens);
+    return [...variableDiff, ...typographyDiff, ...shadowDiff, ...paintDiff];
+  }
+
+  async listBranches(): Promise<string[]> {
+    if (!this.storageService?.listBranches) {
+      throw new Error("Storage provider does not support branch listing");
+    }
+    return this.storageService.listBranches();
+  }
+
+  async createBranch(name: string, fromRef?: string): Promise<void> {
+    if (!this.storageService?.createBranch) {
+      throw new Error("Storage provider does not support branch creation");
+    }
+    await this.storageService.createBranch(name, fromRef);
+  }
+
+  async switchBranch(branch: string): Promise<void> {
+    if (!this.storageService) {
+      throw new Error("No storage service configured");
+    }
+    this.storageService.ref = branch;
+  }
+
+  async createPullRequest(options: PullRequestOptions): Promise<PullRequestResult> {
+    if (!this.storageService?.createPullRequest) {
+      throw new Error("Storage provider does not support pull request creation");
+    }
+    return this.storageService.createPullRequest(options);
   }
 
   private diffObjects(

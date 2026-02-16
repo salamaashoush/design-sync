@@ -15,5 +15,10 @@ class FigmaBase64Encoder {
 }
 const base64 = new FigmaBase64Encoder();
 export function createGitStorageForFigma(remoteStorage: RemoteStorage) {
-  return createGitStorage(remoteStorage.uri, remoteStorage.accessToken, base64);
+  return createGitStorage(
+    remoteStorage.uri,
+    remoteStorage.accessToken,
+    base64,
+    remoteStorage.apiUrl,
+  );
 }
